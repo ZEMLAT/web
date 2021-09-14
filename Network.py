@@ -5,9 +5,11 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM, CuDNNLSTM, BatchNormalization
+# from tensorflow.compat.v1.keras.layers import CuDNNLSTM # python > 3.6
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 import time
 from sklearn import preprocessing
+import os
 
 SEQ_LEN = 60  # how long of a preceeding sequence to collect for RNN
 FUTURE_PERIOD_PREDICT = 3  # how far into the future are we trying to predict?
@@ -77,6 +79,13 @@ def preprocess_df(df):
 
 main_df = pd.DataFrame() # begin empty
 
+# TODO: https://www.freqtrade.io/en/stable/data-download
+# https://github.com/freqtrade/freqtrade/blob/315ea1e1167dc77a9bc79ad06a239b20742c0b27/freqtrade/commands/data_commands.py#L21
+
+# TODO: Update to Tensorflow 2.x (https://github.com/sudharsan13296/Bitcoin-price-Prediction-using-LSTM/blob/master/Bitcoin%20price%20prediction%20(Time%20series)%20using%20LSTM%20RNN.ipynb)
+### COSAS APRENDIDAS HOY (15-09)
+# El jupiter network es python pero ejecutado deesde el ipython (he probado el matplotlib y para ejecutarlo se debe ejecutar desde ipython que me da la misma interfaz)
+
 ratios = ["BTC-USD", "LTC-USD", "BCH-USD", "ETH-USD"]  # the 4 ratios we want to consider
 for ratio in ratios:  # begin iteration
 
@@ -98,10 +107,38 @@ for ratio in ratios:  # begin iteration
 
 main_df.fillna(method="ffill", inplace=True)  # if there are gaps in data, use previously known values
 main_df.dropna(inplace=True)
-#print(main_df.head())  # how did we do??
 
-main_df['future'] = main_df[f'{RATIO_TO_PREDICT}_close'].shift(-FUTURE_PERIOD_PREDICT)
-main_df['target'] = list(map(classify, main_df[f'{RATIO_TO_PREDICT}_close'], main_df['future']))
+print(main_df.head())  # how did we do??
+
+### COSAS APRENDIDAS HOY (15-09)
+# Esto lo único que hace es hacer swap, el future lo unico que hace es traerme valores de tantas casillas como el -VALOR indique
+# Como la información descargada va en tramos de 1 minuto, si FUTURE_PERIOD_PREDICT vale 3, lo que hace es cambiarme el valor actual a 3 valores por delante de lo que había
+
+future = main_df[f'{RATIO_TO_PREDICT}_close'].shift(-FUTURE_PERIOD_PREDICT)
+target = list(map(classify, main_df[f'{RATIO_TO_PREDICT}_close'], future))
+
+main_df['future'] = future
+main_df['target'] = target
+
+print(main_df)
+print(type(main_df))
+
+print(f"future: {len(future)} values")
+print(f"target: {len(target)} values")
+
+# future_file = open("future.txt", "wt")
+# n = future_file.write(future.to_string())
+# future_file.close()
+
+# # target_file = open("target.txt", "wt")
+# # n = target_file.write(target.to_string())
+# # target_file.close()
+
+# dataframe_file = open("dataframe.txt", "wt")
+# n = dataframe_file.write(main_df.to_string())
+# dataframe_file.close()
+
+# print(type(main_df[f'{RATIO_TO_PREDICT}_close']))
 
 main_df.dropna(inplace=True)
 
@@ -147,7 +184,7 @@ model.compile(
     metrics=['accuracy']
 )
 
-tensorboard = TensorBoard(log_dir="logs/{}".format(NAME))
+tensorboard = TensorBoard(log_dir=os.path.join("logs", NAME))
 
 filepath = "RNN_Final-{epoch:02d}-{val_acc:.3f}"  # unique file name that will include the epoch and the validation acc for that epoch
 checkpoint = ModelCheckpoint("models/{}.model".format(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')) # saves only the best ones
@@ -158,7 +195,7 @@ history = model.fit(
     batch_size=BATCH_SIZE,
     epochs=EPOCHS,
     validation_data=(validation_x, validation_y),
-    callbacks=[tensorboard, checkpoint],
+    callbacks=[tensorboard, checkpoint]
 )
 
 # Score model
