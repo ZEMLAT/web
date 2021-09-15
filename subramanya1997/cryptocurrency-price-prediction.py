@@ -140,7 +140,7 @@ optimizer = 'adam'
 
 # In[ ]:
 
-
+hist = hist.drop(['conversionType','conversionSymbol'], axis=1)
 train, test, X_train, X_test, y_train, y_test = prepare_data(
     hist, target_col, window_len=window_len, zero_base=zero_base, test_size=test_size)
 

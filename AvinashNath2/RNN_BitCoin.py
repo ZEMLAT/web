@@ -65,7 +65,7 @@ test_set.head()
 
 #selecting the second column from test data 
 real_btc_price = test_set.iloc[:,1:2] 
-real_btc_price = real_btc_price[0:32]        
+real_btc_price = real_btc_price      
 
 # Coverting into 2D array
 real_btc_price = real_btc_price.values      
@@ -74,10 +74,10 @@ real_btc_price = real_btc_price.values
 inputs = real_btc_price			
 inputs = sc.transform(inputs)
 
-inputs = inputs[0:32]
+# inputs = inputs[0:32]
 
 #Reshaping for Keras [reshape into 3 dimensions, [batch_size, timesteps, input_dim]
-inputs = np.reshape(inputs, (32, 1, 1))
+inputs = np.reshape(inputs, (8, 1, 1))
 predicted_btc_price = regressor.predict(inputs)
 predicted_btc_price = sc.inverse_transform(predicted_btc_price)
 
