@@ -1,0 +1,72 @@
+4/5/21 23:38 - Álvaro: https://d-nb.info/1185667245/34
+4/5/21 23:43 - Álvaro: https://www.xtb.com/es/academia-de-trading/gestion-del-riesgo-ratio-riesgo-beneficio#:~:text=Para%20calcular%20el%20ratio%20riesgo,su%20posici%C3%B3n%20(el%20beneficio).
+4/5/21 23:43 - Álvaro: https://es.cointelegraph.com/tags/cryptocurrencies esta tambien mola
+4/5/21 23:43 - Álvaro: https://alternative.me/crypto/fear-and-greed-index/
+4/5/21 23:57 - Álvaro: https://towardsdatascience.com/using-recurrent-neural-networks-to-predict-bitcoin-btc-prices-c4ff70f9f3e4
+4/5/21 23:58 - Álvaro: https://towardsdatascience.com/cryptocurrency-price-prediction-using-lstms-tensorflow-for-hackers-part-iii-264fcdbccd3f
+4/5/21 23:59 - Álvaro: https://levelup.gitconnected.com/predicting-bitcoins-price-with-recurrent-neural-networks-a27b4d2d839
+4/5/21 23:59 - Álvaro: https://github.com/AvinashNath2/Recurrent-Neural-Network-for-BitCoin-price-prediction
+5/5/21 0:00 - Álvaro: https://medium.com/coinmonks/cryptocurrency-price-prediction-using-deep-learning-f738ead48ffd
+5/5/21 0:03 - Álvaro: https://github.com/akmuthun/crypto_predictor_app
+5/5/21 0:03 - Álvaro: https://www.youtube.com/watch?v=CC0CDPGtJ0g&ab_channel=TradingToolCrypto
+5/5/21 0:04 - Álvaro: Coingecko
+5/5/21 0:05 - Álvaro: https://github.com/edeng23/binance-trade-bot
+5/5/21 0:07 - Álvaro: https://github.com/TeamWertarbyte/crypto-trading-bot
+5/5/21 0:08 - Álvaro: https://github.com/DeviaVir/zenbot
+5/5/21 0:15 - Álvaro: https://github.com/topics/trading-bot
+5/5/21 0:16 - Álvaro: https://github.com/pirate/crypto-trader
+5/5/21 0:16 - Álvaro: https://github.com/askmike/gekko
+5/5/21 0:17 - Álvaro: https://github.com/abhinavsagar/cryptocurrency-price-prediction
+5/5/21 0:18 - Álvaro: https://github.com/freqtrade/freqtrade
+5/5/21 0:25 - Álvaro: https://www.bitcoin.com.mx/los-5-mejores-bots-de-crypto-trading-para-2020/
+5/5/21 0:28 - Álvaro: <Multimedia omitido>
+5/5/21 0:29 - Álvaro: https://github.com/Haehnchen/crypto-trading-bot
+5/5/21 0:29 - Álvaro: https://github.com/botcrypto-io/awesome-crypto-trading-bots
+5/5/21 0:38 - Álvaro: https://www.mql5.com/es/articles/3621
+5/5/21 1:16 - Álvaro Rodríguez Cosentin: https://www.metatrader5.com/es/terminal/help/algotrading/testing_report
+5/5/21 9:30 - Álvaro: https://brookmiles.github.io/freqtrade-stuff/2021/04/20/where-to-start-with-freqtrade/
+5/5/21 9:40 - Álvaro: freqtrade
+----------
+
+honestly look into combinedbinhandcluc and their varietions
+my varietion managed to double my money in a week once back in February
+5/5/21 10:14 - Álvaro: https://www.freqtrade.io/en/latest/telegram-usage/
+5/5/21 10:18 - Álvaro: https://www.freqtrade.io/en/stable/configuration/#using-dry-run-mode
+5/5/21 10:18 - Álvaro: https://github.com/freqtrade/freqtrade-strategies
+5/5/21 10:19 - Álvaro: https://github.com/freqtrade/freqtrade-strategies/blob/master/user_data/strategies/berlinguyinca/CombinedBinHAndCluc.py
+5/5/21 10:24 - Álvaro: tg://resolve?domain=z3nth10n_freqtrade_bot
+5/5/21 10:24 - Álvaro: t.me/tg://resolve?domain=z3nth10n_freqtrade_bot
+5/5/21 10:24 - Álvaro: t.me/z3nth10n_freqtrade_bot
+5/5/21 10:25 - Álvaro: Done! Congratulations on your new bot. You will find it at t.me/z3nth10n_freqtrade_bot. You can now add a description, about section and profile picture for your bot, see /help for a list of commands. By the way, when you've finished creating your cool bot, ping our Bot Support if you want a better username for it. Just make sure the bot is fully operational before you do this.
+
+Use this token to access the HTTP API:
+1761280961:AAFLliTCcYt3_uwgYp6gW0ZOWuLie-p6x6g
+Keep your token secure and store it safely, it can be used by anyone to control your bot.
+
+For a description of the Bot API, see this page: https://core.telegram.org/bots/api
+5/5/21 10:27 - Álvaro: 1215247010
+5/5/21 10:45 - Álvaro: freqtrade trade --strategy CombinedBinHAndCluc --dry-run --dry-run-wallet 50
+5/5/21 11:16 - Álvaro: <Multimedia omitido>
+5/5/21 11:20 - Álvaro: So ok, If I understood if I use BTC as stake cur, it means that I'll start my wallet in BTC. Then If I add DOGE/BTC to the pairlist it means that I'll use that to make investements?
+Leonardvdj — hoy a las 11:18
+It will trade your BTC for DOGE, and then later trade that DOGE back to BTC again
+5/5/21 12:57 - Álvaro: freqtrade backtesting --strategy CombinedBinHAndCluc --dry-run --dry-run-wallet 50 --timeframe 1m
+5/5/21 13:12 - Álvaro: https://www.youtube.com/watch?v=wq3uLSDJxUQ&ab_channel=DevBootstrap
+5/5/21 17:44 - Álvaro: https://tech.serhatteker.com/post/2019-09/upgrade-python37-on-ubuntu18/
+5/5/21 18:00 - Álvaro: https://github.com/Pranjalab/Cryptocurrency-predicting-RNN-Model
+5/5/21 18:21 - Álvaro: https://www.freqtrade.io/en/latest/data-download/
+5/5/21 22:03 - Álvaro Rodríguez Cosentin: download-data
+5/5/21 22:03 - Álvaro Rodríguez Cosentin: --timerange 20210101-20210505
+6/5/21 11:05 - Álvaro: http://dataap.org/blog/2020/05/14/how-to-split-by-delimiter-in-direct-query-power-bi-reports/
+6/5/21 12:56 - Álvaro: P029028201-BZ-20-20191204102922-11
+6/5/21 16:41 - Álvaro: https://www.youtube.com/watch?v=xN-UkIlgvL8
+6/5/21 21:16 - Álvaro: https://pythonprogramming.net/crypto-rnn-model-deep-learning-python-tensorflow-keras/?completed=/balancing-rnn-data-deep-learning-python-tensorflow-keras/
+6/5/21 21:47 - Álvaro Rodríguez Cosentin: https://github.com/flowcoin/kriptomist
+7/5/21 13:16 - Álvaro: <Multimedia omitido>
+7/5/21 14:00 - Álvaro: 14-06-2018 11:31: 1528968660
+25-08-2018 18:41: 1535215260
+7/5/21 14:02 - Álvaro: 92225
+7/5/21 14:03 - Álvaro: 6246600
+7/5/21 14:27 - Álvaro: https://www.freqtrade.io/en/stable/strategy-advanced/#derived-strategies
+7/5/21 14:27 - Álvaro: https://www.freqtrade.io/en/stable/strategy-customization/
+7/5/21 14:40 - Álvaro: https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py
