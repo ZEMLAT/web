@@ -4,7 +4,6 @@
 # In[1]:
 
 
-# get_ipython().run_line_magic('tensorflow_version', '2.x')
 import json
 import requests
 from keras.models import Sequential
@@ -17,30 +16,24 @@ from sklearn.metrics import mean_absolute_error
 # get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[20]:
+# In[ ]:
 
 
 endpoint = 'https://min-api.cryptocompare.com/data/histoday'
-res = requests.get(endpoint + '?fsym=BTC&tsym=CAD&limit=500')
+res = requests.get(endpoint + '?fsym=BTC&tsym=USD&limit=2000')
 hist = pd.DataFrame(json.loads(res.content)['Data'])
 hist = hist.set_index('time')
 hist.index = pd.to_datetime(hist.index, unit='s')
 target_col = 'close'
 
 
-# In[22]:
+# In[39]:
 
 
-hist.drop(["conversionType", "conversionSymbol"], axis = 'columns', inplace = True)
+hist
 
 
-# In[23]:
-
-
-hist.head(5)
-
-
-# In[24]:
+# In[ ]:
 
 
 def train_test_split(df, test_size=0.2):
@@ -50,13 +43,13 @@ def train_test_split(df, test_size=0.2):
     return train_data, test_data
 
 
-# In[25]:
+# In[ ]:
 
 
 train, test = train_test_split(hist, test_size=0.2)
 
 
-# In[26]:
+# In[ ]:
 
 
 def line_plot(line1, line2, label1=None, label2=None, title='', lw=2):
@@ -65,26 +58,27 @@ def line_plot(line1, line2, label1=None, label2=None, title='', lw=2):
     ax.plot(line2, label=label2, linewidth=lw)
     ax.set_ylabel('price [CAD]', fontsize=14)
     ax.set_title(title, fontsize=16)
-    ax.legend(loc='best', fontsize=16);
+    ax.legend(loc='best', fontsize=16)
 
 
-# In[27]:
+# In[53]:
 
 
-line_plot(train[target_col], test[target_col], 'training', 'test', title='')
+line_plot(train[target_col], test[target_col], 'Training', 'Test', title='')
 
 
-# In[28]:
+# In[ ]:
 
 
 def normalise_zero_base(df):
     return df / df.iloc[0] - 1
 
+
 def normalise_min_max(df):
     return (df - df.min()) / (data.max() - df.min())
 
 
-# In[29]:
+# In[ ]:
 
 
 def extract_window_data(df, window_len=5, zero_base=True):
@@ -97,7 +91,7 @@ def extract_window_data(df, window_len=5, zero_base=True):
     return np.array(window_data)
 
 
-# In[30]:
+# In[ ]:
 
 
 def prepare_data(df, target_col, window_len=10, zero_base=True, test_size=0.2):
@@ -113,13 +107,14 @@ def prepare_data(df, target_col, window_len=10, zero_base=True, test_size=0.2):
     return train_data, test_data, X_train, X_test, y_train, y_test
 
 
-# In[31]:
+# In[ ]:
 
 
 def build_lstm_model(input_data, output_size, neurons=100, activ_func='linear',
                      dropout=0.2, loss='mse', optimizer='adam'):
     model = Sequential()
-    model.add(LSTM(neurons, input_shape=(input_data.shape[1], input_data.shape[2])))
+    model.add(LSTM(neurons, input_shape=(
+        input_data.shape[1], input_data.shape[2])))
     model.add(Dropout(dropout))
     model.add(Dense(units=output_size))
     model.add(Activation(activ_func))
@@ -128,7 +123,7 @@ def build_lstm_model(input_data, output_size, neurons=100, activ_func='linear',
     return model
 
 
-# In[32]:
+# In[ ]:
 
 
 np.random.seed(42)
@@ -143,7 +138,7 @@ dropout = 0.2
 optimizer = 'adam'
 
 
-# In[33]:
+# In[ ]:
 
 
 train, test, X_train, X_test, y_train, y_test = prepare_data(
@@ -157,22 +152,10 @@ model = build_lstm_model(
     X_train, output_size=1, neurons=lstm_neurons, dropout=dropout, loss=loss,
     optimizer=optimizer)
 history = model.fit(
-    X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
+    X_train, y_train, epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
 
 
 # In[51]:
-
-
-import matplotlib.pyplot as plt
-plt.plot(history.history['loss'],'r',linewidth=2, label='Train loss')
-plt.plot(history.history['val_loss'], 'g',linewidth=2, label='Validation loss')
-plt.title('LSTM')
-plt.xlabel('Epochs')
-plt.ylabel('MSE')
-plt.show()
-
-
-# In[43]:
 
 
 targets = test[target_col][window_len:]
@@ -180,26 +163,9 @@ preds = model.predict(X_test).squeeze()
 mean_absolute_error(preds, y_test)
 
 
-# In[47]:
-
-
-from sklearn.metrics import mean_squared_error
-MAE=mean_squared_error(preds, y_test)
-MAE
-
-
-# In[48]:
-
-
-from sklearn.metrics import r2_score
-R2=r2_score(y_test, preds)
-R2
-
-
-# In[36]:
+# In[52]:
 
 
 preds = test[target_col].values[:-window_len] * (preds + 1)
 preds = pd.Series(index=targets.index, data=preds)
 line_plot(targets, preds, 'actual', 'prediction', lw=3)
-

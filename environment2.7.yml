@@ -1,0 +1,18 @@
+name: tf_gpu_env2.7
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - certifi=2019.11.28=py27h8c360ce_1
+  - cudatoolkit=10.0.130=0
+  - cudnn=7.6.5=cuda10.0_0
+  - pip=20.1.1=pyh9f0ad1d_0
+  - python=2.7.15=h2880e7c_1011_cpython
+  - python_abi=2.7=1_cp27m
+  - setuptools=44.0.0=py27_0
+  - vc=9=h7299396_1
+  - vs2008_runtime=9.0.30729.6161=0
+  - wheel=0.37.0=pyhd8ed1ab_1
+  - wincertstore=0.2=py27_1003
+prefix: C:\Users\Alvaro\miniconda3\envs\tf_gpu_env2.7

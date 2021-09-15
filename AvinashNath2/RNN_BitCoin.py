@@ -2,9 +2,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from pathlib import Path
 
 # Reading CSV file from train set
-training_set = pd.read_csv('Enter the name of file for training_set ')
+training_set = pd.read_csv(Path.cwd().joinpath('AvinashNath2/BitCoin_Data.csv'))
 training_set.head()
 
 #Selecting the second column [for prediction]
@@ -59,11 +60,12 @@ regressor.fit(X_train, Y_train, batch_size = 32, epochs = 200)
 
 
 # Reading CSV file from test set
-test_set = pd.read_csv('Enter the name of file for testing_set')
+test_set = pd.read_csv(Path.cwd().joinpath('AvinashNath2/BitCoin_Data.csv'))
 test_set.head()
 
 #selecting the second column from test data 
-real_btc_price = test_set.iloc[:,1:2]         
+real_btc_price = test_set.iloc[:,1:2] 
+real_btc_price = real_btc_price[0:32]        
 
 # Coverting into 2D array
 real_btc_price = real_btc_price.values      
@@ -72,8 +74,10 @@ real_btc_price = real_btc_price.values
 inputs = real_btc_price			
 inputs = sc.transform(inputs)
 
+inputs = inputs[0:32]
+
 #Reshaping for Keras [reshape into 3 dimensions, [batch_size, timesteps, input_dim]
-inputs = np.reshape(inputs, (8, 1, 1))
+inputs = np.reshape(inputs, (32, 1, 1))
 predicted_btc_price = regressor.predict(inputs)
 predicted_btc_price = sc.inverse_transform(predicted_btc_price)
 
