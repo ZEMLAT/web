@@ -66,6 +66,7 @@ def line_plot(line1, line2, label1=None, label2=None, title='', lw=2):
     ax.set_ylabel('price [CAD]', fontsize=14)
     ax.set_title(title, fontsize=16)
     ax.legend(loc='best', fontsize=16);
+    # fig.show();
 
 
 # In[27]:

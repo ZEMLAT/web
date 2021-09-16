@@ -4,7 +4,7 @@
 # In[2]:
 
 
-get_ipython().run_line_magic('tensorflow_version', '2.x')
+# get_ipython().run_line_magic('tensorflow_version', '2.x')
 import json
 import requests
 from keras.models import Sequential
@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import mean_absolute_error
-get_ipython().run_line_magic('matplotlib', 'inline')
+# get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 # In[ ]:
