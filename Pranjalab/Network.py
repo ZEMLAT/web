@@ -10,6 +10,7 @@ from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 import time
 from sklearn import preprocessing
 import os
+from pathlib import Path
 
 SEQ_LEN = 60  # how long of a preceeding sequence to collect for RNN
 FUTURE_PERIOD_PREDICT = 3  # how far into the future are we trying to predict?
@@ -17,6 +18,7 @@ RATIO_TO_PREDICT = "LTC-USD"
 EPOCHS = 10  # how many passes through our data
 BATCH_SIZE = 64  # how many batches? Try smaller batch if you're getting OOM (out of memory) errors.
 NAME = f"{SEQ_LEN}-SEQ-{FUTURE_PERIOD_PREDICT}-PRED-{int(time.time())}"
+TARGET_COLUMN=f'{RATIO_TO_PREDICT}_close'
 
 
 def classify(current, future):
@@ -91,7 +93,7 @@ for ratio in ratios:  # begin iteration
 
     ratio = ratio.split('.csv')[0]  # split away the ticker from the file-name
     print(ratio)
-    dataset = f'crypto_data/{ratio}.csv'  # get the full path to the file.
+    dataset = Path.cwd().joinpath(f'Pranjalab/crypto_data/{ratio}.csv')  # get the full path to the file.
     df = pd.read_csv(dataset, names=['time', 'low', 'high', 'open', 'close', 'volume'])  # read in specific file
 
     # rename volume and close to include the ticker so we can still which close/volume is which:
@@ -198,9 +200,70 @@ history = model.fit(
     callbacks=[tensorboard, checkpoint]
 )
 
+import matplotlib.pyplot as plt
+
+
+def line_plot_args(title='', lw=2, **kwargs):
+    line1 = kwargs.pop('line1') if 'line1' in kwargs else []
+    line2 = kwargs.pop('line2') if 'line2' in kwargs else []
+    line3 = kwargs.pop('line3') if 'line3' in kwargs else []
+    line4 = kwargs.pop('line4') if 'line4' in kwargs else []
+    line5 = kwargs.pop('line5') if 'line5' in kwargs else []
+    line6 = kwargs.pop('line6') if 'line6' in kwargs else []
+    line7 = kwargs.pop('line7') if 'line7' in kwargs else []
+    line8 = kwargs.pop('line8') if 'line8' in kwargs else []
+    line9 = kwargs.pop('line9') if 'line9' in kwargs else []
+
+    label1 = kwargs.pop('label1') if 'label1' in kwargs else []
+    label2 = kwargs.pop('label2') if 'label2' in kwargs else []
+    label3 = kwargs.pop('label3') if 'label3' in kwargs else []
+    label4 = kwargs.pop('label4') if 'label4' in kwargs else []
+    label5 = kwargs.pop('label5') if 'label5' in kwargs else []
+    label6 = kwargs.pop('label6') if 'label6' in kwargs else []
+    label7 = kwargs.pop('label7') if 'label7' in kwargs else []
+    label8 = kwargs.pop('label8') if 'label8' in kwargs else []
+    label9 = kwargs.pop('label9') if 'label9' in kwargs else []
+
+    fig, ax = plt.subplots(1, figsize=(13, 7))
+    if (len(line1) > 0):
+        ax.plot(line1, label=label1, linewidth=lw, color='red')
+    if (len(line2) > 0):
+        ax.plot(line2, label=label2, linewidth=lw, color='green')
+    if (len(line3) > 0):
+        ax.plot(line3, label=label3, linewidth=lw, color='blue')
+    if (len(line4) > 0):
+        ax.plot(line4, label=label4, linewidth=lw, color='gold')
+    if (len(line5) > 0):
+        ax.plot(line5, label=label5, linewidth=lw, color='deepskyblue')
+    if (len(line6) > 0):
+        ax.plot(line6, label=label6, linewidth=lw, color='purple')
+    if (len(line7) > 0):
+        ax.plot(line7, label=label7, linewidth=lw, color='orange')
+    if (len(line8) > 0):
+        ax.plot(line8, label=label8, linewidth=lw, color='teal')
+    if (len(line9) > 0):
+        ax.plot(line9, label=label9, linewidth=lw, color='crimson')
+    ax.set_ylabel('price [USD]', fontsize=14)
+    ax.set_title(title, fontsize=16)
+    ax.legend(loc='best', fontsize=16)
+    
+df = df.set_index('time')
+    
+line_plot_args('', 2, 
+               line1=validation_x, label1="validation1",
+               line2=validation_y, label2="validation2",
+               line3=df[TARGET_COLUMN], label3="prices",
+               )
+
+plt.title('LSTM')
+plt.xlabel('Epochs')
+plt.ylabel('MSE')
+plt.show()
+
 # Score model
 score = model.evaluate(validation_x, validation_y, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 # Save model
 model.save("models/{}".format(NAME))
+
