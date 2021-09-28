@@ -1,0 +1,12 @@
+numpy 
+scipy 
+scikit-learn 
+Keras 
+tensorflow 
+matplotlib 
+pandas 
+aylien_news_api 
+nltk 
+rpy2 
+textblob 
+vaderSentiment 
