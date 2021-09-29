@@ -5,6 +5,9 @@ for file in $(find . -name *.ipynb)
 do
    jupyter nbconvert "$file" --to pdf
    pdfFile="${file/.ipynb/.pdf}"
-   dest="./papers/${pdfFile:2}"
-   mv -Rv "$pdfFile" "$dest"
+   dest="./papers/pdf-nbconv/${pdfFile:2}"
+   mkdir -p `dirname "$dest"`
+   mv -v "$pdfFile" "$dest"
+   # cp -Rv "$pdfFile" "$dest"
+   # rm "$pdfFile"
 done
