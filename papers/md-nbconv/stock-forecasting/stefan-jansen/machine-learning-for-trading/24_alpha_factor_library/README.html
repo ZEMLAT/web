@@ -1,0 +1,75 @@
+<h1>Appendix - Alpha Factor Library</h1>
+
+<p>Throughout this book, we emphasized how the smart design of features, including appropriate preprocessing and denoising, typically leads to an effective strategy. 
+This appendix synthesizes some of the lessons learned on feature engineering and provides additional information on this vital topic.</p>
+
+<p>Chapter 4 categorized factors by the underlying risk they represent and for which an investor would earn a reward above and beyond the market return. 
+These categories include value vs growth, quality, and sentiment, as well as volatility, momentum, and liquidity. 
+Throughout the book, we used numerous metrics to capture these risk factors. 
+This appendix expands on those examples and collects popular indicators so you can use it as a reference or inspiration for your own strategy development. 
+It also shows you how to compute them and includes some steps to evaluate these indicators. </p>
+
+<p>To this end, we focus on the broad range of indicators implemented by TA-Lib (see <a href="04_alpha_factor_research">Chapter 4</a>) and WorldQuant's <a href="https://arxiv.org/pdf/1601.00991.pdf">101 Formulaic Alphas</a> paper (Kakushadze 2016), which presents real-life quantitative trading factors used in production with an average holding period of 0.6-6.4 days.</p>
+
+<p>This chapter covers: 
+- How to compute several dozen technical indicators using TA-Lib and NumPy/pandas,
+- Creating the formulaic alphas describe in the above paper, and
+- Evaluating the predictive quality of the results using various metrics from rank correlation and mutual information to feature importance, SHAP values and Alphalens. </p>
+
+<h2>Content</h2>
+
+<ol>
+<li><a href="#the-indicator-zoo">The Indicator Zoo</a></li>
+<li><a href="#code-example-common-alpha-factors-implemented-in-ta-lib">Code example: common alpha factors implemented in TA-Lib</a></li>
+<li><a href="#code-example-worldquants-quest-for-formulaic-alphas">Code example: WorldQuant’s quest for formulaic alphas</a></li>
+<li><a href="#code-example-bivariate-and-multivariate-factor-evaluation">Code example: Bivariate and multivariate factor evaluation</a></li>
+</ol>
+
+<h2>The Indicator Zoo</h2>
+
+<p>Chapter 4, <a href="../04_alpha_factor_research">Financial Feature Engineering: How to Research Alpha Factors</a>, summarized the long-standing efforts of academics and practitioners to identify information or variables that helps reliably predict asset returns. 
+This research led from the single-factor capital asset pricing model to a “<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.407.3913&amp;rep=rep1&amp;type=pdf">zoo of new factors</a>" (Cochrane 2011). </p>
+
+<p>This factor zoo contains hundreds of firm characteristics and security price metrics presented as statistically significant predictors of equity returns in the anomalies literature since 1970 (see a summary in <a href="https://academic.oup.com/rfs/article-abstract/30/12/4389/3091648">Green, Hand, and Zhang</a>, 2017). 
+- The notebook <a href="00_indicator_zoo.ipynb">indicator_zoo</a> lists numerous examples.</p>
+
+<h2>Code example: common alpha factors implemented in TA-Lib</h2>
+
+<p>The TA-Lib library is widely used to perform technical analysis of financial market data by trading software developers. It includes over 150 popular indicators from multiple categories that range from Overlap Studies, including moving averages and Bollinger Bands, to Statistic Functions such as linear regression. </p>
+
+<p><strong>Function Group</strong>|<strong># Indicators</strong>
+:-----:|:-----:
+Overlap Studies|17
+Momentum Indicators|30
+Volume Indicators|3
+Volatility Indicators|3
+Price Transform|4
+Cycle Indicators|5
+Math Operators|11
+Math Transform|15
+Statistic Functions|9</p>
+
+<p>The notebook <a href="02_common_alpha_factors.ipynb">common<em>alpha</em>factors</a> contains the relevant code samples.</p>
+
+<h2>Code example: WorldQuant’s quest for formulaic alphas</h2>
+
+<p>We introduced <a href="https://www.worldquant.com/home/">WorldQuant</a> in Chapter 1, <a href="../01_machine_learning_for_trading">Machine Learning for Trading: From Idea to Execution</a>, as part of a trend towards crowd-sourcing investment strategies. 
+WorldQuant maintains a virtual research center where quants worldwide compete to identify alphas. 
+These alphas are trading signals in the form of computational expressions that help predict price movements just like the common factors described in the previous section.</p>
+
+<p>These formulaic alphas translate the mechanism to extract the signal from data into code and can be developed and tested individually with the goal to integrate their information into a broader automated strategy (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/9781119571278.ch1">Tulchinsky 2019</a>. 
+As stated repeatedly throughout the book, mining for signals in large datasets is prone to multiple testing bias and false discoveries. 
+Regardless of these important caveats, this approach represents a modern alternative to the more conventional features presented in the previous section.</p>
+
+<p>[Kakushadze (2016) presents <a href="https://arxiv.org/pdf/1601.00991.pdf">101 examples</a> of such alphas, 80 percent of which were used in a real-world trading system at the time. It defines a range of functions that operate on cross-sectional or time-series data and can be combined, e.g. in nested form.</p>
+
+<p>The notebook <a href="03_101_formulaic_alphas.ipynb">101<em>formulaic</em>alphas</a> contains the relevant code.</p>
+
+<h2>Code example: Bivariate and multivariate factor evaluation</h2>
+
+<p>To evaluate the numerous factors, we rely on the various performance measures introduced in this book, including the following:
+- Bivariate measures of the signal content of a factor with respect to the one-day forward returns
+- Multivariate measures of feature importance for a gradient boosting model trained to predict the one-day forward returns using all factors
+- Financial performance of portfolios invested according to factor quantiles using Alphalens</p>
+
+<p>The notebooks <a href="04_factor_evaluation.ipynb">factor<em>evaluation</a> and <a href="05_alphalens_analysis.ipynb">alphalens</em>analysis</a> contain the relevant code examples.</p>

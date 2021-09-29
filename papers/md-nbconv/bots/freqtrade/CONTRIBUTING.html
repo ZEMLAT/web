@@ -1,0 +1,137 @@
+<h1>Contributing</h1>
+
+<h2>Contribute to freqtrade</h2>
+
+<p>Feel like our bot is missing a feature? We welcome your pull requests! </p>
+
+<p>Issues labeled <a href="https://github.com/freqtrade/freqtrade/labels/good%20first%20issue">good first issue</a> can be good first contributions, and will help get you familiar with the codebase.</p>
+
+<p>Few pointers for contributions:</p>
+
+<ul>
+<li>Create your PR against the <code>develop</code> branch, not <code>stable</code>.</li>
+<li>New features need to contain unit tests, must conform to PEP8 (max-line-length = 100) and should be documented with the introduction PR.</li>
+<li>PR's can be declared as <code>[WIP]</code> - which signify Work in Progress Pull Requests (which are not finished).</li>
+</ul>
+
+<p>If you are unsure, discuss the feature on our <a href="https://discord.gg/p7nuUNVfP7">discord server</a> or in a <a href="https://github.com/freqtrade/freqtrade/issues">issue</a> before a Pull Request.</p>
+
+<h2>Getting started</h2>
+
+<p>Best start by reading the <a href="https://www.freqtrade.io/">documentation</a> to get a feel for what is possible with the bot, or head straight to the <a href="https://www.freqtrade.io/en/latest/developer/">Developer-documentation</a> (WIP) which should help you getting started.</p>
+
+<h2>Before sending the PR</h2>
+
+<h3>1. Run unit tests</h3>
+
+<p>All unit tests must pass. If a unit test is broken, change your code to 
+make it pass. It means you have introduced a regression.</p>
+
+<h4>Test the whole project</h4>
+
+<p><code>bash
+pytest
+</code></p>
+
+<h4>Test only one file</h4>
+
+<p><code>bash
+pytest tests/test_&lt;file_name&gt;.py
+</code></p>
+
+<h4>Test only one method from one file</h4>
+
+<p><code>bash
+pytest tests/test_&lt;file_name&gt;.py::test_&lt;method_name&gt;
+</code></p>
+
+<h3>2. Test if your code is PEP8 compliant</h3>
+
+<h4>Run Flake8</h4>
+
+<p><code>bash
+flake8 freqtrade tests scripts
+</code></p>
+
+<p>We receive a lot of code that fails the <code>flake8</code> checks.
+To help with that, we encourage you to install the git pre-commit 
+hook that will warn you when you try to commit code that fails these checks. 
+Guide for installing them is <a href="http://flake8.pycqa.org/en/latest/user/using-hooks.html">here</a>.</p>
+
+<h3>3. Test if all type-hints are correct</h3>
+
+<h4>Run mypy</h4>
+
+<p><code>bash
+mypy freqtrade
+</code></p>
+
+<h3>4. Ensure all imports are correct</h3>
+
+<h4>Run isort</h4>
+
+<p><code>bash
+isort .
+</code></p>
+
+<h2>(Core)-Committer Guide</h2>
+
+<h3>Process: Pull Requests</h3>
+
+<p>How to prioritize pull requests, from most to least important:</p>
+
+<ol>
+<li>Fixes for broken tests. Broken means broken on any supported platform or Python version.</li>
+<li>Extra tests to cover corner cases.</li>
+<li>Minor edits to docs.</li>
+<li>Bug fixes.</li>
+<li>Major edits to docs.</li>
+<li>Features.</li>
+</ol>
+
+<p>Ensure that each pull request meets all requirements in the Contributing document.</p>
+
+<h3>Process: Issues</h3>
+
+<p>If an issue is a bug that needs an urgent fix, mark it for the next patch release.
+Then either fix it or mark as please-help.</p>
+
+<p>For other issues: encourage friendly discussion, moderate debate, offer your thoughts.</p>
+
+<h3>Process: Your own code changes</h3>
+
+<p>All code changes, regardless of who does them, need to be reviewed and merged by someone else.
+This rule applies to all the core committers.</p>
+
+<p>Exceptions:</p>
+
+<ul>
+<li>Minor corrections and fixes to pull requests submitted by others.</li>
+<li>While making a formal release, the release manager can make necessary, appropriate changes.</li>
+<li>Small documentation changes that reinforce existing subject matter. Most commonly being, but not limited to spelling and grammar corrections.</li>
+</ul>
+
+<h3>Responsibilities</h3>
+
+<ul>
+<li>Ensure cross-platform compatibility for every change that's accepted. Windows, Mac &amp; Linux.</li>
+<li>Ensure no malicious code is introduced into the core code.</li>
+<li>Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.</li>
+<li>Keep feature versions as small as possible, preferably one new feature per version.</li>
+<li>Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. See the Python Community Code of Conduct (https://www.python.org/psf/codeofconduct/).</li>
+</ul>
+
+<h3>Becoming a Committer</h3>
+
+<p>Contributors may be given commit privileges. Preference will be given to those with:</p>
+
+<ol>
+<li>Past contributions to Freqtrade and other related open-source projects. Contributions to Freqtrade include both code (both accepted and pending) and friendly participation in the issue tracker and Pull request reviews. Quantity and quality are considered.</li>
+<li>A coding style that the other core committers find simple, minimal, and clean.</li>
+<li>Access to resources for cross-platform development and testing.</li>
+<li>Time to devote to the project regularly.</li>
+</ol>
+
+<p>Being a Committer does not grant write permission on <code>develop</code> or <code>stable</code> for security reasons (Users trust Freqtrade with their Exchange API keys).</p>
+
+<p>After being Committer for some time, a Committer may be named Core Committer and given full repository access.</p>

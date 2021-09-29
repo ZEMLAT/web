@@ -1,0 +1,146 @@
+<h1>Analyzing bot data with Jupyter notebooks</h1>
+
+<p>You can analyze the results of backtests and trading history easily using Jupyter notebooks. Sample notebooks are located at <code>user_data/notebooks/</code> after initializing the user directory with <code>freqtrade create-userdir --userdir user_data</code>.  </p>
+
+<h2>Quick start with docker</h2>
+
+<p>Freqtrade provides a docker-compose file which starts up a jupyter lab server.
+You can run this server using the following command: <code>docker-compose -f docker/docker-compose-jupyter.yml up</code></p>
+
+<p>This will create a dockercontainer running jupyter lab, which will be accessible using <code>https://127.0.0.1:8888/lab</code>.
+Please use the link that's printed in the console after startup for simplified login.</p>
+
+<p>For more information, Please visit the <a href="docker_quickstart.md#data-analayis-using-docker-compose">Data analysis with Docker</a> section.</p>
+
+<h3>Pro tips</h3>
+
+<ul>
+<li>See <a href="https://jupyter.org/documentation">jupyter.org</a> for usage instructions.</li>
+<li>Don't forget to start a Jupyter notebook server from within your conda or venv environment or use <a href="https://github.com/Anaconda-Platform/nb_conda_kernels">nb<em>conda</em>kernels</a>*</li>
+<li>Copy the example notebook before use so your changes don't get overwritten with the next freqtrade update.</li>
+</ul>
+
+<h3>Using virtual environment with system-wide Jupyter installation</h3>
+
+<p>Sometimes it can be desired to use a system-wide installation of Jupyter notebook, and use a jupyter kernel from the virtual environment.
+This prevents you from installing the full jupyter suite multiple times per system, and provides an easy way to switch between tasks (freqtrade / other analytics tasks).</p>
+
+<p>For this to work, first activate your virtual environment and run the following commands:</p>
+
+<p>``` bash</p>
+
+<h1>Activate virtual environment</h1>
+
+<p>source .env/bin/activate</p>
+
+<p>pip install ipykernel
+ipython kernel install --user --name=freqtrade</p>
+
+<h1>Restart jupyter (lab / notebook)</h1>
+
+<h1>select kernel "freqtrade" in the notebook</h1>
+
+<p>```</p>
+
+<p>!!! Note
+    This section is provided for completeness, the Freqtrade Team won't provide full support for problems with this setup and will recommend to install Jupyter in the virtual environment directly, as that is the easiest way to get jupyter notebooks up and running. For help with this setup please refer to the <a href="https://jupyter.org/">Project Jupyter</a> <a href="https://jupyter.org/documentation">documentation</a> or <a href="https://jupyter.org/community">help channels</a>.</p>
+
+<p>!!! Warning
+    Some tasks don't work especially well in notebooks. For example, anything using asynchronous execution is a problem for Jupyter. Also, freqtrade's primary entry point is the shell cli, so using pure python in a notebook bypasses arguments that provide required objects and parameters to helper functions. You may need to set those values or create expected objects manually.</p>
+
+<h2>Recommended workflow</h2>
+
+<p>| Task | Tool | <br />
+  --- | --- <br />
+Bot operations | CLI <br />
+Repetitive tasks | Shell scripts
+Data analysis &amp; visualization | Notebook  </p>
+
+<ol>
+<li><p>Use the CLI to</p>
+
+<ul>
+<li>download historical data</li>
+<li>run a backtest</li>
+<li>run with real-time data</li>
+<li>export results  </li>
+</ul></li>
+<li><p>Collect these actions in shell scripts</p>
+
+<ul>
+<li>save complicated commands with arguments</li>
+<li>execute multi-step operations  </li>
+<li>automate testing strategies and preparing data for analysis</li>
+</ul></li>
+<li><p>Use a notebook to</p>
+
+<ul>
+<li>visualize data</li>
+<li>munge and plot to generate insights</li>
+</ul></li>
+</ol>
+
+<h2>Example utility snippets</h2>
+
+<h3>Change directory to root</h3>
+
+<p>Jupyter notebooks execute from the notebook directory. The following snippet searches for the project root, so relative paths remain consistent.</p>
+
+<p>```python
+import os
+from pathlib import Path</p>
+
+<h1>Change directory</h1>
+
+<h1>Modify this cell to insure that the output shows the correct path.</h1>
+
+<h1>Define all paths relative to the project root shown in the cell output</h1>
+
+<p>project<em>root = "somedir/freqtrade"
+i=0
+try:
+    os.chdirdir(project</em>root)
+    assert Path('LICENSE').is<em>file()
+except:
+    while i&lt;4 and (not Path('LICENSE').is</em>file()):
+        os.chdir(Path(Path.cwd(), '../'))
+        i+=1
+    project_root = Path.cwd()
+print(Path.cwd())
+```</p>
+
+<h3>Load multiple configuration files</h3>
+
+<p>This option can be useful to inspect the results of passing in multiple configs.
+This will also run through the whole Configuration initialization, so the configuration is completely initialized to be passed to other methods.</p>
+
+<p>``` python
+import json
+from freqtrade.configuration import Configuration</p>
+
+<h1>Load config from multiple files</h1>
+
+<p>config = Configuration.from_files(["config1.json", "config2.json"])</p>
+
+<h1>Show the config in memory</h1>
+
+<p>print(json.dumps(config['original_config'], indent=2))
+```</p>
+
+<p>For Interactive environments, have an additional configuration specifying <code>user_data_dir</code> and pass this in last, so you don't have to change directories while running the bot.
+Best avoid relative paths, since this starts at the storage location of the jupyter notebook, unless the directory is changed.</p>
+
+<p><code>json
+{
+    "user_data_dir": "~/.freqtrade/"
+}
+</code></p>
+
+<h3>Further Data analysis documentation</h3>
+
+<ul>
+<li><a href="strategy_analysis_example.md">Strategy debugging</a> - also available as Jupyter notebook (<code>user_data/notebooks/strategy_analysis_example.ipynb</code>)</li>
+<li><a href="plotting.md">Plotting</a></li>
+</ul>
+
+<p>Feel free to submit an issue or Pull Request enhancing this document if you would like to share ideas on how to best analyze the data.</p>

@@ -1,0 +1,32 @@
+<h2>Scraping OpenTable data</h2>
+
+<p>Typical sources of alternative data are review websites such as Glassdoor or Yelp that convey insider insights using employee comments or guest reviews. This data provides valuable input for ML models that aim to predict a business' prospects or directly its market value to obtain trading signals.</p>
+
+<p>The data needs to be extracted from the HTML source, barring any legal obstacles. To illustrate the web scraping tools that Python offers, we'll retrieve information on restaurant bookings from OpenTable. Data of this nature could be used to forecast economic activity by geography, real estate prices, or restaurant chain revenues.</p>
+
+<h3>Building a dataset of restaurant bookings</h3>
+
+<blockquote>
+  <p>Note: different from all other examples, the code that uses Selenium is written to run on a host rather than using the Docker image because it relies on a browser. The code has been tested on Ubuntu and Mac only.</p>
+</blockquote>
+
+<p>With the browser automation tool <a href="https://www.seleniumhq.org/">Selenium</a>, you can follow the links to the next pages and quickly build a dataset of over 10,000 restaurants in NYC that you could then update periodically to track a time series.</p>
+
+<p>To set up selenium, run 
+<code>bash
+./selenium_setup.sh
+</code>
+with suitable permission, i.e., after running <code>chmod +x selenium_setup.sh</code>.</p>
+
+<p>The script <a href="opentable_selenium.py">opentable_selenium</a> illustrates how to scrape and store the data. Simply run as 
+<code>python
+python opentable_selenium.py
+</code></p>
+
+<p>Since websites change frequently, this code may stop working at any moment.</p>
+
+<h3>One step further – Scrapy and splash</h3>
+
+<p>Scrapy is a powerful library to build bots that follow links, retrieve the content, and store the parsed result in a structured way. In combination with the headless browser splash, it can also interpret JavaScript and becomes an efficient alternative to Selenium. </p>
+
+<p>You can run the spider using the <code>scrapy crawl opentable</code> command in the 01_opentable directory where the results are logged to spider.log.</p>

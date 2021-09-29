@@ -1,0 +1,163 @@
+<h1>Financial Feature Engineering: How to research Alpha Factors</h1>
+
+<p>Algorithmic trading strategies are driven by signals that indicate when to buy or sell assets to generate superior returns relative to a benchmark such as an index. The portion of an asset's return that is not explained by exposure to this benchmark is called alpha, and hence the signals that aim to produce such uncorrelated returns are also called alpha factors.</p>
+
+<p>If you are already familiar with ML, you may know that feature engineering is a key ingredient for successful predictions. This is no different in trading. Investment, however, is particularly rich in decades of research into how markets work and which features may work better than others to explain or predict price movements as a result. This chapter provides an overview as a starting point for your own search for alpha factors.</p>
+
+<p>This chapter also presents key tools that facilitate the computing and testing alpha factors. We will highlight how the NumPy, pandas and TA-Lib libraries facilitate the manipulation of data and present popular smoothing techniques like the wavelets and the Kalman filter that help reduce noise in data.</p>
+
+<p>We also preview how you can use the trading simulator Zipline to evaluate the predictive performance of (traditional) alpha factors. We discuss key alpha factor metrics like the information coefficient and factor turnover. An in-depth introduction to backtesting trading strategies that use machine learning follows in <a href="../08_ml4t_workflow">Chapter 6</a>, which covers the <strong>ML4T workflow</strong> that we will use throughout the book to evaluate trading strategies. </p>
+
+<p>Please see the <a href="../24_alpha_factor_library">Appendix - Alpha Factor Library</a> for additional material on this topic, including numerous code examples that compute a broad range of alpha factors.</p>
+
+<h2>Content</h2>
+
+<ol>
+<li><a href="#alpha-factors-in-practice-from-data-to-signals">Alpha Factors in practice: from data to signals</a></li>
+<li><a href="#building-on-decades-of-factor-research">Building on Decades of Factor Research</a>
+<ul>
+<li><a href="#references">References</a></li>
+</ul></li>
+<li><a href="#engineering-alpha-factors-that-predict-returns">Engineering alpha factors that predict returns</a>
+<ul>
+<li><a href="#code-example-how-to-engineer-factors-using-pandas-and-numpy">Code Example: How to engineer factors using pandas and NumPy</a></li>
+<li><a href="#code-example-how-to-use-ta-lib-to-create-technical-alpha-factors">Code Example: How to use TA-Lib to create technical alpha factors</a></li>
+<li><a href="#code-example-how-to-denoise-your-alpha-factors-with-the-kalman-filter">Code Example: How to denoise your Alpha Factors with the Kalman Filter</a></li>
+<li><a href="#code-example-how-to-preprocess-your-noisy-signals-using-wavelets">Code Example: How to preprocess your noisy signals using Wavelets</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul></li>
+<li><a href="#from-signals-to-trades-backtesting-with-zipline">From signals to trades: backtesting with <code>Zipline</code></a>
+<ul>
+<li><a href="#code-example-how-to-use-zipline-to-backtest-a-single-factor-strategy">Code Example: How to use Zipline to backtest a single-factor strategy</a></li>
+<li><a href="#code-example-combining-factors-from-diverse-data-sources-on-the-quantopian-platform">Code Example: Combining factors from diverse data sources on the Quantopian platform</a></li>
+<li><a href="#code-example-separating-signal-and-noise--how-to-use-alphalens">Code Example: Separating signal and noise – how to use alphalens</a></li>
+</ul></li>
+<li><a href="#alternative-algorithmic-trading-libraries-and-platforms">Alternative Algorithmic Trading Libraries and Platforms</a></li>
+</ol>
+
+<h2>Alpha Factors in practice: from data to signals</h2>
+
+<p>Alpha factors are transformations of market, fundamental, and alternative data that contain predictive signals. They are designed to capture risks that drive asset returns. One set of factors describes fundamental, economy-wide variables such as growth, inflation, volatility, productivity, and demographic risk. Another set consists of tradeable investment styles such as the market portfolio, value-growth investing, and momentum investing.</p>
+
+<p>There are also factors that explain price movements based on the economics or institutional setting of financial markets, or investor behavior, including known biases of this behavior. The economic theory behind factors can be rational, where the factors have high returns over the long run to compensate for their low returns during bad times, or behavioral, where factor risk premiums result from the possibly biased, or not entirely rational behavior of agents that is not arbitraged away.</p>
+
+<h2>Building on Decades of Factor Research</h2>
+
+<p>In an idealized world, categories of risk factors should be independent of each other (orthogonal), yield positive risk premia, and form a complete set that spans all dimensions of risk and explains the systematic risks for assets in a given class. In practice, these requirements will hold only approximately.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://schwert.ssb.rochester.edu/f532/ff_JF08.pdf">Dissecting Anomalies</a> by Eugene Fama and Ken French (2008)</li>
+<li><a href="https://www.ifa.com/pdfs/explainingstockreturns.pdf">Explaining Stock Returns: A Literature Review</a> by James L. Davis (2001)</li>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=15108">Market Efficiency, Long-Term Returns, and Behavioral Finance</a> by Eugene Fama (1997)</li>
+<li><a href="https://pubs.aeaweb.org/doi/pdf/10.1257/089533003321164958">The Efficient Market Hypothesis and It's Critics</a> by Burton Malkiel (2003)</li>
+<li><a href="https://www.palgrave.com/us/book/9780333786765">The New Palgrave Dictionary of Economics</a> (2008) by Steven Durlauf and Lawrence Blume, 2nd ed.</li>
+<li><a href="https://www.nber.org/papers/w9277.pdf">Anomalies and Market Efficiency</a> by G. William Schwert25 (Ch. 15 in Handbook of the- "Economics of Finance", by Constantinides, Harris, and Stulz, 2003)</li>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=265132">Investor Psychology and Asset Pricing</a>, by David Hirshleifer (2001)</li>
+<li><a href="https://www.unofficialgoogledatascience.com/2016/10/practical-advice-for-analysis-of-large.html">Practical advice for analysis of large, complex data sets</a>, Patrick Riley, Unofficial Google Data Science Blog</li>
+</ul>
+
+<h2>Engineering alpha factors that predict returns</h2>
+
+<p>Based on a conceptual understanding of key factor categories, their rationale and popular metrics, a key task is to identify new factors that may better capture the risks embodied by the return drivers laid out previously, or to find new ones. In either case, it will be important to compare the performance of innovative factors to that of known factors to identify incremental signal gains.</p>
+
+<h3>Code Example: How to engineer factors using pandas and NumPy</h3>
+
+<p>The notebook <a href="00_data/feature_engineering.ipynb">feature_engineering.ipynb</a> in the <a href="00_data">data</a> directory illustrates how to engineer basic factors.</p>
+
+<h3>Code Example: How to use TA-Lib to create technical alpha factors</h3>
+
+<p>The notebook <a href="02_how_to_use_talib.ipynb">how<em>to</em>use_talib</a> illustrates the usage of TA-Lib, which includes a broad range of common technical indicators. These indicators have in common that they only use market data, i.e., price and volume information.</p>
+
+<p>The notebook <a href="../24_alpha_factor_library/02_common_alpha_factors.ipynb">common<em>alpha</em>factors</a> in th <strong>appendix</strong> contains dozens of additional examples.  </p>
+
+<h3>Code Example: How to denoise your Alpha Factors with the Kalman Filter</h3>
+
+<p>The notebook <a href="03_kalman_filter_and_wavelets.ipynb">kalman<em>filter</em>and_wavelets</a> demonstrates the use of the Kalman filter using the <code>PyKalman</code> package for smoothing; we will also use it in <a href="../09_time_series_models">Chapter 9</a> when we develop a pairs trading strategy.</p>
+
+<h3>Code Example: How to preprocess your noisy signals using Wavelets</h3>
+
+<p>The notebook <a href="03_kalman_filter_and_wavelets.ipynb">kalman<em>filter</em>and_wavelets</a> also demonstrates how to work with wavelets using the <code>PyWavelets</code> package.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html">Fama French</a> Data Library</li>
+<li><a href="https://numpy.org/">numpy</a> website
+<ul>
+<li><a href="https://numpy.org/devdocs/user/quickstart.html">Quickstart Tutorial</a></li>
+</ul></li>
+<li><a href="https://pandas.pydata.org/">pandas</a> website
+<ul>
+<li><a href="https://pandas.pydata.org/docs/user_guide/index.html">User Guide</a></li>
+<li><a href="https://pandas.pydata.org/pandas-docs/stable/getting_started/10min.html">10 minutes to pandas</a></li>
+<li><a href="https://www.learndatasci.com/tutorials/python-pandas-tutorial-complete-introduction-for-beginners/">Python Pandas Tutorial: A Complete Introduction for Beginners</a></li>
+</ul></li>
+<li><a href="https://github.com/marketneutral/alphatools">alphatools</a> - Quantitative finance research tools in Python</li>
+<li><a href="https://github.com/hudson-and-thames/mlfinlab">mlfinlab</a> - Package based on the work of Dr Marcos Lopez de Prado regarding his research with respect to Advances in Financial Machine Learning</li>
+<li><a href="https://pykalman.github.io/">PyKalman</a> documentation</li>
+<li><a href="http://web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf">Tutorial: The Kalman Filter</a></li>
+<li><a href="http://biorobotics.ri.cmu.edu/papers/sbp_papers/integrated3/kleeman_kalman_basics.pdf">Understanding and Applying Kalman Filtering</a></li>
+<li><a href="https://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/">How a Kalman filter works, in pictures</a></li>
+<li><a href="https://pywavelets.readthedocs.io/en/latest/">PyWavelets</a> - Wavelet Transforms in Python</li>
+<li><a href="https://www.eecis.udel.edu/~amer/CISC651/IEEEwavelet.pdf">An Introduction to Wavelets</a> </li>
+<li><a href="http://web.iitd.ac.in/~sumeet/WaveletTutorial.pdf">The Wavelet Tutorial</a></li>
+<li><a href="http://www.gtwavelet.bme.gatech.edu/wp/kidsA.pdf">Wavelets for Kids</a></li>
+<li><a href="https://www.alacra.com/alacra/help/barra_handbook_GEM.pdf">The Barra Equity Risk Model Handbook</a></li>
+<li><a href="https://www.amazon.com/Active-Portfolio-Management-Quantitative-Controlling/dp/0070248826">Active Portfolio Management: A Quantitative Approach for Producing Superior Returns and Controlling Risk</a> by Richard Grinold and Ronald Kahn, 1999</li>
+<li><a href="https://www.amazon.com/Modern-Investment-Management-Equilibrium-Approach/dp/0471124109">Modern Investment Management: An Equilibrium Approach</a> by Bob Litterman, 2003</li>
+<li><a href="https://www.crcpress.com/Quantitative-Equity-Portfolio-Management-Modern-Techniques-and-Applications/Qian-Hua-Sorensen/p/book/9781584885580">Quantitative Equity Portfolio Management: Modern Techniques and Applications</a> by Edward Qian, Ronald Hua, and Eric Sorensen</li>
+<li><a href="https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php">Spearman Rank Correlation</a></li>
+</ul>
+
+<h2>From signals to trades: backtesting with <code>Zipline</code></h2>
+
+<p>The open source <a href="https://zipline.ml4trading.io/index.html">zipline</a> library is an event-driven backtesting system maintained and used in production by the crowd-sourced quantitative investment fund <a href="https://www.quantopian.com/">Quantopian</a> to facilitate algorithm-development and live-trading. It automates the algorithm's reaction to trade events and provides it with current and historical point-in-time data that avoids look-ahead bias.</p>
+
+<ul>
+<li><a href="../08_ml4t_workflow">Chapter 8</a> contains a more comprehensive introduction to Zipline.</li>
+<li>Please follow the <a href="../installation">instructions</a> in the <code>installation</code> folder, including to address <strong>know issues</strong>.</li>
+</ul>
+
+<h3>Code Example: How to use Zipline to backtest a single-factor strategy</h3>
+
+<p>The notebook <a href="04_single_factor_zipline.ipynb">single<em>factor</em>zipline</a> develops and test a simple mean-reversion factor that measures how much recent performance has deviated from the historical average. Short-term reversal is a common strategy that takes advantage of the weakly predictive pattern that stock price increases are likely to mean-revert back down over horizons from less than a minute to one month.</p>
+
+<h3>Code Example: Combining factors from diverse data sources on the Quantopian platform</h3>
+
+<p>The Quantopian research environment is tailored to the rapid testing of predictive alpha factors. The process is very similar because it builds on <code>zipline</code>, but offers much richer access to data sources. </p>
+
+<p>The notebook <a href="05_multiple_factors_quantopian_research.ipynb">multiple<em>factors</em>quantopian_research</a> illustrates how to compute alpha factors not only from market data as previously but also from fundamental and alternative data.</p>
+
+<h3>Code Example: Separating signal and noise – how to use alphalens</h3>
+
+<p>The notebook <a href="06_performance_eval_alphalens.ipynb">performance<em>eval</em>alphalens</a> introduces the <a href="http://quantopian.github.io/alphalens/">alphalens</a> library for the performance analysis of predictive (alpha) factors, open-sourced by Quantopian. It demonstrates how it integrates with the backtesting library <code>zipline</code> and the portfolio performance and risk analysis library <code>pyfolio</code> that we will explore in the next chapter.</p>
+
+<p><code>alphalens</code> facilitates the analysis of the predictive power of alpha factors concerning the:
+- Correlation of the signals with subsequent returns
+- Profitability of an equal or factor-weighted portfolio based on a (subset of) the signals
+- Turnover of factors to indicate the potential trading costs
+- Factor-performance during specific events
+- Breakdowns of the preceding by sector</p>
+
+<p>The analysis can be conducted using <code>tearsheets</code> or individual computations and plots. The tearsheets are illustrated in the online repo to save some space.</p>
+
+<ul>
+<li>See <a href="https://github.com/quantopian/alphalens/blob/master/alphalens/examples/alphalens_tutorial_on_quantopian.ipynb">here</a> for a detailed <code>alphalens</code> tutorial by Quantopian</li>
+</ul>
+
+<h2>Alternative Algorithmic Trading Libraries and Platforms</h2>
+
+<ul>
+<li><a href="https://www.quantconnect.com/">QuantConnect</a></li>
+<li><a href="https://www.alphalabshft.com/">Alpha Trading Labs</a>
+<ul>
+<li>Alpha Trading Labs is no longer active</li>
+</ul></li>
+<li><a href="https://www.worldquantvrc.com/en/cms/wqc/home/">WorldQuant</a></li>
+<li>Python Algorithmic Trading Library <a href="http://gbeced.github.io/pyalgotrade/">PyAlgoTrade</a></li>
+<li><a href="https://github.com/ematvey/pybacktest">pybacktest</a></li>
+<li><a href="http://www.tradingwithpython.com/">Trading with Python</a></li>
+<li><a href="https://www.interactivebrokers.com/en/index.php?f=5041">Interactive Brokers</a></li>
+</ul>

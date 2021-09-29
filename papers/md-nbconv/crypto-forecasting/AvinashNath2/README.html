@@ -1,0 +1,181 @@
+<h1>Recurrent-Neural-Network-for-BitCoin-price-prediction</h1>
+
+<p>Recurrent Neural Network(LSTM) by using TensorFlow and Keras in Python for BitCoin price prediction </p>
+
+<h2>Prerequisites</h2>
+
+<ul>
+<li>Python 3.0+</li>
+<li>ML Lib.(numpy, matplotlib, pandas, scikit learn)</li>
+<li>TensorFlow</li>
+<li>Keras</li>
+</ul>
+
+<h2>What are RNNs and why we need that?</h2>
+
+<p>The idea behind RNNs is to make use of sequential information. In a traditional neural network we assume that all inputs (and outputs) are independent of each other. But for many tasks that’s a very bad idea. If you want to predict the next word in a sentence you better know which words came before it. RNNs are called recurrent because they perform the same task for every element of a sequence, with the output being depended on the previous computations. Another way to think about RNNs is that they have a “memory” which captures information about what has been calculated so far. In theory RNNs can make use of information in arbitrarily long sequences, but in practice they are limited to looking back only a few steps (more on this later). Here is what a typical RNN looks like:</p>
+
+<p><p align="center"> 
+<img src="https://cdn-images-1.medium.com/max/1600/0*x1vmPLhmSow0kzvK.">
+</p</p>
+
+<p><strong>Intel Nervana</strong> 
+<a href="https://www.youtube.com/watch?v=Y0pqc0RZOsI&amp;t=142s">Small Video Introductory Tutorial by Intel</a> Do Check this out </p>
+
+<p>The above diagram shows a RNN being unrolled (or unfolded) into a full network. By unrolling we simply mean that we write out the network for the complete sequence. For example, if the sequence we care about is a sentence of 5 words, the network would be unrolled into a 5-layer neural network.</p>
+
+<h2>RNN Extensions</h2>
+
+<p>Over the years researchers have developed more sophisticated types of RNNs to deal with some of the shortcomings of the vanilla RNN model.</p>
+
+<p><strong>Bidirectional RNN</strong>
+based on the idea that the output at time t may not only depend on the previous elements in the sequence, but also future elements. For example, to predict a missing word in a sequence you want to look at both the left and the right context. Bidirectional RNNs are quite simple. They are just two RNNs stacked on top of each other. The output is then computed based on the hidden state of both RNNs.</p>
+
+<p><p align="center"> 
+<img src="http://www.wildml.com/wp-content/uploads/2015/09/bidirectional-rnn-300x196.png">
+</p</p>
+
+<p><strong>Deep (Bidirectional) RNN</strong>
+similar to Bidirectional RNNs, only that we now have multiple layers per time step. In practice this gives us a higher learning capacity (but we also need a lot of training data).</p>
+
+<p><p align="center"> 
+<img src="http://www.wildml.com/wp-content/uploads/2015/09/Screen-Shot-2015-09-16-at-2.21.51-PM-272x300.png">
+</p</p>
+
+<p><strong>LSTM Cell</strong></p>
+
+<p>Why LSTM ?
+In a traditional recurrent neural network, <code>during the gradient back-propagation phase, the gradient signal can end up being multiplied a large number of times (as many as the number of timesteps) by the weight matrix associated with the connections between the neurons of the recurrent hidden layer. This means that, the magnitude of weights in the transition matrix can have a strong impact on the learning process</code>.</p>
+
+<p>If the weights in this matrix are small (or, more formally, if the leading eigenvalue of the weight matrix is smaller than 1.0), it can lead to a situation called <code>vanishing gradients</code> where the gradient signal gets so small that learning either becomes very slow or stops working altogether. It can also make more difficult the task of learning long-term dependencies in the data. Conversely, if the weights in this matrix are large (or, again, more formally, if the leading eigenvalue of the weight matrix is larger than 1.0), it can lead to a situation where the gradient signal is so large that it can cause learning to diverge. This is often referred to as <code>exploding gradients</code>.</p>
+
+<p>LSTM networks are quite popular these days and we briefly talked about them above. LSTMs don’t have a fundamentally different architecture from RNNs, but they use a different function to compute the hidden state. The memory in LSTMs are called cells and you can think of them as black boxes that take as input the previous state h<em>{t-1} and current input x</em>t. Internally these cells  decide what to keep in (and what to erase from) memory. They then combine the previous state, the current memory, and the input. It turns out that these types of units are very efficient at capturing long-term dependencies.
+The repeating module in an LSTM contains four interacting layers.</p>
+
+<p><p align="center"> 
+<img src="http://colah.github.io/posts/2015-08-Understanding-LSTMs/img/LSTM3-var-GRU.png">
+LSTM Cell
+</p</p>
+
+<p>please do visit for proper explanation <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">[Link]</a></p>
+
+<h2>Implementing LSTM</h2>
+
+<p><strong>Importing Data</strong>
+```python</p>
+
+<h1>Importing the Libraries</h1>
+
+<p>import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd</p>
+
+<h1>Reading CSV file from train set</h1>
+
+<p>training<em>set = pd.read</em>csv('Enter the name of file for training<em>set ')
+training</em>set.head()</p>
+
+<h1>Selecting the second column [for prediction]</h1>
+
+<p>training<em>set = training</em>set.iloc[:,1:2]
+training_set.head()</p>
+
+<h1>Converting into 2D array</h1>
+
+<p>training<em>set = training</em>set.values
+training<em>set
+<code>
+**Scaling**
+</code>python
+from sklearn.preprocessing import MinMaxScaler
+sc = MinMaxScaler()
+training</em>set = sc.fit<em>transform(training</em>set)
+training<em>set = sc.fit</em>transform(training<em>set)
+training</em>set</p>
+
+<p>X<em>train = training</em>set[0:897]
+Y<em>train = training</em>set[1:898]
+<code>
+**Reshaping for keras**
+</code>python</p>
+
+<h1>Reshaping for Keras [reshape into 3 dimensions, [batch<em>size, timesteps, input</em>dim]</h1>
+
+<p>X<em>train = np.reshape(X</em>train, (897, 1, 1))
+X_train
+<code>
+**RNN Layers**
+</code>python
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+regressor = Sequential()</p>
+
+<h1>Adding the input layer and the LSTM layer</h1>
+
+<p>regressor.add(LSTM(units = 4, activation = 'sigmoid', input_shape = (None, 1)))</p>
+
+<h1>Adding the output layer</h1>
+
+<p>regressor.add(Dense(units = 1))</p>
+
+<h1>Compiling the Recurrent Neural Network</h1>
+
+<p>regressor.compile(optimizer = 'adam', loss = 'mean<em>squared</em>error')</p>
+
+<h1>Fitting the Recurrent Neural Network [epoches is a kindoff number of iteration]</h1>
+
+<p>regressor.fit(X<em>train, Y</em>train, batch_size = 32, epochs = 200)
+```
+<strong>To prevent Overfitting we can use DropOutLyaer</strong> but it's a naive model so it's not really important.  </p>
+
+<p><strong>Making Prediction</strong>
+```python</p>
+
+<h1>Reading CSV file from test set</h1>
+
+<p>test<em>set = pd.read</em>csv('Enter the name of file for testing<em>set')
+test</em>set.head()</p>
+
+<h1>selecting the second column from test data</h1>
+
+<p>real<em>btc</em>price = test_set.iloc[:,1:2]         </p>
+
+<h1>Coverting into 2D array</h1>
+
+<p>real<em>btc</em>price = real<em>btc</em>price.values      </p>
+
+<h1>getting the predicted BTC value of the first week of Dec 2017</h1>
+
+<p>inputs = real<em>btc</em>price <br />
+inputs = sc.transform(inputs)</p>
+
+<h1>Reshaping for Keras [reshape into 3 dimensions, [batch<em>size, timesteps, input</em>dim]</h1>
+
+<p>inputs = np.reshape(inputs, (8, 1, 1))
+predicted<em>btc</em>price = regressor.predict(inputs)
+predicted<em>btc</em>price = sc.inverse<em>transform(predicted</em>btc_price)
+```</p>
+
+<p><strong>Output</strong>
+```python</p>
+
+<h1>Graphs for predicted values</h1>
+
+<p>plt.plot(real<em>btc</em>price, color = 'red', label = 'Real BTC Value')
+plt.plot(predicted<em>btc</em>price, color = 'blue', label = 'Predicted BTC Value')
+plt.title('BTC Value Prediction')
+plt.xlabel('Days')
+plt.ylabel('BTC Value')
+plt.legend()
+plt.show()
+```</p>
+
+<p><img src="https://user-images.githubusercontent.com/24585799/34250830-1ff0b65a-e664-11e7-971b-e45a400f98a6.PNG" alt="pred_output" title="" /></p>
+
+<h2>Reference-</h2>
+
+<p>Please do visit Great Explanation
+- <a href="http://www.wildml.com/2015/09/recurrent-neural-networks-tutorial-part-1-introduction-to-rnns/">WILDML</a> Tutorial 
+- <a href="https://blog.statsbot.co/time-series-prediction-using-recurrent-neural-networks-lstms-807fa6ca7f">StatsBot</a> Blog
+- <a href="https://github.com/kimanalytics/Recurrent-Neural-Network-to-Predict-Stock-Prices">Kimanalytics</a> for Code </p>

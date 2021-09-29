@@ -1,0 +1,133 @@
+<h1>stocksight Change Log</h1>
+
+<h2>[0.1-b.12] = 2020-06-08</h2>
+
+<h3>changed</h3>
+
+<ul>
+<li>removed --noelasticsearch cli arg option</li>
+</ul>
+
+<h2>[0.1-b.11] = 2020-05-24</h2>
+
+<h3>changed</h3>
+
+<ul>
+<li>removed stocksight web site uploading capability, site has been removed</li>
+</ul>
+
+<h2>[0.1-b.10] = 2020-03-29</h2>
+
+<h3>added</h3>
+
+<ul>
+<li><p>Dockerfile and docker-compose.yml for running in docker</p>
+
+<h3>changed</h3></li>
+<li><p>added random time delay between fetching tweets to reduce chance of getting Twitter 420 code (throttled/backoff)</p>
+
+<h3>fixed</h3></li>
+<li><p>using -k keywords no longer causes twitter user id's to be looked up</p></li>
+<li>fatal error when looking up and using twitter user ids</li>
+</ul>
+
+<h2>[0.1-b.9] = 2019-10-27</h2>
+
+<h3>added</h3>
+
+<ul>
+<li>-l --linksentiment cli arg - follow any tweet link urls and run sentiment analysis on those web pages</li>
+<li>requirement for newspaper3k python module to requirements.txt, install with pip</li>
+</ul>
+
+<h2>[0.1-b.8] = 2019-10-25</h2>
+
+<h3>added</h3>
+
+<ul>
+<li>-w --websentiment cli arg - Get sentiment results from text processing website</li>
+<li>improved nltk token processing - no longed needed to provide multiple case in nltk tokens in config</li>
+<li><p>requirement for nltk stopwords, install with python -c "import nltk; nltk.download('stopwords')"</p>
+
+<h3>changed</h3></li>
+<li><p>getting web sentiment results from text processing website is no longer default</p></li>
+<li>improved tweet text cleaning, sentiment algorithm and stocksight sentiment upload values</li>
+</ul>
+
+<h2>[0.1-b.7] = 2019-10-24</h2>
+
+<h3>added</h3>
+
+<ul>
+<li>check if running Python 3</li>
+<li>-U --upload - uploads sentiment to stocksight website (BETA) https://stocksight.diskoverspace.com/</li>
+<li>stocksight_token in config.py.sample, used for auth to upload to stocksight website, copy to your config</li>
+<li>nltk<em>min</em>tokens in config.py.sample, used to set minimum number of tokens required, copy to your config</li>
+<li>tweet/news headline count/filtered/ratio log output</li>
+<li>--noelasticsearch cli arg for not adding new docs to Elasticsearch</li>
+<li>-s stock symbol cli arg (required arg), this is the stock symbol name and also used as the "tag name" on the stocksight webiste when uploading sentiment data</li>
+<li>--overridetokensreq and --overridetokensignore cli args</li>
+<li><p>-a --addtokens cli arg to add nltk required tokens from config to keywords</p>
+
+<h3>changed</h3></li>
+<li><p>--newsheadlines no longer requires stock symbol, use -s to provide stock symbol</p></li>
+<li><p>nltk required tokens from config now do not automatically get added to keywords, use -a or --addtokens to add them</p>
+
+<h3>fixed</h3></li>
+<li><p>'NoneType' object is not iterable Can't get sentiment from url caused by 400 Form Validation Errors text: This field is required traceback error when tweet with no text passed to sentiment_analysis</p></li>
+</ul>
+
+<h2>[0.1-b.6] = 2019-07-15</h2>
+
+<h3>fixed</h3>
+
+<ul>
+<li>"TypeError: sequence item 0: expected str instance, int found" traceback error when running with -f twitteruserids.txt</li>
+</ul>
+
+<h2>[0.1-b.5] = 2019-01-11</h2>
+
+<h3>changed</h3>
+
+<ul>
+<li>set encoding to utf-8 and checked for bytes when writing to twitteruserids.txt</li>
+</ul>
+
+<h2>[0.1-b.4] = 2018-12-10</h2>
+
+<h3>fixed</h3>
+
+<ul>
+<li>TypeError: can't concat str to bytes when writing to twitteruserids.txt</li>
+</ul>
+
+<h2>[0.1-b.3] = 2018-11-23</h2>
+
+<h3>added</h3>
+
+<ul>
+<li>requirements.txt for installing python requirements with pip</li>
+<li>config.py.sample has new setting for specifying elasticsearch host/ip, port, username and password, copy to your config file</li>
+</ul>
+
+<h2>[0.1-b.2] = 2018-10-10</h2>
+
+<h3>added</h3>
+
+<ul>
+<li>cli option -n --newsheadlines to fetch and analyze stock symbol headlines from yahoo finance website instead of twitter</li>
+<li>cli option --frequency to control how often news headlines are retrieved</li>
+<li>cli option --followlinks to follow any links in news headlines and scrape any relevant text on landing page</li>
+<li><p>additional mappings for newsheadline docs in elasticsearch indices</p>
+
+<h3>changed</h3></li>
+<li><p>code cleanup</p></li>
+</ul>
+
+<h2>[0.1-b.1] = 2018-10-09</h2>
+
+<h3>note</h3>
+
+<ul>
+<li>first release</li>
+</ul>

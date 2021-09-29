@@ -1,0 +1,31 @@
+<h1>How to update</h1>
+
+<p>To update your freqtrade installation, please use one of the below methods, corresponding to your installation method.</p>
+
+<h2>docker-compose</h2>
+
+<p>!!! Note "Legacy installations using the <code>master</code> image"
+    We're switching from master to stable for the release Images - please adjust your docker-file and replace <code>freqtradeorg/freqtrade:master</code> with <code>freqtradeorg/freqtrade:stable</code></p>
+
+<p><code>bash
+docker-compose pull
+docker-compose up -d
+</code></p>
+
+<h2>Installation via setup script</h2>
+
+<p><code>bash
+./setup.sh --update
+</code></p>
+
+<p>!!! Note
+    Make sure to run this command with your virtual environment disabled!</p>
+
+<h2>Plain native installation</h2>
+
+<p>Please ensure that you're also updating dependencies - otherwise things might break without you noticing.</p>
+
+<p><code>bash
+git pull
+pip install -U -r requirements.txt
+</code></p>

@@ -1,0 +1,69 @@
+<h1>Stock Prediction <a href="https://travis-ci.org/UWFlex/stock-prediction"><img src="https://travis-ci.org/UWFlex/stock-prediction.svg?branch=master" alt="Build Status" title="" /></a></h1>
+
+<p>A complete machine learning data pipeline for training TensorFlow models to forecast stock prices. Written in Python.</p>
+
+<p>Goal: given stock data (<code>opening</code>, <code>closing</code> and <code>indicators</code>), predict next day's <code>adjusted closing</code> price</p>
+
+<p>Predictions for MSFT:</p>
+
+<p><img src="screenshots/MSFT_pred.png" alt="" title="" /></p>
+
+<p>Mean Relative error: 11.53%</p>
+
+<p>Orange line: predictions</p>
+
+<p>Blue line: actual</p>
+
+<h2>Running the pipeline</h2>
+
+<p>First, make sure dependencies are installed:
+<code>shell
+$ pip install -r requirements.txt
+</code></p>
+
+<p>The pipeline is outlined in <code>scripts/run.py</code>. To run the complete pipeline to train a neural network model for each stock (i.e. fetch, preprocess, train, evaluate), run:
+<code>shell
+$ python scripts/run.py -f -p -nn
+</code></p>
+
+<h3>Running jobs separately</h3>
+
+<p><code>-f</code>, <code>--fetch</code>: run the data fetch job, which fetches stock data and financial indicators for each stock symbol, joins them together, then saves the data to a <code>csv</code> file in <code>output/raw</code></p>
+
+<p><code>-p</code>, <code>--preprocess</code>: run the preprocessing job. Data must already exist in <code>output/raw</code>. This job creates the label dimension and shifts it one day down. It then splits the data into 80% training and 20% testing sets. After that, a <em>last observed carried forward</em> procedure is performed to fill in the missing data. Finally, a <code>scikit-learn</code> <code>MinMaxScaler</code> is applied to each column to scale the dataset.</p>
+
+<p><code>-nn</code>, <code>--neuralnetwork</code>: trains a neural network model for each stock using TensorFlow. Then runs a simply evaluation on the test set to calculate the relative error. Models are saved in <code>output/models</code></p>
+
+<p><code>--evalnn</code>: runs evaluation using the test data set. Gives MSE and relative error.</p>
+
+<h2>Pipeline</h2>
+
+<p>The pipeline consists of the following stages
+1. Data fetching from <a href="http://alphavantage.co">AlphaVantage stock quotes API</a>
+2. Data preprocessing - splitting, scaling/normalization, last observed carried forward and shifting
+3. Training various supervised learning models, a separate model is trained for each stock
+    - Neural Networks
+    - AdaBoost regressors
+    - Gradient boosting regressors
+    - Random forest regressors
+4. Model evaluation - loss and relative error</p>
+
+<h2>Structure of data</h2>
+
+<p>the stock data for S&amp;P 500 companies includes the <code>daily adjusted time series</code> data as well as 51 financial indicators. The <code>adjusted closing</code> is used as the label and shifted one day down.</p>
+
+<h2>Models used</h2>
+
+<p><strong>Neural Networks</strong></p>
+
+<p>A TensorFlow 5 layer Neural Network is used. The 3 hidden layers have 64, 32 and 16 neurons respectively to better fit the input dimensions. <code>Rectified Linear Units</code> are used as activation functions. The <code>Mean Squared Error</code> is used as the loss function and the <code>AdamOptimizer</code> is used to compute the gradients.</p>
+
+<p><strong>Boosting Regressor</strong></p>
+
+<p><strong>Random Forest Regressor</strong></p>
+
+<h2>Future Improvements</h2>
+
+<ul>
+<li>Sentiment analysis on Twitter and news</li>
+</ul>

@@ -1,0 +1,405 @@
+<h1>Installation instructions</h1>
+
+<blockquote>
+  <p>Update September 10, 2021: New environment files <code>ml4t-base.[txt, yml]</code> for OS-agnostic <code>pip</code> (Linux, MacOS) and <code>conda</code> (Linux, MacOS, Windows) installs available that include the latest <a href="https://github.com/stefan-jansen/zipline-reloaded">Zipline</a>, <a href="https://github.com/stefan-jansen/alphalens-reloaded">Alphalens</a> and <a href="https://github.com/stefan-jansen/pyfolio-reloaded">Pyfolio</a> versions. </p>
+
+<p>Update April 25, 2021: The <a href="https://github.com/stefan-jansen/zipline-reloaded">new Zipline version</a> permits running the backtest notebooks without Docker on all operating systems; the installation instructions now refer to Windows/MacOS/Linux environment files.  </p>
+
+<p>Update March 14, 2021: I have just released a <a href="https://github.com/stefan-jansen/zipline-reloaded">new Zipline version</a> that runs on Python 3.7-3.9; see <a href="https://github.com/stefan-jansen/zipline-reloaded/releases/tag/2.0.0rc4">release info</a> and <a href="https://zipline.ml4trading.io/">docs</a>. As a result, the Docker solution will no longer be necessary going forward and I will provide new environment files over the course of April.</p>
+
+<p>Update Feb 26, 2021: Release 2.0 reduces the number of environments to 2 and bumps the Python version to 3.8 for the main <code>ml4t</code> and to 3.6 for the <code>backtest</code> environment.
+Instructions below reflect these changes.</p>
+
+<p>To update the Docker image to the latest version, run:
+<code>docker pull appliedai/packt:latest</code></p>
+</blockquote>
+
+<p>This book uses Python 3.8 and various ML- and trading-related libraries that can be installed:</p>
+
+<ol>
+<li>Using <a href="https://github.com/mamba-org/mamba">mamba</a> in <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">conda environments</a> based on the <a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a> distribution and the provided <code>ml4t.yml</code> environment files,
+<ul>
+<li>If you run into issues with the OS-specific files, please use the agnostic <code>installation/ml4t-base.yml</code> file instead.</li>
+<li>Run:</li>
+<li><code>bash
+conda create -n ml4t python=3.8
+mamba env update -n ml4t -f ml4t-base.yml
+conda activate ml4t
+</code></li>
+</ul></li>
+<li>For macOS and Linux only: via <a href="https://pip.pypa.io/en/stable/">pip</a> in a Python virtual environment created with, e.g., <a href="https://github.com/pyenv/pyenv">pyenv</a> or <a href="https://docs.python.org/3/tutorial/venv.html">venv</a> using the provided <code>ml4t.txt</code> requirement files.</li>
+<li>Deprecated: using <a href="https://www.docker.com/">Docker</a> Desktop to pull an image from <a href="https://www.docker.com/products/docker-hub">Docker Hub</a> and create a local container with the requisite software to run the notebooks. </li>
+</ol>
+
+<p>We'll describe how to obtain the source code and then lay out the first two options in turn. Then, we address how to work with <a href="https://jupyter.org/">Jupyter</a> notebooks to view and execute the code examples. Finally, we list the legacy Docker installation instructions.</p>
+
+<h2>Sourcing the code samples</h2>
+
+<p>You can work with the code samples by downloading a compressed version of the <a href="https://github.com/stefan-jansen/machine-learning-for-trading">GitHub repository</a>, or by <a href="https://www.howtogeek.com/451360/how-to-clone-a-github-repository/">cloning</a> its content. The latter will result in a larger download because it includes the commit history. </p>
+
+<p>Alternatively, you can create a <a href="https://guides.github.com/activities/forking/">fork</a> of the repo and continue to develop from there after cloning its content.</p>
+
+<p>To work with the code locally, do the following:
+1. Select a file system location where you would like to store the code and the data.
+2. Using the <code>ssh</code> or <code>https</code> links or the download option provided by the green <code>Code</code> button on the <a href="https://github.com/stefan-jansen/machine-learning-for-trading">GitHub repository</a>, either clone or unzip the code to the target folder.
+    - To clone the starter repo, run <code>git clone https://github.com/stefan-jansen/machine-learning-for-trading.git</code> and change into the new directory.
+    - If you cloned the repo and did not rename it, the root directory will be called <code>machine-learning-for-trading</code>, the ZIP the version will unzip to <code>machine-learning-for-trading-master</code>.</p>
+
+<h2>How to install the required libraries using <code>conda</code> environments</h2>
+
+<p>The instructions rely on Anaconda's <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> distribution, the <a href="https://github.com/mamba-org/mamba">mamba</a> package manager to facilitate dependency management, and OS-specific environment files at <code>installation/[windows|macos|linux]/ml4t.yml</code> with pinned library versions. </p>
+
+<p>Alternatively, there is also an environment file <code>installation/ml4t-base.yml</code> that only contains a list of the required libraries without dependencies; if you use this file instead you will obtain the latest versions - just be aware that at some point more recent software may become incompatible with the examples.</p>
+
+<p>You could also just install the packages required for the notebooks you are interested in; the most recent versions (as of March 2021) should work.</p>
+
+<h3>Install miniconda</h3>
+
+<p>The notebooks rely on a single virtual environment based on <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda3</a> that you need to install first. </p>
+
+<p>You can find detailed instructions for various operating systems <a href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">here</a>.</p>
+
+<h3>Create a conda environment from an environment file</h3>
+
+<p>[conda] is the package manager provided by the <a href="https://www.anaconda.com/">Anaconda</a> python distribution. Unfortunately, it is currently <a href="https://github.com/conda/conda/issues/9707">not in very good shape</a>. Instead, we'll use the more recent and much faster <a href="https://github.com/mamba-org/mamba">mamba</a> package manager to install packages. You can install it using:
+<code>python
+conda install -n base -c conda-forge mamba
+</code></p>
+
+<p>To create a <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">virtual environment</a> with the latest versions of the libraries used in the notebooks (as of April 2021), you just need to run one of the following options (depending on your operating system) from the command line in the root directory of the cloned repo:</p>
+
+<p><code>bash
+conda env create -n ml4t python=3.8
+mamba env update -n ml4t -f installation/windows/ml4t.yml 
+mamba env update -n ml4t -f installation/macosx/ml4t.yml # deprecated; use ml4t-base.yml
+mamba env update -n ml4t -f installation/linux/ml4t.yml
+</code></p>
+
+<p>See also <a href="https://towardsdatascience.com/getting-started-with-python-environments-using-conda-32e9f2779307">here</a> for a more detailed tutorial on virtual environments.</p>
+
+<p>If you want to create a new environment with the latest library versions as of whenever you read this, run</p>
+
+<p><code>bash
+conda env create -f installation/ml4t-base.yml
+</code></p>
+
+<h3>Activate conda environment</h3>
+
+<p>After you've create it, you can activate the environment using its name, which in our case is <code>ml4t</code>:</p>
+
+<p><code>bash
+conda activate ml4t
+</code></p>
+
+<p>To deactivate, simply use</p>
+
+<p><code>bash
+conda deactivate
+</code></p>
+
+<h2>Installing the libraries using pip</h2>
+
+<p>You should install the required libraries in a <a href="https://realpython.com/python-virtual-environments-a-primer/">virtual environment</a>. See the docs for the built-in <a href="https://docs.python.org/3/library/venv.html">venv</a> option, or the <a href="https://github.com/pyenv/pyenv">pyenv</a> alternative that allows you to run multiple Python versions in parallel.</p>
+
+<p>Several of the libraries require previous installation of OS-specific software, which may depend on the state of your machine. We list a few common cases below. Should you encounter other problems, please consult the documentation for the library causing the issue. In case this does not resolve the matter, please raise an issue on our GitHub so we can take a look and update the instructions here accordingly.  </p>
+
+<h3>Pre-requisites: MacOS</h3>
+
+<p>Installation for MacOS requires the following libraries that can be installed via <a href="https://brew.sh/">homebrew</a>:
+<code>bash
+brew install lightgbm swig xz ta-lib
+</code></p>
+
+<h3>Pre-requisites: Linux</h3>
+
+<p>On Ubuntu, pre-requisites can be fulfilled via <code>apt</code>. For TA-Lib, the <a href="https://artiya4u.medium.com/installing-ta-lib-on-ubuntu-944d8ca24eae">necessary steps</a> are:</p>
+
+<p>```bash</p>
+
+<h1>nstall the build tool</h1>
+
+<p>sudo apt install build-essential wget -y</p>
+
+<h1>Download and extract the source code</h1>
+
+<p>wget https://artiya4u.keybase.pub/TA-lib/ta-lib-0.4.0-src.tar.gz
+tar -xvf ta-lib-0.4.0-src.tar.gz</p>
+
+<h1>Config and build from source.</h1>
+
+<p>cd ta-lib/
+./configure --prefix=/usr
+make</p>
+
+<h1>Install to system</h1>
+
+<p>sudo make install
+```</p>
+
+<h3>Installing the requirements</h3>
+
+<p>Assuming you have created and activated a virtual environment, you just need to run (depending on your OS):
+<code>bash
+pip install -U pip setuptools wheel
+pip install -r installation/macosx/ml4t.txt # for macOS; deprecated; use ml4t-base.txt
+pip install -r installation/linux/ml4t.txt # for Ubuntu
+</code></p>
+
+<h2>Post-installation instructions</h2>
+
+<h3>Get a QUANDL API Key</h3>
+
+<p>To download US equity data that we'll be using for several examples throughout the book in the next step, <a href="https://www.quandl.com/sign-up">register</a> for a personal Quandl account to obtain an API key. It will be displayed on your <a href="https://www.quandl.com/account/profile">profile</a> page.</p>
+
+<p>If you are on a UNIX-based system like Mac OSX, you may want to store the API key in an environment variable such as QUANDL<em>API</em>KEY, e.g. by adding <code>export QUANDL_API_KEY=&lt;your_key&gt;</code> to your <code>.bash_profile</code>.  </p>
+
+<h3>Ingesting Zipline data</h3>
+
+<p>To run Zipline backtests, we need to <code>ingest</code> data. See the <a href="https://zipline.ml4trading.io/beginner-tutorial.html">Beginner Tutorial</a> for more information. </p>
+
+<p>Per default, Zipline stores data in your user directory under <code>~/.zipline</code> directory. </p>
+
+<p>From the command prompt, activate your <code>ml4t</code> virtual environment and run:
+<code>bash
+zipline ingest -b quandl
+</code> </p>
+
+<p>You should see numerous messages (including some warnings that you can ignore) as Zipline processes around 3,000 stock price series.</p>
+
+<h3>Working with Jupyter notebooks</h3>
+
+<p>This section covers how to set up notebook extension that facilitate working in this environment and how to convert notebooks to python script if preferred. </p>
+
+<h4>Set up jupyter extensions</h4>
+
+<p>jupyter notebooks can use a range of <a href="https://github.com/ipython-contrib/jupyter_contrib_nbextensions">extentsion</a> provided by the community. There are many useful ones that are described in the <a href="https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/">documentation</a>.</p>
+
+<p>The notebooks in this repo are formatted to use the <a href="https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/nbextensions/toc2/README.html">Table of Contents (2)</a> extension. For the best experience, activate it using the Configurator in the <a href="https://github.com/Jupyter-contrib/jupyter_nbextensions_configurator">Nbextensions</a> tab available in your browser after starting the jupyter server. Modify the settings to check the option 'Leave h1 items out of ToC' if not set by default.</p>
+
+<h4>Converting jupyter notebooks to python scripts</h4>
+
+<p>The book uses <a href="https://jupyter.org/">jupyter</a> notebooks to present the code with extensive commentary and context information and facilitate the visualization of results in one place. Some of the code examples are longer and make more sense to run as <code>python</code> scripts; you can convert a notebook to a script by running the following on the command line:</p>
+
+<p><code>bash
+$ jupyter nbconvert --to script [YOUR_NOTEBOOK].ipynb
+</code></p>
+
+<h2>Legacy Instructions: Running the notebooks using a Docker container</h2>
+
+<p>Docker Desktop is a very popular application for MacOS and Windows machines because is permits for the easy sharing of containerized applications across different OS. For this book, we have a Docker image that let's you instantiate a container to run Ubuntu 20.04 as a guest OS with the pre-installed <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">conda environments</a> on Windows 10 or Mac OS X without worrying about dependencies on your host.</p>
+
+<h3>Installing Docker Desktop</h3>
+
+<p>As usual, installation differs for Mac OS X and Window 10, and requires an additional step for Windows 10 Home to enable virtualization. </p>
+
+<p>We'll cover installation for each OS separately and then address some setting adjustments necessary in both cases.</p>
+
+<h4>Docker Desktop on Mac OS X</h4>
+
+<p>Installing Docker Desktop on Mac OS X is very straightforward:
+1. Follow the detailed guide in Docker <a href="https://docs.docker.com/docker-for-mac/install/">docs</a> to download and install Docker Desktop from <a href="https://hub.docker.com/editions/community/docker-ce-desktop-mac/">Docker Hub</a>. It also covers how Docker Desktop and Docker Toolbox <a href="https://docs.docker.com/docker-for-mac/docker-toolbox/">can coexist</a>.
+2. Use <a href="https://brew.sh/">homebrew</a> by following the tutorial <a href="https://aspetraining.com/resources/blog/docker-on-mac-homebrew-a-step-by-step-tutorial">here</a>.</p>
+
+<p>Open terminal and run the following test to check that Docker works:
+<code>Docker
+docker run hello-world
+</code></p>
+
+<p>Review the <a href="https://docs.docker.com/docker-for-mac/">Getting Started</a> guide for Mac OS to familiarize yourself with key settings and commands.</p>
+
+<h4>Docker Desktop on Windows</h4>
+
+<p>Docker Desktop works on both Windows 10 Home and Pro editions; the Home edition requires the additional step of enabling the Virtual Machine Platform.  </p>
+
+<h5>Windows 10 Home: enabling the Virtual Machine Platform</h5>
+
+<p>You can now install Docker Desktop on Windows Home machines using the <a href="https://fossbytes.com/what-is-windows-subsystem-for-linux-wsl/">Windows Subsystem for Linux</a> (WSL 2)  backend. Docker Desktop on Windows Home is a full version of Docker Desktop for Linux container development.</p>
+
+<p>Windows 10 Home machines must meet certain <a href="https://docs.docker.com/docker-for-windows/install-windows-home/#system-requirements">requirements</a>. These include Windows 10 Home version 2004 (released May 2020) or higher. The Docker Desktop Edge release also supports Windows 10, version 1903 or higher.</p>
+
+<p>Enable WSL 2 as described <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">here</a>, taking the following steps:</p>
+
+<ol>
+<li>Enable the optional Windows Subsystem for Linux feature. Open PowerShell as Administrator and run:
+<code>bash
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+</code></li>
+<li>Check that your system meets the requirements outlined <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10#requirements">here</a> and update your Windows 10 version if necessary.</li>
+<li>Enable the Virtual Machine Platform optional feature by opening PowerShell as and Administrator and run:
+<code>bash
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+</code></li>
+<li>Restart your machine to complete the WSL install and update to WSL 2.</li>
+<li>Download and run the Linux kernel <a href="https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi">update package</a>. You will be prompted for elevated permissions, select ‘yes’ to approve this installation.</li>
+<li>Set WSL 2 as your default version when installing a new Linux distribution by open PowerShell as Administrator and run the following command:
+<code>bash
+wsl --set-default-version 2
+</code></li>
+</ol>
+
+<h5>Windows 10: Docker Desktop installation</h5>
+
+<p>Once we have enabled WSL 2 for Windows Home, the remaining steps to install Docker Desktop are the same for Windows 10 <a href="https://docs.docker.com/docker-for-windows/install-windows-home/">Home</a> and <a href="https://docs.docker.com/docker-for-windows/install-windows-home/">Pro, Enterprise or Education</a>. Refer to the linked guides for each OS version for system requirements.</p>
+
+<ol>
+<li>Download and run (double-click) the installer from <a href="https://hub.docker.com/editions/community/docker-ce-desktop-windows/">Docker Hub</a>.</li>
+<li>When prompted, ensure the Enable Hyper-V Windows Features option is selected on the Configuration page.</li>
+<li>Follow the instructions on the installation wizard to authorize the installer and proceed with the install.</li>
+<li>When the installation is successful, click Close to complete the installation process.</li>
+<li>If your admin account is different to your user account, you must add the user to the docker-users group. Run Computer Management as an administrator and navigate to Local Users and Groups > Groups > docker-users. Right-click to add the user to the group. Log out and log back in for the changes to take effect.</li>
+</ol>
+
+<p>Open Powershell and run the following test to check that Docker works:
+<code>Docker
+docker run hello-world
+</code></p>
+
+<p>Review the <a href="https://docs.docker.com/docker-for-windows/">Getting Started</a> guide for Windows to familiarize yourself with key settings and commands.</p>
+
+<h3>Docker Desktop Settings: memory and file sharing</h3>
+
+<p>The getting started guides for each OS referenced above describe the Docker Desktop settings.</p>
+
+<h4>Increasing memory</h4>
+
+<ul>
+<li>Under Preferences, look for Resources to find out how you can increase the memory allocated to the container; the default setting is too low given the size of the data. Increase to at least 4GB, better 8GB or more.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </li>
+<li>Several examples are quite memory-intensive, for example the NASDAQ tick data and the SEC filings example in Chapter 2, and will require significantly higher memory allocation.</li>
+</ul>
+
+<h4>Troubleshooting file sharing permissions</h4>
+
+<p>We will download the code examples and data to the local drive on your host OS but run it from the Docker container by mounting your local drive as a volume. This should work fine with the current versions but in case you receive <strong>permission errors</strong> , please refer to the <strong>File Sharing</strong> sections in the Docker user guides. The Docker GUIs let you assign permissions explicitly. See also (slightly outdated) explanation <a href="https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c">here</a>.</p>
+
+<h3>Sourcing the code samples</h3>
+
+<p>You can work with the code samples by downloading a compressed version of the <a href="https://github.com/stefan-jansen/machine-learning-for-trading">GitHub repository</a>, or by <a href="https://www.howtogeek.com/451360/how-to-clone-a-github-repository/">cloning</a> its content. The latter will result in a larger download because it includes the commit history. </p>
+
+<p>Alternatively, you can create a <a href="https://guides.github.com/activities/forking/">fork</a> of the repo and continue to develop from there after cloning its content.</p>
+
+<p>To work with the code locally, do the following:
+1. Select a file system location where you would like to store the code and the data.
+2. Using the <code>ssh</code> or <code>https</code> links or the download option provided by the green <code>Code</code> button on the <a href="https://github.com/stefan-jansen/machine-learning-for-trading">GitHub repository</a>, either clone or unzip the code to the target folder.
+    - To clone the starter repo, run <code>git clone https://github.com/stefan-jansen/machine-learning-for-trading.git</code> and change into the new directory.
+    - If you cloned the repo and did not rename it, the root directory will be called <code>machine-learning-for-trading</code>, the ZIP the version will unzip to <code>machine-learning-for-trading-master</code>.</p>
+
+<h3>Get a QUANDL API Key</h3>
+
+<p>To download US equity data that we'll be using for several examples throughout the book in the next step, <a href="https://www.quandl.com/sign-up">register</a> for a personal Quandl account to obtain an API key. It will be displayed on your <a href="https://www.quandl.com/account/profile">profile</a> page.</p>
+
+<p>If you are on a UNIX-based system like Mac OSX, you may want to store the API key in an environment variable such as QUANDL<em>API</em>KEY, e.g. by adding <code>export QUANDL_API_KEY=&lt;your_key&gt;</code> to your <code>.bash_profile</code>.  </p>
+
+<h3>Downloading the Docker image and running the container</h3>
+
+<p>We'll be using a Docker <a href="https://hub.docker.com/repository/docker/appliedai/packt">image</a> based on the Ubuntu 20.04 OS with <a href="https://www.anaconda.com/">Anaconda</a>'s <a href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a> Python distribution installed. It comes with two conda environments described below. </p>
+
+<p>With a single Docker command, we can accomplish several things at once (see the Getting Started guides linked above for more detail):
+- only on the first run: pull the Docker image from the Docker Hub account <code>appliedai</code> and the repository <code>packt</code> with the tag <code>latest</code> 
+- creates a local container with the name <code>ml4t</code> and runs it in interactive mode, forwarding the port 8888 used by the <code>jupyter</code> server
+- mount the current directory containing the starter project files as a volume in the directory <code>/home/packt/ml4t</code> inside the container
+- set the environment variable <code>QUANDL_API_KEY</code> with the value of your key (that you need to fill in for <code>&lt;your API key&gt;</code>), and
+- start a <code>bash</code> terminal inside the container, resulting in a new command prompt for the user <code>packt</code>.</p>
+
+<ol>
+<li>Open a Terminal or a Powershell window.</li>
+<li>Navigate to the directory containing the <a href="https://github.com/stefan-jansen/machine-learning-for-trading">ML4T</a> code samples that you sourced above.</li>
+<li><p>In the root directory of the local version of the repo, run the following command, taking into account the different path formats required by Mac and Windows:</p>
+
+<ul>
+<li><strong>Mac OS</strong>: you can use the <code>pwd</code> command as a shell variable that contains the absolute path to the present working directory (and you could use <code>$QUANDL_API_KEY</code> if you created such an environment variable in the previous step): <br />
+<code>docker
+docker run -it -v $(pwd):/home/packt/ml4t -p 8888:8888 -e QUANDL_API_KEY=&lt;your API key&gt; --name ml4t appliedai/packt:latest bash
+</code></li>
+<li><p><strong>Windows</strong>: enter the absolute path to the current directory <strong>with forward slashes</strong>, e.g. <code>C:/Users/stefan/Documents/machine-learning-for-trading</code> instead of <code>C:\Users\stefan\Documents\machine-learning-for-trading</code>, so that the command becomes (for this example):                                                                                                                                                                                                                                                                                                                                                                                                  </p>
+
+<p><code>docker
+docker run -it -v C:/Users/stefan/Documents/machine-learning-for-trading:/home/packt/ml4t -p 8888:8888 -e QUANDL_API_KEY=&lt;your API key&gt; --name ml4t appliedai/packt:latest bash
+</code>              </p></li>
+</ul></li>
+<li>Run <code>exit</code> from the container shell to exit and stop the container. </li>
+<li>To resume working, you can run <code>docker start -a -i ml4t</code> from Mac OS terminal or Windows Powershell in the root directory to restart the container and attach it to the host shell in interactive mode (see Docker docs for more detail).</li>
+</ol>
+
+<blockquote>
+  <p>To update the Docker image to the latest version, run:
+<code>docker pull appliedai/packt:latest</code></p>
+</blockquote>
+
+<h3>Running the notebooks from the container</h3>
+
+<p>Now you are running a shell inside the container and can access both <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">conda environments</a>. Run <code>conda env list</code> to see that there are a <code>base</code>, <code>ml4t</code> (default), and a <code>backtest</code> environments.</p>
+
+<p>The <code>backtest</code> environment is necessary because the latest version of Zipline 1.4.1 only support Python 3.6 and older versions of various other dependencies that partly also require compilation. I hope to update Zipline in the future to run on Python 3.8 as well.</p>
+
+<p>We use the environment <code>ml4t</code> except for a dozen notebooks related to backtesting that use Zipline directly inputs generated by Zipline. The noteooks that require the <code>backtest</code> environment contain a notification. </p>
+
+<blockquote>
+  <p>If you want to use a GPU for the deep learning examples, you can run <code>conda install tensorflow-gpu</code> if you have the proper <a href="https://www.tensorflow.org/install/source#gpu">CUDA version</a> installed. 
+<strong>Alternatively</strong>, you can leverage <a href="https://www.tensorflow.org/install/docker">TensorFlow's Docker</a> images and install any additional libraries there; the DL examples don't require anything that's overly complicated to install.</p>
+</blockquote>
+
+<ul>
+<li>You can switch to another environment using <code>conda activate &lt;env_name&gt;</code> or using the Jupyter Notebook or Jupyter Lab Kernel menu thanks to the <a href="https://github.com/Anaconda-Platform/nb_conda_kernels">nb<em>conda</em>kernels</a> extension (see below).</li>
+<li>You may see an error message suggesting you run <code>conda init bash</code>. After doing so, reload the shell with the command <code>source .bashrc</code>.</li>
+</ul>
+
+<h3>Ingesting Zipline data</h3>
+
+<p>To run Zipline backtests, we need to <code>ingest</code> data. See the <a href="https://zipline.ml4trading.io/beginner-tutorial.html">Beginner Tutorial</a> for more information. </p>
+
+<p>The image has been configured to store the data in a <code>.zipline</code> directory in the directory where you started the container (which should be the root folder of the starter code you've downloaded above). </p>
+
+<p>From the command prompt of the container shell, run
+<code>bash
+conda activate backtest
+zipline ingest -b quandl
+</code> 
+You should see numerous messages as Zipline processes around 3,000 stock price series.</p>
+
+<h4>Known Zipline issues</h4>
+
+<blockquote>
+  <p>I have patched the following country code issue in the <a href="https://github.com/stefan-jansen/zipline/commit/b33e5c955a58d888f55101874f45cd141c61d3e1">latest Zipline version</a>, so you should not have to manually fiddle with the asset database any longer.</p>
+</blockquote>
+
+<p>When running a backtest, you will likely encounter an <a href="https://github.com/quantopian/zipline/issues/2517">error</a> because the current Zipline version requires a country code entry in the exchanges table of the <code>assets-7.sqlite</code> database where it stores the asset metadata.</p>
+
+<p>The linked <a href="https://github.com/quantopian/zipline/issues/2517">GitHub issue</a> describes how to address this by opening the <a href="https://sqlitebrowser.org/dl/">SQLite database</a> and entering <code>US</code> in the <code>country_code</code> field of the exchanges table.</p>
+
+<p>In practice, this looks as follows:</p>
+
+<ol>
+<li>Use the <a href="https://sqlitebrowser.org/dl/">SQLite Browser</a> to open the file <code>assets-7.sqlite</code> in the directory containing your latest bundle download. The path will look like this (on Linux/Max OSX) if you ran the command as just described:  <code>~/machine-learning-for-trading/data/.zipline/data/quandl/2020-12-29T02;06;08.894865/</code></li>
+<li>Select the table <code>exchanges</code> as outlined in the following screenshot:</li>
+</ol>
+
+<p align="center">
+<img src="https://i.imgur.com/khq6gtX.png" title="Modifying QUANDL SQLite - Step 1" width="50%"/>
+</p>
+
+<ol>
+<li>Insert the country code and save the result (you'll get a prompt when closing the program):</li>
+</ol>
+
+<p align="center">
+<img src="https://i.imgur.com/mtdiylk.png" title="Modifying QUANDL SQLite - Step 1" width="50%"/>
+</p>
+
+<p>That's all. Unfortunately, you (had to..) repeat this everytime you run <code>zipline ingest -b quandl</code>. This error still occurs when you run <code>zipline ingest</code> for the default <code>quantopian-quandl</code> bundle because this command bypasses the <code>ingest</code> process and downloads instead a compressed version of the result generated by an earlier version of Zipline.  </p>
+
+<h3>Working with notebooks int the Docker container</h3>
+
+<p>You can run <a href="https://jupyter.org/">juypter</a> notebooks using either the traditional <a href="https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/what_is_jupyter.html">notebook</a> or the more recent <a href="https://jupyterlab.readthedocs.io/en/stable/">Jupyter Lab</a> interface; both are available in all <code>conda</code> environments. Moreover, you start jupyter from the <code>base</code> environment and switch the environment from the notebook due to the <code>nb_conda_kernels</code> package (see <a href="https://github.com/Anaconda-Platform/nb_conda_kernels">docs</a>. </p>
+
+<p>To get started, run one of the following two commands:
+<code>bash
+jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
+jupyter lab --ip 0.0.0.0 --no-browser --allow-root
+</code>
+There are also <code>alias</code> shortcuts for each so you don't have to type them: 
+- <code>nb</code> for the <code>jupyter notebook</code> version, and 
+- <code>lab</code> for the <code>jupyter lab</code> version.</p>
+
+<p>The container terminal will display a few messages while spinning up the jupyter server. When complete, it will display a URL that you should paste into your browser to access the jupyter server from the current working directory.</p>
+
+<p>You can modify any of the environments using the standard conda workflow outlined below; see Docker <a href="https://docs.docker.com/storage/">docs</a> for how to persist containers after making changes.  </p>

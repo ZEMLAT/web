@@ -1,0 +1,118 @@
+<h2>Prices used for orders</h2>
+
+<p>Prices for regular orders can be controlled via the parameter structures <code>bid_strategy</code> for buying and <code>ask_strategy</code> for selling.
+Prices are always retrieved right before an order is placed, either by querying the exchange tickers or by using the orderbook data.</p>
+
+<p>!!! Note
+    Orderbook data used by Freqtrade are the data retrieved from exchange by the ccxt's function <code>fetch_order_book()</code>, i.e. are usually data from the L2-aggregated orderbook, while the ticker data are the structures returned by the ccxt's <code>fetch_ticker()</code>/<code>fetch_tickers()</code> functions. Refer to the ccxt library <a href="https://github.com/ccxt/ccxt/wiki/Manual#market-data">documentation</a> for more details.</p>
+
+<p>!!! Warning "Using market orders"
+    Please read the section <a href="#market-order-pricing">Market order pricing</a> section when using market orders.</p>
+
+<h3>Buy price</h3>
+
+<h4>Check depth of market</h4>
+
+<p>When check depth of market is enabled (<code>bid_strategy.check_depth_of_market.enabled=True</code>), the buy signals are filtered based on the orderbook depth (sum of all amounts) for each orderbook side.</p>
+
+<p>Orderbook <code>bid</code> (buy) side depth is then divided by the orderbook <code>ask</code> (sell) side depth and the resulting delta is compared to the value of the <code>bid_strategy.check_depth_of_market.bids_to_ask_delta</code> parameter. The buy order is only executed if the orderbook delta is greater than or equal to the configured delta value.</p>
+
+<p>!!! Note
+    A delta value below 1 means that <code>ask</code> (sell) orderbook side depth is greater than the depth of the <code>bid</code> (buy) orderbook side, while a value greater than 1 means opposite (depth of the buy side is higher than the depth of the sell side).</p>
+
+<h4>Buy price side</h4>
+
+<p>The configuration setting <code>bid_strategy.price_side</code> defines the side of the spread the bot looks for when buying.</p>
+
+<p>The following displays an orderbook.</p>
+
+<p><code>explanation
+...
+103
+102
+101  # ask
+-------------Current spread
+99   # bid
+98
+97
+...
+</code></p>
+
+<p>If <code>bid_strategy.price_side</code> is set to <code>"bid"</code>, then the bot will use 99 as buying price. <br />
+In line with that, if <code>bid_strategy.price_side</code> is set to <code>"ask"</code>, then the bot will use 101 as buying price.</p>
+
+<p>Using <code>ask</code> price often guarantees quicker filled orders, but the bot can also end up paying more than what would have been necessary.
+Taker fees instead of maker fees will most likely apply even when using limit buy orders.
+Also, prices at the "ask" side of the spread are higher than prices at the "bid" side in the orderbook, so the order behaves similar to a market order (however with a maximum price).</p>
+
+<h4>Buy price with Orderbook enabled</h4>
+
+<p>When buying with the orderbook enabled (<code>bid_strategy.use_order_book=True</code>), Freqtrade fetches the <code>bid_strategy.order_book_top</code> entries from the orderbook and uses the entry specified as <code>bid_strategy.order_book_top</code> on the configured side (<code>bid_strategy.price_side</code>) of the orderbook. 1 specifies the topmost entry in the orderbook, while 2 would use the 2nd entry in the orderbook, and so on.</p>
+
+<h4>Buy price without Orderbook enabled</h4>
+
+<p>The following section uses <code>side</code> as the configured <code>bid_strategy.price_side</code>.</p>
+
+<p>When not using orderbook (<code>bid_strategy.use_order_book=False</code>), Freqtrade uses the best <code>side</code> price from the ticker if it's below the <code>last</code> traded price from the ticker. Otherwise (when the <code>side</code> price is above the <code>last</code> price), it calculates a rate between <code>side</code> and <code>last</code> price.</p>
+
+<p>The <code>bid_strategy.ask_last_balance</code> configuration parameter controls this. A value of <code>0.0</code> will use <code>side</code> price, while <code>1.0</code> will use the <code>last</code> price and values between those interpolate between ask and last price.</p>
+
+<h3>Sell price</h3>
+
+<h4>Sell price side</h4>
+
+<p>The configuration setting <code>ask_strategy.price_side</code> defines the side of the spread the bot looks for when selling.</p>
+
+<p>The following displays an orderbook:</p>
+
+<p><code>explanation
+...
+103
+102
+101  # ask
+-------------Current spread
+99   # bid
+98
+97
+...
+</code></p>
+
+<p>If <code>ask_strategy.price_side</code> is set to <code>"ask"</code>, then the bot will use 101 as selling price. <br />
+In line with that, if <code>ask_strategy.price_side</code> is set to <code>"bid"</code>, then the bot will use 99 as selling price.</p>
+
+<h4>Sell price with Orderbook enabled</h4>
+
+<p>When selling with the orderbook enabled (<code>ask_strategy.use_order_book=True</code>), Freqtrade fetches the <code>ask_strategy.order_book_top</code> entries in the orderbook and uses the entry specified as <code>ask_strategy.order_book_top</code> from the configured side (<code>ask_strategy.price_side</code>) as selling price.</p>
+
+<p>1 specifies the topmost entry in the orderbook, while 2 would use the 2nd entry in the orderbook, and so on.</p>
+
+<h4>Sell price without Orderbook enabled</h4>
+
+<p>When not using orderbook (<code>ask_strategy.use_order_book=False</code>), the price at the <code>ask_strategy.price_side</code> side (defaults to <code>"ask"</code>) from the ticker will be used as the sell price.</p>
+
+<p>When not using orderbook (<code>ask_strategy.use_order_book=False</code>), Freqtrade uses the best <code>side</code> price from the ticker if it's below the <code>last</code> traded price from the ticker. Otherwise (when the <code>side</code> price is above the <code>last</code> price), it calculates a rate between <code>side</code> and <code>last</code> price.</p>
+
+<p>The <code>ask_strategy.bid_last_balance</code> configuration parameter controls this. A value of <code>0.0</code> will use <code>side</code> price, while <code>1.0</code> will use the last price and values between those interpolate between <code>side</code> and last price.</p>
+
+<h3>Market order pricing</h3>
+
+<p>When using market orders, prices should be configured to use the "correct" side of the orderbook to allow realistic pricing detection.
+Assuming both buy and sell are using market orders, a configuration similar to the following might be used</p>
+
+<p><code>jsonc
+  "order_types": {
+    "buy": "market",
+    "sell": "market"
+    // ...
+  },
+  "bid_strategy": {
+    "price_side": "ask",
+    // ...
+  },
+  "ask_strategy":{
+    "price_side": "bid",
+    // ...
+  },
+</code></p>
+
+<p>Obviously, if only one side is using limit orders, different pricing combinations can be used.</p>

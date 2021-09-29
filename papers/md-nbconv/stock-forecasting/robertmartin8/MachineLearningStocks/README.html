@@ -1,0 +1,399 @@
+<h1>MachineLearningStocks in python: a starter project and guide</h1>
+
+<p><a href="https://www.python.org/"><img src="https://ForTheBadge.com/images/badges/made-with-python.svg" alt="forthebadge made-with-python" title="" /></a></p>
+
+<p><a href="https://github.com/surelyourejoking/MachineLearningStocks/blob/master/LICENSE.txt"><img src="https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square" alt="GitHub license" title="" /></a></p>
+
+<p><em>EDIT as of Feb 2021: MachineLearningStocks is no longer actively maintained</em></p>
+
+<p>MachineLearningStocks is designed to be an <strong>intuitive</strong> and <strong>highly extensible</strong> template project applying machine learning to making stock predictions. My hope is that this project will help you understand the overall workflow of using machine learning to predict stock movements and also appreciate some of its subtleties. And of course, after following this guide and playing around with the project, you should definitely <strong>make your own improvements</strong> – if you're struggling to think of what to do, at the end of this readme I've included a long list of possiblilities: take your pick.</p>
+
+<p>Concretely, we will be cleaning and preparing a dataset of historical stock prices and fundamentals using <code>pandas</code>, after which we will apply a <code>scikit-learn</code> classifier to discover the relationship between stock fundamentals (e.g PE ratio, debt/equity, float, etc) and the subsequent annual price change (compared with the an index). We then conduct a simple backtest, before generating predictions on current data.</p>
+
+<p>While I would not live trade based off of the predictions from this exact code, I do believe that you can use this project as starting point for a profitable trading system – I have actually used code based on this project to live trade, with pretty decent results (around 20% returns on backtest and 10-15% on live trading).</p>
+
+<p>This project has quite a lot of personal significance for me. It was my first proper python project, one of my first real encounters with ML, and the first time I used git. At the start, my code was rife with bad practice and inefficiency: I have since tried to amend most of this, but please be warned that some minor issues may remain (feel free to raise an issue, or fork and submit a PR). Both the project and myself as a programmer have evolved a lot since the first iteration, but there is always room to improve.</p>
+
+<p><em>As a disclaimer, this is a purely educational project. Be aware that backtested performance may often be deceptive – trade at your own risk!</em></p>
+
+<p><em>MachineLearningStocks predicts which stocks will outperform. But it does not suggest how best to combine them into a portfolio. I have just released <a href="https://github.com/robertmartin8/PyPortfolioOpt">PyPortfolioOpt</a>, a portfolio optimisation library which uses
+classical efficient frontier techniques (with modern improvements) in order to generate risk-efficient portfolios. Generating optimal allocations from the predicted outperformers might be a great way to improve risk-adjusted returns.</em></p>
+
+<p><em>This guide has been cross-posted at my academic blog, <a href="https://reasonabledeviations.com/">reasonabledeviations.com</a></em></p>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#contents">Contents</a></li>
+<li><a href="#overview">Overview</a>
+<ul>
+<li><a href="#edit-as-of-24518">EDIT as of 24/5/18</a></li>
+<li><a href="#edit-as-of-october-2019">EDIT as of October 2019</a></li>
+</ul></li>
+<li><a href="#quickstart">Quickstart</a></li>
+<li><a href="#preliminaries">Preliminaries</a></li>
+<li><a href="#historical-data">Historical data</a>
+<ul>
+<li><a href="#historical-stock-fundamentals">Historical stock fundamentals</a></li>
+<li><a href="#historical-price-data">Historical price data</a></li>
+</ul></li>
+<li><a href="#creating-the-training-dataset">Creating the training dataset</a>
+<ul>
+<li><a href="#preprocessing-historical-price-data">Preprocessing historical price data</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#valuation-measures">Valuation measures</a></li>
+<li><a href="#financials">Financials</a></li>
+<li><a href="#trading-information">Trading information</a></li>
+<li><a href="#parsing">Parsing</a></li>
+</ul></li>
+<li><a href="#backtesting">Backtesting</a></li>
+<li><a href="#current-fundamental-data">Current fundamental data</a></li>
+<li><a href="#stock-prediction">Stock prediction</a></li>
+<li><a href="#unit-testing">Unit testing</a></li>
+<li><a href="#where-to-go-from-here">Where to go from here</a>
+<ul>
+<li><a href="#data-acquisition">Data acquisition</a></li>
+<li><a href="#data-preprocessing">Data preprocessing</a></li>
+<li><a href="#machine-learning">Machine learning</a></li>
+</ul></li>
+<li><a href="#contributing">Contributing</a></li>
+</ul>
+
+<h2>Overview</h2>
+
+<p>The overall workflow to use machine learning to make stocks prediction is as follows:</p>
+
+<ol>
+<li>Acquire historical fundamental data – these are the <em>features</em> or <em>predictors</em></li>
+<li>Acquire historical stock price data – this is will make up the dependent variable, or label (what we are trying to predict).</li>
+<li>Preprocess data</li>
+<li>Use a machine learning model to learn from the data</li>
+<li>Backtest the performance of the machine learning model</li>
+<li>Acquire current fundamental data</li>
+<li>Generate predictions from current fundamental data</li>
+</ol>
+
+<p>This is a very generalised overview, but in principle this is all you need to build a fundamentals-based ML stock predictor.</p>
+
+<h3>EDIT as of 24/5/18</h3>
+
+<p>This project uses pandas-datareader to download historical price data from Yahoo Finance. However, in the past few weeks this has become extremely inconsistent – it seems like Yahoo have added some measures to prevent the bulk download of their data. I will try to add a fix, but for now, take note that <code>download_historical_prices.py</code> may be deprecated.</p>
+
+<p>As a temporary solution, I've uploaded <code>stock_prices.csv</code> and <code>sp500_index.csv</code>, so the rest of the project can still function.</p>
+
+<h3>EDIT as of October 2019</h3>
+
+<p>I expect that after so much time there will be many data issues. To that end, I have decided to upload the other CSV files: <code>keystats.csv</code> (the output of <code>parsing_keystats.py</code>) and <code>forward_sample.csv</code> (the output of <code>current_data.py</code>).</p>
+
+<h2>Quickstart</h2>
+
+<p>If you want to throw away the instruction manual and play immediately, clone this project, then download and unzip the <a href="https://pythonprogramming.net/data-acquisition-machine-learning/">data file</a> into the same directory. Then, open an instance of terminal and cd to the project's file path, e.g</p>
+
+<p><code>bash
+cd Users/User/Desktop/MachineLearningStocks
+</code></p>
+
+<p>Then, run the following in terminal:</p>
+
+<p><code>bash
+pip install -r requirements.txt
+python download_historical_prices.py
+python parsing_keystats.py
+python backtesting.py
+python current_data.py
+pytest -v
+python stock_prediction.py
+</code></p>
+
+<p>Otherwise, follow the step-by-step guide below.</p>
+
+<h2>Preliminaries</h2>
+
+<p>This project uses python 3.6, and the common data science libraries <code>pandas</code> and <code>scikit-learn</code>. If you are on python 3.x less than 3.6, you will find some syntax errors wherever f-strings have been used for string formatting. These are fortunately very easy to fix (just rebuild the string using your preferred method), but I do encourage you to upgrade to 3.6 to enjoy the elegance of f-strings. A full list of requirements is included in the <code>requirements.txt</code> file. To install all of the requirements at once, run the following code in terminal:</p>
+
+<p><code>bash
+pip install -r requirements.txt
+</code></p>
+
+<p>To get started, clone this project and unzip it. This folder will become our working directory, so make sure you <code>cd</code> your terminal instance into this directory.</p>
+
+<h2>Historical data</h2>
+
+<p>Data acquisition and preprocessing is probably the hardest part of most machine learning projects. But it is a necessary evil, so it's best to not fret and just carry on.</p>
+
+<p>For this project, we need three datasets:</p>
+
+<ol>
+<li>Historical stock fundamentals</li>
+<li>Historical stock prices</li>
+<li>Historical S&amp;P500 prices</li>
+</ol>
+
+<p>We need the S&amp;P500 index prices as a benchmark: a 5% stock growth does not mean much if the S&amp;P500 grew 10% in that time period, so all stock returns must be compared to those of the index.</p>
+
+<h3>Historical stock fundamentals</h3>
+
+<p>Historical fundamental data is actually very difficult to find (for free, at least). Although sites like <a href="https://www.quandl.com/">Quandl</a> do have datasets available, you often have to pay a pretty steep fee.</p>
+
+<p>It turns out that there is a way to parse this data, for free, from <a href="https://finance.yahoo.com/">Yahoo Finance</a>. I will not go into details, because <a href="https://pythonprogramming.net/data-acquisition-machine-learning/">Sentdex has done it for us</a>. On his page you will be able to find a file called <code>intraQuarter.zip</code>, which you should download, unzip, and place in your working directory. Relevant to this project is the subfolder called <code>_KeyStats</code>, which contains html files that hold stock fundamentals for all stocks in the S&amp;P500 between 2003 and 2013, sorted by stock. However, at this stage, the data is unusable – we will have to parse it into a nice csv file before we can do any ML.</p>
+
+<h3>Historical price data</h3>
+
+<p>In the first iteration of the project, I used <code>pandas-datareader</code>, an extremely convenient library which can load stock data straight into <code>pandas</code>. However, after Yahoo Finance changed their UI, <code>datareader</code> no longer worked, so I switched to <a href="https://www.quandl.com/">Quandl</a>, which has free stock price data for a few tickers, and a python API. However, as <code>pandas-datareader</code> has been <a href="https://github.com/ranaroussi/fix-yahoo-finance">fixed</a>, we will use that instead.</p>
+
+<p>Likewise, we can easily use <code>pandas-datareader</code> to access data for the SPY ticker. Failing that, one could manually download it from <a href="https://finance.yahoo.com/quote/%5EGSPC/history?p=%5EGSPC">yahoo finance</a>, place it into the project directory and rename it <code>sp500_index.csv</code>.</p>
+
+<p>The code for downloading historical price data can be run by entering the following into terminal:</p>
+
+<p><code>bash
+python download_historical_prices.py
+</code></p>
+
+<h2>Creating the training dataset</h2>
+
+<p>Our ultimate goal for the training data is to have a 'snapshot' of a particular stock's fundamentals at a particular time, and the corresponding subsequent annual performance of the stock.</p>
+
+<p>For example, if our 'snapshot' consists of all of the fundamental data for AAPL on the date 28/1/2005, then we also need to know the percentage price change of AAPL between 28/1/05 and 28/1/06. Thus our algorithm can learn how the fundamentals impact the annual change in the stock price.</p>
+
+<p>In fact, this is a slight oversimplification. In fact, what the algorithm will eventually learn is how fundamentals impact the <em>outperformance of a stock relative to the S&amp;P500 index</em>. This is why we also need index data.</p>
+
+<h3>Preprocessing historical price data</h3>
+
+<p>When <code>pandas-datareader</code> downloads stock price data, it does not include rows for weekends and public holidays (when the market is closed).</p>
+
+<p>However, referring to the example of AAPL above, if our snapshot includes fundamental data for 28/1/05 and we want to see the change in price a year later, we will get the nasty surprise that 28/1/2006 is a Saturday. Does this mean that we have to discard this snapshot?</p>
+
+<p>By no means – data is too valuable to callously toss away. As a workaround, I instead decided to 'fill forward' the missing data, i.e we will assume that the stock price on Saturday 28/1/2006 is equal to the stock price on Friday 27/1/2006.</p>
+
+<h3>Features</h3>
+
+<p>Below is a list of some of the interesting variables that are available on Yahoo Finance.</p>
+
+<h4>Valuation measures</h4>
+
+<ul>
+<li>'Market Cap'</li>
+<li>Enterprise Value</li>
+<li>Trailing P/E</li>
+<li>Forward P/E</li>
+<li>PEG Ratio</li>
+<li>Price/Sales</li>
+<li>Price/Book</li>
+<li>Enterprise Value/Revenue</li>
+<li>Enterprise Value/EBITDA</li>
+</ul>
+
+<h4>Financials</h4>
+
+<ul>
+<li>Profit Margin</li>
+<li>Operating Margin</li>
+<li>Return on Assets</li>
+<li>Return on Equity</li>
+<li>Revenue</li>
+<li>Revenue Per Share</li>
+<li>Quarterly Revenue Growth</li>
+<li>Gross Profit</li>
+<li>EBITDA</li>
+<li>Net Income Avi to Common</li>
+<li>Diluted EPS</li>
+<li>Quarterly Earnings Growth</li>
+<li>Total Cash</li>
+<li>Total Cash Per Share</li>
+<li>Total Debt</li>
+<li>Total Debt/Equity</li>
+<li>Current Ratio</li>
+<li>Book Value Per Share</li>
+<li>Operating Cash Flow</li>
+<li>Levered Free Cash Flow</li>
+</ul>
+
+<h4>Trading information</h4>
+
+<ul>
+<li>Beta</li>
+<li>50-Day Moving Average</li>
+<li>200-Day Moving Average</li>
+<li>Avg Vol (3 month)</li>
+<li>Shares Outstanding</li>
+<li>Float</li>
+<li>% Held by Insiders</li>
+<li>% Held by Institutions</li>
+<li>Shares Short</li>
+<li>Short Ratio</li>
+<li>Short % of Float</li>
+<li>Shares Short (prior month)</li>
+</ul>
+
+<h3>Parsing</h3>
+
+<p>However, all of this data is locked up in HTML files. Thus, we need to build a parser. In this project, I did the parsing with regex, but please note that generally it is <a href="https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags">really not recommended</a> to use regex to parse HTML. However, I think regex probably wins out for ease of understanding (this project being educational in nature), and from experience regex works fine in this case.</p>
+
+<p>This is the exact regex used:</p>
+
+<p><code>python
+r'&gt;' + re.escape(variable) + r'.*?(\-?\d+\.*\d*K?M?B?|N/A[\\n|\s]*|&gt;0|NaN)%?(&lt;/td&gt;|&lt;/span&gt;)'
+</code></p>
+
+<p>While it looks pretty arcane, all it is doing is searching for the first occurence of the feature (e.g "Market Cap"), then it looks forward until it finds a number immediately followed by a <code>&lt;/td&gt;</code> or <code>&lt;/span&gt;</code> (signifying the end of a table entry). The complexity of the expression above accounts for some subtleties in the parsing:</p>
+
+<ul>
+<li>the numbers could be preceeded by a minus sign</li>
+<li>Yahoo Finance sometimes uses K, M, and B as abbreviations for thousand, million and billion respectively.</li>
+<li>some data are given as percentages</li>
+<li>some datapoints are missing, so instead of a number we have to look for "N/A" or "NaN.</li>
+</ul>
+
+<p>Both the preprocessing of price data and the parsing of keystats are included in <code>parsing_keystats.py</code>. Run the following in your terminal:</p>
+
+<p><code>bash
+python parsing_keystats.py
+</code></p>
+
+<p>You should see the file <code>keystats.csv</code> appear in your working directory. Now that we have the training data ready, we are ready to actually do some machine learning.</p>
+
+<h2>Backtesting</h2>
+
+<p>Backtesting is arguably the most important part of any quantitative strategy: you must have some way of testing the performance of your algorithm before you live trade it.</p>
+
+<p>Despite its importance, I originally did not want to include backtesting code in this repository. The reasons were as follows:</p>
+
+<ul>
+<li>Backtesting is messy and empirical. The code is not very pleasant to use, and in practice requires a lot of manual interaction.</li>
+<li>Backtesting is very difficult to get right, and if you do it wrong, you will be deceiving yourself with high returns.</li>
+<li>Developing and working with your backtest is probably the best way to learn about machine learning and stocks – you'll see what works, what doesn't, and what you don't understand.</li>
+</ul>
+
+<p>Nevertheless, because of the importance of backtesting, I decided that I can't really call this a 'template machine learning stocks project' without backtesting. Thus, I have included a simplistic backtesting script. Please note that there is a fatal flaw with this backtesting implementation that will result in <em>much</em> higher backtesting returns. It is quite a subtle point, but I will let you figure that out :)</p>
+
+<p>Run the following in terminal:</p>
+
+<p><code>bash
+python backtesting.py
+</code></p>
+
+<p>You should get something like this:</p>
+
+<p>```txt</p>
+
+<h1>Classifier performance</h1>
+
+<p>Accuracy score:  0.81
+Precision score:  0.75</p>
+
+<h1>Stock prediction performance report</h1>
+
+<p>Total Trades: 177
+Average return for stock predictions:  37.8 %
+Average market return in the same period:  9.2%
+Compared to the index, our strategy earns  28.6 percentage points more
+```</p>
+
+<p>Again, the performance looks too good to be true and almost certainly is.</p>
+
+<h2>Current fundamental data</h2>
+
+<p>Now that we have trained and backtested a model on our data, we would like to generate actual predictions on current data.</p>
+
+<p>As always, we can scrape the data from good old Yahoo Finance. My method is to literally just download the statistics page for each stock (here is the <a href="https://finance.yahoo.com/quote/AAPL/key-statistics?p=AAPL">page</a> for Apple), then to parse it using regex as before.</p>
+
+<p>In fact, the regex should be almost identical, but because Yahoo has changed their UI a couple of times, there are some minor differences. This part of the projet has to be fixed whenever yahoo finance changes their UI, so if you can't get the project to work, the problem is most likely here.</p>
+
+<p>Run the following in terminal:</p>
+
+<p><code>bash
+python current_data.py
+</code></p>
+
+<p>The script will then begin downloading the HTML into the <code>forward/</code> folder within your working directory, before parsing this data and outputting the file <code>forward_sample.csv</code>. You might see a few miscellaneous errors for certain tickers (e.g 'Exceeded 30 redirects.'), but this is to be expected.</p>
+
+<h2>Stock prediction</h2>
+
+<p>Now that we have the training data and the current data, we can finally generate actual predictions. This part of the project is very simple: the only thing you have to decide is the value of the <code>OUTPERFORMANCE</code> parameter (the percentage by which a stock has to beat the S&amp;P500 to be considered a 'buy'). I have set it to 10 by default, but it can easily be modified by changing the variable at the top of the file. Go ahead and run the script:</p>
+
+<p><code>bash
+python stock_prediction.py
+</code></p>
+
+<p>You should get something like this:</p>
+
+<p><code>txt
+21 stocks predicted to outperform the S&amp;P500 by more than 10%:
+NOC FL SWK NFX LH NSC SCHL KSU DDS GWW AIZ ORLY R SFLY SHW GME DLX DIS AMP BBBY APD
+</code></p>
+
+<h2>Unit testing</h2>
+
+<p>I have included a number of unit tests (in the <code>tests/</code> folder) which serve to check that things are working properly. However, due to the nature of the some of this projects functionality (downloading big datasets), you will have to run all the code once before running the tests. Otherwise, the tests themselves would have to download huge datasets (which I don't think is optimal).</p>
+
+<p>I thus recommend that you run the tests after you have run all the other scripts (except, perhaps, <code>stock_prediction.py</code>).</p>
+
+<p>To run the tests, simply enter the following into a terminal instance in the project directory:</p>
+
+<p><code>bash
+pytest -v
+</code></p>
+
+<p>Please note that it is not considered best practice to include an <code>__init__.py</code> file in the <code>tests/</code> directory (see <a href="https://docs.pytest.org/en/latest/goodpractices.html">here</a> for more), but I have done it anyway because it is uncomplicated and functional.</p>
+
+<h2>Where to go from here</h2>
+
+<p>I have stated that this project is extensible, so here are some ideas to get you started and possibly increase returns (no promises).</p>
+
+<h3>Data acquisition</h3>
+
+<p>My personal belief is that better quality data is THE factor that will ultimately determine your performance. Here are some ideas:</p>
+
+<ul>
+<li>Explore the other subfolders in Sentdex's <code>intraQuarter.zip</code>.</li>
+<li>Parse the annual reports that all companies submit to the SEC (have a look at the <a href="https://www.sec.gov/edgar/searchedgar/companysearch.html">Edgar Database</a>)</li>
+<li>Try to find websites from which you can scrape fundamental data (this has been my solution).</li>
+<li>Ditch US stocks and go global – perhaps better results may be found in markets that are less-liquid. It'd be interesting to see whether the predictive power of features vary based on geography.</li>
+<li>Buy Quandl data, or experiment with alternative data.</li>
+</ul>
+
+<h3>Data preprocessing</h3>
+
+<ul>
+<li>Build a more robust parser using BeautifulSoup</li>
+<li>In this project, I have just ignored any rows with missing data, but this reduces the size of the dataset considerably. Are there any ways you can fill in some of this data?
+<ul>
+<li>hint: if the PE ratio is missing but you know the stock price and the earnings/share...</li>
+<li>hint 2: how different is Apple's book value in March to its book value in June?</li>
+</ul></li>
+<li>Some form of feature engineering
+<ul>
+<li>e.g, calculate <a href="https://www.investopedia.com/terms/g/graham-number.asp">Graham's number</a> and use it as a feature</li>
+<li>some of the features are probably redundant. Why not remove them to speed up training?</li>
+</ul></li>
+<li>Speed up the construction of <code>keystats.csv</code>.
+<ul>
+<li>hint: don't keep appending to one growing dataframe! Split it into chunks</li>
+</ul></li>
+</ul>
+
+<h3>Machine learning</h3>
+
+<p>Altering the machine learning stuff is probably the easiest and most fun to do.</p>
+
+<ul>
+<li>The most important thing if you're serious about results is to find the problem with the current backtesting setup and fix it. This will likely be quite a sobering experience, but if your backtest is done right, it should mean that any observed outperformance on your test set can be traded on (again, do so at your own discretion).</li>
+<li>Try a different classifier – there is plenty of research that advocates the use of SVMs, for example. Don't forget that other classifiers may require feature scaling etc.</li>
+<li>Hyperparameter tuning: use gridsearch to find the optimal hyperparameters for your classifier. But make sure you don't overfit!</li>
+<li>Make it <em>deep</em> – experiment with neural networks (an easy way to start is with <code>sklearn.neural_network</code>).</li>
+<li>Change the classification problem into a regression one: will we achieve better results if we try to predict the stock <em>return</em> rather than whether it outperformed?</li>
+<li>Run the prediction multiple times (perhaps using different hyperparameters?) and select the <em>k</em> most common stocks to invest in. This is especially important if the algorithm is not deterministic (as is the case for Random Forest)</li>
+<li>Experiment with different values of the <code>outperformance</code> parameter.</li>
+<li>Should we really be trying to predict raw returns? What happens if a stock achieves a 20% return but does so by being highly volatile?</li>
+<li>Try to plot the importance of different features to 'see what the machine sees'.</li>
+</ul>
+
+<h2>Contributing</h2>
+
+<p>Feel free to fork, play around, and submit PRs. I would be very grateful for any bug fixes or more unit tests.</p>
+
+<p>This project was originally based on Sentdex's excellent <a href="https://www.youtube.com/playlist?list=PLQVvvaa0QuDd0flgGphKCej-9jp-QdzZ3">machine learning tutorial</a>, but it has since evolved far beyond that and the code is almost completely different. The complete series is also on <a href="https://pythonprogramming.net/machine-learning-python-sklearn-intro/">his website</a>.</p>
+
+<hr />
+
+<p>For more content like this, check out my academic blog at <a href="https://reasonabledeviations.com">reasonabledeviations.com/</a>.</p>

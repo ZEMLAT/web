@@ -1,0 +1,210 @@
+<h1>Word Embeddings for Earnings Calls and SEC Filings</h1>
+
+<p>This chapter introduces uses neural networks to learn a vector representation of individual semantic units like a word or a paragraph. These vectors are dense rather than sparse as in the bag-of-words model and have a few hundred real-valued rather than tens of thousand binary or discrete entries. They are called embeddings because they assign each semantic unit a location in a continuous vector space.</p>
+
+<p>Embeddings result from training a model to relate tokens to their context with the benefit that similar usage implies a similar vector. As a result, the embeddings encode semantic aspects like relationships among words by means of their relative location. They are powerful features for use in the deep learning models that we will introduce in the following chapters.</p>
+
+<h2>Content</h2>
+
+<ol>
+<li><a href="#how-word-embeddings-encode-semantics">How Word Embeddings encode Semantics</a>
+<ul>
+<li><a href="#how-neural-language-models-learn-usage-in-context">How neural language models learn usage in context</a></li>
+<li><a href="#the-word2vec-model-scalable-word-and-phrase-embeddings">The word2vec Model: scalable word and phrase embeddings</a></li>
+<li><a href="#evaluating-embeddings-vector-arithmetic-and-analogies">Evaluating embeddings: vector arithmetic and analogies</a></li>
+</ul></li>
+<li><a href="#code-example-working-with-embedding-models">Code example: Working with embedding models</a>
+<ul>
+<li><a href="#working-with-global-vectors-for-word-representation-glove">Working with Global Vectors for Word Representation (GloVe)</a></li>
+<li><a href="#evaluating-embeddings-using-analogies">Evaluating embeddings using analogies</a></li>
+</ul></li>
+<li><a href="#code-example-training-domain-specific-embeddings-using-financial-news">Code example: training domain-specific embeddings using financial news</a>
+<ul>
+<li><a href="#preprocessing-financial-news-sentence-detection-and-n-grams">Preprocessing financial news: sentence detection and n-grams</a></li>
+<li><a href="#skip-gram-architecture-in-tensorflow-2-and-visualization-with-tensorboard">Skip-gram architecture in TensorFlow 2 and visualization with TensorBoard</a></li>
+<li><a href="#how-to-train-embeddings-faster-with-gensim">How to train embeddings faster with Gensim</a></li>
+</ul></li>
+<li><a href="#code-example-word-vectors-from-sec-filings-using-gensim">Code Example: word Vectors from SEC Filings using gensim</a>
+<ul>
+<li><a href="#preprocessing-content-selection-sentence-detection-and-n-grams">Preprocessing: content selection, sentence detection, and n-grams</a></li>
+<li><a href="#model-training-and-evaluation">Model training and evaluation</a></li>
+</ul></li>
+<li><a href="#code-example-sentiment-analysis-with-doc2vec">Code example: sentiment Analysis with Doc2Vec</a></li>
+<li><a href="#new-frontiers-attention-transformers-and-pretraining">New Frontiers: Attention, Transformers, and Pretraining</a>
+<ul>
+<li><a href="#attention-is-all-you-need-transforming-natural-language-generation">Attention is all you need: transforming natural language generation</a></li>
+<li><a href="#bert-towards-a-more-universal-pretrained-language-model">BERT: Towards a more universal, pretrained language model</a></li>
+<li><a href="#using-pretrained-state-of-the-art-models">Using pretrained state-of-the-art models</a></li>
+</ul></li>
+<li><a href="#additional-resources">Additional Resources</a></li>
+</ol>
+
+<h2>How Word Embeddings encode Semantics</h2>
+
+<p>Word embeddings represent tokens as lower-dimensional vectors so that their relative location reflects their relationship in terms of how they are used in context. They embody the distributional hypothesis from linguistics that claims words are best defined by the company they keep.</p>
+
+<p>Word vectors are capable of capturing numerous semantic aspects; not only are synonyms close to each other, but words can have multiple degrees of similarity, e.g. the word ‘driver’ could be similar to ‘motorist’ or to ‘factor’. Furthermore, embeddings reflect relationships among pairs of words like analogies (Tokyo is to Japan what Paris is to France, or went is to go what saw is to see).  </p>
+
+<h3>How neural language models learn usage in context</h3>
+
+<p>Word embeddings result from a training a shallow neural network to predict a word given its context. Whereas traditional language models define context as the words preceding the target, word embedding models use the words contained in a symmetric window surrounding the target. </p>
+
+<p>In contrast, the bag-of-words model uses the entire documents as context and uses (weighted) counts to capture the co-occurrence of words rather than predictive vectors.</p>
+
+<h3>The word2vec Model: scalable word and phrase embeddings</h3>
+
+<p>A word2vec model is a two-layer neural net that takes a text corpus as input and outputs a set of embedding vectors for words in that corpus. There are two different architectures to efficiently learn word vectors using shallow neural networks.
+- The <strong>continuous-bag-of-words</strong> (CBOW) model predicts the target word using the average of the context word vectors as input so that their order does not matter. CBOW trains faster and tends to be slightly more accurate for frequent terms, but pays less attention to infrequent words.
+- The <strong>skip-gram</strong> (SG) model, in contrast, uses the target word to predict words sampled from the context. It works well with small datasets and finds good representations even for rare words or phrases.</p>
+
+<h3>Evaluating embeddings: vector arithmetic and analogies</h3>
+
+<p>The dimensions of the word and phrase vectors do not have an explicit meaning. However, the embeddings encode similar usage as proximity in the latent space in a way that carries over to semantic relationships. This results in the interesting properties that analogies can be expressed by adding and subtracting word vectors.</p>
+
+<p>Just as words can be used in different contexts, they can be related to other words in different ways, and these relationships correspond to different directions in the latent space. Accordingly, there are several types of analogies that the embeddings should reflect if the training data permits.</p>
+
+<p>The word2vec authors provide a list of several thousand relationships spanning aspects of geography, grammar and syntax, and family relationships to evaluate the quality of embedding vectors (see directory <a href="data/analogies">analogies</a>).</p>
+
+<h2>Code example: Working with embedding models</h2>
+
+<p>Similar to other unsupervised learning techniques, the goal of learning embedding vectors is to generate features for other tasks like text classification or sentiment analysis.
+There are several options to obtain embedding vectors for a given corpus of documents:
+- Use embeddings learned from a generic large corpus like Wikipedia or Google News
+- Train your own model using documents that reflect a domain of interest</p>
+
+<h3>Working with Global Vectors for Word Representation (GloVe)</h3>
+
+<p>GloVe is an unsupervised algorithm developed at the Stanford NLP lab that learns vector representations for words from aggregated global word-word co-occurrence statistics (see references). Vectors pre-trained on the following web-scale sources are available:
+- Common Crawl with 42B or 840B tokens and a vocabulary of 1.9M or 2.2M tokens
+- Wikipedia 2014 + Gigaword 5 with 6B tokens and a vocabulary of 400K tokens
+- Twitter using 2B tweets, 27B tokens and a vocabulary of 1.2M tokens</p>
+
+<p>The following table shows the accuracy on the word2vec semantics test achieved by the GloVE vectors trained on Wikipedia:</p>
+
+<p>| Category                 | Samples | Accuracy | Category              | Samples | Accuracy |
+|--------------------------|---------|----------|-----------------------|---------|----------|
+| capital-common-countries | 506     | 94.86%   | comparative           | 1332    | 88.21%   |
+| capital-world            | 8372    | 96.46%   | superlative           | 1056    | 74.62%   |
+| city-in-state            | 4242    | 60.00%   | present-participle    | 1056    | 69.98%   |
+| currency                 | 752     | 17.42%   | nationality-adjective | 1640    | 92.50%   |
+| family                   | 506     | 88.14%   | past-tense            | 1560    | 61.15%   |
+| adjective-to-adverb      | 992     | 22.58%   | plural                | 1332    | 78.08%   |
+| opposite                 | 756     | 28.57%   | plural-verbs          | 870     | 58.51%   |</p>
+
+<p>There are several sources for pre-trained word embeddings. Popular options include Stanford’s GloVE and spaCy’s built-in vectors.
+- The notebook <a href="01_using_trained_vectors.ipynb">using<em>trained</em>vectors </a> illustrates how to work with pretrained vectors.</p>
+
+<h3>Evaluating embeddings using analogies</h3>
+
+<p>The notebook <a href="02_evaluating_embeddings.ipynb">evaluating_embeddings</a> demonstrates how to test the quality of word vectors using analogies and other semantic relationships among words.</p>
+
+<h2>Code example: training domain-specific embeddings using financial news</h2>
+
+<p>Many tasks require embeddings of domain-specific vocabulary that models pre-trained on a generic corpus may not be able to capture. Standard word2vec models are not able to assign vectors to out-of-vocabulary words and instead use a default vector that reduces their predictive value. </p>
+
+<p>For example, when working with industry-specific documents, the vocabulary or its usage may change over time as new technologies or products emerge. As a result, the embeddings need to evolve as well. In addition, documents like corporate earnings releases use nuanced language that GloVe vectors pre-trained on Wikipedia articles are unlikely to properly reflect.</p>
+
+<p>See the <a href="../data">data</a> directory for instructions on sourcing the financial news dataset.</p>
+
+<h3>Preprocessing financial news: sentence detection and n-grams</h3>
+
+<p>The notebook <a href="03_financial_news_preprocessing.ipynb">financial<em>news</em>preprocessing</a> demonstrates how to prepare the source data for our model</p>
+
+<h3>Skip-gram architecture in TensorFlow 2 and visualization with TensorBoard</h3>
+
+<p>The notebook <a href="04_financal_news_word2vec_tensorflow.ipynb">financal<em>news</em>word2vec_tensorflow</a> illustrates how to build a word2vec model using the Keras interface of TensorFlow 2 that we will introduce in much more detail in the next chapter. </p>
+
+<h3>How to train embeddings faster with Gensim</h3>
+
+<p>The TensorFlow implementation is very transparent in terms of its architecture, but it is not particularly fast. The natural language processing (NLP) library <a href="https://radimrehurek.com/gensim/">gensim</a> that we also used for topic modeling in the last chapter, offers better performance and more closely resembles the C-based word2vec implementation provided by the original authors.</p>
+
+<p>The notebook <a href="05_financial_news_word2vec_gensim.ipynb">inancial<em>news</em>word2vec_gensim</a> shows how to learn word vectors more efficiently.</p>
+
+<h2>Code Example: word Vectors from SEC Filings using gensim</h2>
+
+<p>In this section, we will learn word and phrase vectors from annual SEC filings using gensim to illustrate the potential value of word embeddings for algorithmic trading. In the following sections, we will combine these vectors as features with price returns to train neural networks to predict equity prices from the content of security filings.</p>
+
+<p>In particular, we use a dataset containing over 22,000 10-K annual reports from the period 2013-2016 that are filed by listed companies and contain both financial information and management commentary (see Chapter 3 on <a href="../03_alternative_data">Alternative Data</a>). For about half of 11K filings for companies that we have stock prices to label the data for predictive modeling (see references about data source and the notebooks in the folder <a href="sec-filings">sec-filings</a> for details). </p>
+
+<ul>
+<li><a href="https://data.world/jumpyaf/2013-2016-cleaned-parsed-10-k-filings-with-the-sec">2013-2016 Cleaned/Parsed 10-K Filings with the SEC</a></li>
+<li><a href="https://www.microsoft.com/developerblog/2017/12/04/predicting-stock-performance-deep-learning/">Stock Market Predictions with Natural Language Deep Learning</a></li>
+</ul>
+
+<h3>Preprocessing: content selection, sentence detection, and n-grams</h3>
+
+<p>The notebook <a href="06_sec_preprocessing.ipynb">sec_preprocessing</a> shows how to parse and tokenize the text using spaCy, similar to the approach in Chapter 14, <a href="../14_working_with_text_data">Text Data for Trading: Sentiment Analysis</a>. </p>
+
+<h3>Model training and evaluation</h3>
+
+<p>The notebook <a href="07_sec_word2vec.ipynb">sec_word2vec</a> uses gensim's <a href="https://radimrehurek.com/gensim/models/word2vec.html">word2vec</a> implementation of the skip-gram architecture to learn word vectors for the SEC filings dataset.</p>
+
+<h2>Code example: sentiment Analysis with Doc2Vec</h2>
+
+<p>Text classification requires combining multiple word embeddings. A common approach is to average the embedding vectors for each word in the document. This uses information from all embeddings and effectively uses vector addition to arrive at a different location point in the embedding space. However, relevant information about the order of words is lost. </p>
+
+<p>In contrast, the state-of-the-art generation of embeddings for pieces of text like a paragraph or a product review is to use the document embedding model doc2vec. This model was developed by the word2vec authors shortly after publishing their original contribution. Similar to word2vec, there are also two flavors of doc2vec:
+- The distributed bag of words (DBOW) model corresponds to the Word2Vec CBOW model. The document vectors result from training a network on the synthetic task of predicting a target word based on both the context word vectors and the document's doc vector.
+- The distributed memory (DM) model corresponds to the word2wec skipgram architecture. The doc vectors result from training a neural net to predict a target word using the full document’s doc vector.</p>
+
+<p>The notebook <a href="08_doc2vec_yelp_sentiment.ipynb">doc2vec<em>yelp</em>sentiment</a> applies doc2vec to a random sample of 1mn Yelp reviews with their associated star ratings.</p>
+
+<h2>New Frontiers: Attention, Transformers, and Pretraining</h2>
+
+<p>Word2vec and GloVe embeddings capture more semantic information than the bag-of-words approach, but only allow for a single fixed-length representation of each token that does not differentiate between context-specific usages. To address unsolved problems like multiple meanings for the same word, called polysemy, several new models have emerged that build on the attention mechanism designed to learn more contextualized word embeddings (<a href="https://arxiv.org/abs/1706.03762">Vaswani et al. 2017</a>). Key characteristics of these models are 
+- the use of bidirectional language models that process text both left-to-right and right-to-left for a richer context representation, and
+- the use of semi-supervised pretraining on a large generic corpus to learn universal language aspects in the form of embeddings and network weights that can be used end fine-tuned for specific tasks</p>
+
+<h3>Attention is all you need: transforming natural language generation</h3>
+
+<p>In 2018, Google released the BERT model, which stands for Bidirectional Encoder Representations from Transformers (<a href="https://arxiv.org/abs/1810.04805">Devlin et al. 2019</a>). In a major breakthrough for NLP research, it achieved groundbreaking results on eleven natural language understanding tasks ranging from question answering and named entity recognition to paraphrasing and sentiment analysis as measured by the General Language Understanding Evaluation (GLUE) <a href="https://gluebenchmark.com/">benchmark</a>.</p>
+
+<ul>
+<li><a href="http://nlp.seas.harvard.edu/2018/04/03/attention.html">The Annotated Transformer</a></li>
+<li><a href="https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/">Visualizing A Neural Machine Translation Model (Mechanics of Seq2seq Models With Attention)</a></li>
+</ul>
+
+<h3>BERT: Towards a more universal, pretrained language model</h3>
+
+<p>The BERT model builds on two key ideas, namely the transformer architecture described in the previous section and unsupervised pre-training so that it doesn’t need to be trained from scratch for each new task; rather, its weights are fine-tuned.
+- BERT takes the attention mechanism to a new (deeper) level by using 12 or 24 layers depending on the architecture, each with 12 or 16 attention heads, resulting in up to 24 x 16 = 384 attention mechanisms to learn context-specific embeddings. <br />
+- BERT uses unsupervised, bidirectional pre-training to learn its weights in advance on two tasks: masked language modeling (predicting a missing word given the left and right context) and next sentence prediction (predicting whether one sentence follows another).</p>
+
+<ul>
+<li><a href="https://jalammar.github.io/illustrated-bert/">The Illustrated BERT, ELMo, and co. (How NLP Cracked Transfer Learning)</a></li>
+<li><a href="https://gluebenchmark.com/leaderboard">The General Language Understanding Evaluation (GLUE) benchmark</a></li>
+<li><a href="https://www.youtube.com/watch?v=rdmaR4WRYEM&amp;list=PLBmcuObd5An4UC6jvK_-eSl6jCvP1gwXc&amp;index=9">Financial NLP at S&amp;P Global </a></li>
+</ul>
+
+<h3>Using pretrained state-of-the-art models</h3>
+
+<ul>
+<li><a href="https://github.com/huggingface/transformers">Huggingface Transformers</a>
+<ul>
+<li>Transformers (formerly known as pytorch-transformers and pytorch-pretrained-bert) provides state-of-the-art general-purpose architectures (BERT, GPT-2, RoBERTa, XLM, DistilBert, XLNet, T5, CTRL...) for Natural Language Understanding (NLU) and Natural Language Generation (NLG) with over thousands of pretrained models in 100+ languages and deep interoperability between PyTorch &amp; TensorFlow 2.0.</li>
+</ul></li>
+<li><a href="https://github.com/explosion/spacy-transformers">spacy-transformers</a>
+<ul>
+<li>This package (previously spacy-pytorch-transformers) provides spaCy model pipelines that wrap Hugging Face's transformers package, so you can use them in spaCy. The result is convenient access to state-of-the-art transformer architectures, such as BERT, GPT-2, XLNet, etc. For more details and background.</li>
+</ul></li>
+<li><a href="https://allennlp.org/">Allen NLP</a>
+<ul>
+<li>Deep learning for NLP: AllenNLP makes it easy to design and evaluate new deep learning models for nearly any NLP problem, along with the infrastructure to easily run them in the cloud or on your laptop.</li>
+<li>State of the art models: AllenNLP includes reference implementations of high quality models for both core NLP problems (e.g. semantic role labeling) and NLP applications (e.g. textual entailment).</li>
+</ul></li>
+<li>[Sentence Transformers: Multilingual Sentence Embeddings using BERT / RoBERTa / XLM-RoBERTa &amp; Co. with PyTorch]
+ -BERT / RoBERTa / XLM-RoBERTa produces out-of-the-box rather bad sentence embeddings. This repository fine-tunes BERT / RoBERTa / DistilBERT / ALBERT / XLNet with a siamese or triplet network structure to produce semantically meaningful sentence embeddings that can be used in unsupervised scenarios: Semantic textual similarity via cosine-similarity, clustering, semantic search.</li>
+</ul>
+
+<h2>Additional Resources</h2>
+
+<ul>
+<li><a href="https://github.com/stanfordnlp/GloVe">GloVe: Global Vectors for Word Representation</a></li>
+<li><a href="http://commoncrawl.org/the-data/">Common Crawl Data</a></li>
+<li><a href="https://github.com/nicholas-leonard/word2vec/blob/master/questions-words.txt">word2vec analogy samples</a></li>
+<li><a href="https://spacy.io/usage/vectors-similarity">spaCy word vectors and semantic similarity</a></li>
+<li><a href="https://data.world/jumpyaf/2013-2016-cleaned-parsed-10-k-filings-with-the-sec">2013-2016 Cleaned/Parsed 10-K Filings with the SEC</a></li>
+<li><a href="https://nlp.stanford.edu/sentiment/treebank.html">Stanford Sentiment Tree Bank</a></li>
+<li><a href="https://www.tensorflow.org/tutorials/text/word_embeddings">Word embeddings | TensorFlow Core</a></li>
+<li><a href="https://www.tensorflow.org/tensorboard/tensorboard_projector_plugin">Visualizing Data using the Embedding Projector in TensorBoard</a></li>
+</ul>

@@ -1,0 +1,64 @@
+<h2>How-to, this model based on <a href="https://github.com/huseinzol05/Stock-Prediction-Models/tree/master/agent">evolution-strategy</a></h2>
+
+<ol>
+<li>You can check <a href="realtime-evolution-strategy.ipynb">realtime-evolution-strategy.ipynb</a> for to train an evolution strategy to do realtime trading.</li>
+</ol>
+
+<p>I trained the model to learn trading on different stocks,</p>
+
+<p><code>python
+['TWTR.csv',
+ 'GOOG.csv',
+ 'FB.csv',
+ 'LB.csv',
+ 'MTDR.csv',
+ 'CPRT.csv',
+ 'FSV.csv',
+ 'TSLA.csv',
+ 'SINA.csv',
+ 'GWR.csv']
+</code></p>
+
+<p>You might want to add more to cover more stochastic patterns.</p>
+
+<ol>
+<li>Run <a href="app.py">app.py</a> to serve the checkpoint model using Flask,</li>
+</ol>
+
+<p><code>bash
+python3 app.py
+</code></p>
+
+<p><code>text
+* Serving Flask app "app" (lazy loading)
+* Environment: production
+  WARNING: This is a development server. Do not use it in a production deployment.
+  Use a production WSGI server instead.
+* Debug mode: off
+* Running on http://0.0.0.0:8005/ (Press CTRL+C to quit)
+</code></p>
+
+<ol>
+<li>You can check requests example in <a href="request.ipynb">request.ipynb</a> to get a kickstart.</li>
+</ol>
+
+<p><code>bash
+curl http://localhost:8005/trade?data=[13.1, 13407500]
+</code></p>
+
+<p><code>python
+{'action': 'sell', 'balance': 971.1199990000001, 'investment': '10.224268 %', 'status': 'sell 1 unit, price 16.709999', 'timestamp': '2019-05-26 01:12:10.370206'}
+{'action': 'nothing', 'balance': 971.1199990000001, 'status': 'do nothing', 'timestamp': '2019-05-26 01:12:10.376245'}
+{'action': 'sell', 'balance': 987.7799990000001, 'investment': '11.066667 %', 'status': 'sell 1 unit, price 16.660000', 'timestamp': '2019-05-26 01:12:10.382282'}
+{'action': 'nothing', 'balance': 987.7799990000001, 'status': 'do nothing', 'timestamp': '2019-05-26 01:12:10.388330'}
+{'action': 'nothing', 'balance': 987.7799990000001, 'status': 'do nothing', 'timestamp': '2019-05-26 01:12:10.394324'}
+{'action': 'sell', 'balance': 1006.1299990000001, 'investment': '18.387097 %', 'status': 'sell 1 unit, price 18.350000', 'timestamp': '2019-05-26 01:12:10.400104'}
+{'action': 'nothing', 'balance': 1006.1299990000001, 'status': 'do nothing', 'timestamp': '2019-05-26 01:12:10.405804'}
+{'action': 'nothing', 'balance': 1006.1299990000001, 'status': 'do nothing', 'timestamp': '2019-05-26 01:12:10.411531'}
+</code></p>
+
+<h2>Notes</h2>
+
+<ol>
+<li>You can use this code to integrate with realtime socket, or any APIs you wanted, imagination is your limit now.</li>
+</ol>

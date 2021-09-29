@@ -1,0 +1,27 @@
+<h1>02 API access to market data</h1>
+
+<p>There are several options to access market data via API using Python.</p>
+
+<h2>pandas datareader</h2>
+
+<p>The notebook <a href="01_pandas_datareader_demo.ipynb">01<em>pandas</em>datareader<em>demo</a> presents a few sources built into the pandas library. 
+- The <code>pandas</code> library enables access to data displayed on websites using the read</em>html function 
+- the related <code>pandas-datareader</code> library provides access to the API endpoints of various data providers through a standard interface </p>
+
+<h2>yfinance: Yahoo! Finance market and fundamental data</h2>
+
+<p>The notebook <a href="02_yfinance_demo.ipynb">yfinance_demo</a> shows how to use yfinance to download a variety of data from Yahoo! Finance. The library works around the deprecation of the historical data API by scraping data from the website in a reliable, efficient way with a Pythonic API.</p>
+
+<h2>LOBSTER tick data</h2>
+
+<p>The notebook <a href="03_lobster_itch_data.ipynb">03<em>lobster</em>itch_data</a> demonstrates the use of order book data made available by LOBSTER (Limit Order Book System - The Efficient Reconstructor), an <a href="https://lobsterdata.com/info/WhatIsLOBSTER.php">online</a> limit order book data tool that aims to provide easy-to-use, high-quality limit order book data.</p>
+
+<p>Since 2013 LOBSTER acts as a data provider for the academic community, giving access to reconstructed limit order book data for the entire universe of NASDAQ traded stocks. More recently, it started offering a commercial service.</p>
+
+<h2>Qandl</h2>
+
+<p>The notebook <a href="03_quandl_demo.ipynb">03<em>quandl</em>demo</a> shows how Quandl uses a very straightforward API to make its free and premium data available. See <a href="https://www.quandl.com/tools/api">documentation</a> for more details.</p>
+
+<h2>zipline &amp; Qantopian</h2>
+
+<p>The notebook [contains the notebook <a href="05_zipline_data.ipynb">zipline_data</a> briefly introduces the backtesting library <code>zipline</code> that we will use throughout this book and show how to access stock price data while running a backtest. For installation please refer to the instructions <a href="../../installation">here</a>.</p>

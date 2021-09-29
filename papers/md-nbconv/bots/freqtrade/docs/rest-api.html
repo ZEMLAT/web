@@ -1,0 +1,372 @@
+<h1>REST API &amp; FreqUI</h1>
+
+<h2>FreqUI</h2>
+
+<p>Freqtrade provides a builtin webserver, which can serve <a href="https://github.com/freqtrade/frequi">FreqUI</a>, the freqtrade UI.</p>
+
+<p>By default, the UI is not included in the installation (except for docker images), and must be installed explicitly with <code>freqtrade install-ui</code>.
+This same command can also be used to update freqUI, should there be a new release.</p>
+
+<p>Once the bot is started in trade / dry-run mode (with <code>freqtrade trade</code>) - the UI will be available under the configured port below (usually <code>http://127.0.0.1:8080</code>).</p>
+
+<p>!!! info "Alpha release"
+    FreqUI is still considered an alpha release - if you encounter bugs or inconsistencies please open a <a href="https://github.com/freqtrade/frequi/issues/new/choose">FreqUI issue</a>.</p>
+
+<p>!!! Note "developers"
+    Developers should not use this method, but instead use the method described in the <a href="https://github.com/freqtrade/frequi">freqUI repository</a> to get the source-code of freqUI.</p>
+
+<h2>Configuration</h2>
+
+<p>Enable the rest API by adding the api_server section to your configuration and setting <code>api_server.enabled</code> to <code>true</code>.</p>
+
+<p>Sample configuration:</p>
+
+<p><code>json
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "127.0.0.1",
+        "listen_port": 8080,
+        "verbosity": "error",
+        "enable_openapi": false,
+        "jwt_secret_key": "somethingrandom",
+        "CORS_origins": [],
+        "username": "Freqtrader",
+        "password": "SuperSecret1!"
+    },
+</code></p>
+
+<p>!!! Danger "Security warning"
+    By default, the configuration listens on localhost only (so it's not reachable from other systems). We strongly recommend to not expose this API to the internet and choose a strong, unique password, since others will potentially be able to control your bot.</p>
+
+<p>You can then access the API by going to <code>http://127.0.0.1:8080/api/v1/ping</code> in a browser to check if the API is running correctly.
+This should return the response:</p>
+
+<p><code>output
+{"status":"pong"}
+</code></p>
+
+<p>All other endpoints return sensitive info and require authentication and are therefore not available through a web browser.</p>
+
+<h3>Security</h3>
+
+<p>To generate a secure password, best use a password manager, or use the below code.</p>
+
+<p><code>python
+import secrets
+secrets.token_hex()
+</code></p>
+
+<p>!!! Hint "JWT token"
+    Use the same method to also generate a JWT secret key (<code>jwt_secret_key</code>).</p>
+
+<p>!!! Danger "Password selection"
+    Please make sure to select a very strong, unique password to protect your bot from unauthorized access.
+    Also change <code>jwt_secret_key</code> to something random (no need to remember this, but it'll be used to encrypt your session, so it better be something unique!). </p>
+
+<h3>Configuration with docker</h3>
+
+<p>If you run your bot using docker, you'll need to have the bot listen to incoming connections. The security is then handled by docker.</p>
+
+<p><code>json
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8080,
+        "username": "Freqtrader",
+        "password": "SuperSecret1!",
+        //...
+    },
+</code></p>
+
+<p>Uncomment the following from your docker-compose file:</p>
+
+<p><code>yml
+    ports:
+      - "127.0.0.1:8080:8080"
+</code></p>
+
+<p>!!! Danger "Security warning"
+    By using <code>8080:8080</code> in the docker port mapping, the API will be available to everyone connecting to the server under the correct port, so others may be able to control your bot.</p>
+
+<h2>Rest API</h2>
+
+<h3>Consuming the API</h3>
+
+<p>You can consume the API by using the script <code>scripts/rest_client.py</code>.
+The client script only requires the <code>requests</code> module, so Freqtrade does not need to be installed on the system.</p>
+
+<p><code>bash
+python3 scripts/rest_client.py &lt;command&gt; [optional parameters]
+</code></p>
+
+<p>By default, the script assumes <code>127.0.0.1</code> (localhost) and port <code>8080</code> to be used, however you can specify a configuration file to override this behaviour.</p>
+
+<h4>Minimalistic client config</h4>
+
+<p><code>json
+{
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8080,
+        "username": "Freqtrader",
+        "password": "SuperSecret1!",
+        //...
+    }
+}
+</code></p>
+
+<p><code>bash
+python3 scripts/rest_client.py --config rest_config.json &lt;command&gt; [optional parameters]
+</code></p>
+
+<h3>Available endpoints</h3>
+
+<p>|  Command | Description |
+|----------|-------------|
+| <code>ping</code> | Simple command testing the API Readiness - requires no authentication.
+| <code>start</code> | Starts the trader.
+| <code>stop</code> | Stops the trader.
+| <code>stopbuy</code> | Stops the trader from opening new trades. Gracefully closes open trades according to their rules.
+| <code>reload_config</code> | Reloads the configuration file.
+| <code>trades</code> | List last trades. Limited to 500 trades per call.
+| <code>trade/&lt;tradeid&gt;</code> | Get specific trade.
+| <code>delete_trade &lt;trade_id&gt;</code> | Remove trade from the database. Tries to close open orders. Requires manual handling of this trade on the exchange.
+| <code>show_config</code> | Shows part of the current configuration with relevant settings to operation.
+| <code>logs</code> | Shows last log messages.
+| <code>status</code> | Lists all open trades.
+| <code>count</code> | Displays number of trades used and available.
+| <code>locks</code> | Displays currently locked pairs.
+| <code>delete_lock &lt;lock_id&gt;</code> | Deletes (disables) the lock by id.
+| <code>profit</code> | Display a summary of your profit/loss from close trades and some stats about your performance.
+| <code>forcesell &lt;trade_id&gt;</code> | Instantly sells the given trade  (Ignoring <code>minimum_roi</code>).
+| <code>forcesell all</code> | Instantly sells all open trades (Ignoring <code>minimum_roi</code>).
+| <code>forcebuy &lt;pair&gt; [rate]</code> | Instantly buys the given pair. Rate is optional. (<code>forcebuy_enable</code> must be set to True)
+| <code>performance</code> | Show performance of each finished trade grouped by pair.
+| <code>balance</code> | Show account balance per currency.
+| <code>daily &lt;n&gt;</code> | Shows profit or loss per day, over the last n days (n defaults to 7).
+| <code>stats</code> | Display a summary of profit / loss reasons as well as average holding times.
+| <code>whitelist</code> | Show the current whitelist.
+| <code>blacklist [pair]</code> | Show the current blacklist, or adds a pair to the blacklist.
+| <code>edge</code> | Show validated pairs by Edge if it is enabled.
+| <code>pair_candles</code> | Returns dataframe for a pair / timeframe combination while the bot is running. <strong>Alpha</strong>
+| <code>pair_history</code> | Returns an analyzed dataframe for a given timerange, analyzed by a given strategy. <strong>Alpha</strong>
+| <code>plot_config</code> | Get plot config from the strategy (or nothing if not configured). <strong>Alpha</strong>
+| <code>strategies</code> | List strategies in strategy directory. <strong>Alpha</strong>
+| <code>strategy &lt;strategy&gt;</code> | Get specific Strategy content. <strong>Alpha</strong>
+| <code>available_pairs</code> | List available backtest data. <strong>Alpha</strong>
+| <code>version</code> | Show version.</p>
+
+<p>!!! Warning "Alpha status"
+    Endpoints labeled with <em>Alpha status</em> above may change at any time without notice.</p>
+
+<p>Possible commands can be listed from the rest-client script using the <code>help</code> command.</p>
+
+<p><code>bash
+python3 scripts/rest_client.py help
+</code></p>
+
+<p>``` output
+Possible commands:</p>
+
+<p>available<em>pairs
+    Return available pair (backtest data) based on timeframe / stake</em>currency selection</p>
+
+<pre><code>    :param timeframe: Only pairs with this timeframe available.
+    :param stake_currency: Only pairs that include this timeframe
+</code></pre>
+
+<p>balance
+    Get the account balance.</p>
+
+<p>blacklist
+    Show the current blacklist.</p>
+
+<pre><code>    :param add: List of coins to add (example: "BNB/BTC")
+</code></pre>
+
+<p>count
+    Return the amount of open trades.</p>
+
+<p>daily
+    Return the profits for each day, and amount of trades.</p>
+
+<p>delete_lock
+    Delete (disable) lock from the database.</p>
+
+<pre><code>    :param lock_id: ID for the lock to delete
+</code></pre>
+
+<p>delete_trade
+    Delete trade from the database.
+        Tries to close open orders. Requires manual handling of this asset on the exchange.</p>
+
+<pre><code>    :param trade_id: Deletes the trade with this ID from the database.
+</code></pre>
+
+<p>edge
+    Return information about edge.</p>
+
+<p>forcebuy
+    Buy an asset.</p>
+
+<pre><code>    :param pair: Pair to buy (ETH/BTC)
+    :param price: Optional - price to buy
+</code></pre>
+
+<p>forcesell
+    Force-sell a trade.</p>
+
+<pre><code>    :param tradeid: Id of the trade (can be received via status command)
+</code></pre>
+
+<p>locks
+    Return current locks</p>
+
+<p>logs
+    Show latest logs.</p>
+
+<pre><code>    :param limit: Limits log messages to the last &lt;limit&gt; logs. No limit to get the entire log.
+</code></pre>
+
+<p>pair_candles
+    Return live dataframe for <pair><timeframe>.</p>
+
+<pre><code>    :param pair: Pair to get data for
+    :param timeframe: Only pairs with this timeframe available.
+    :param limit: Limit result to the last n candles.
+</code></pre>
+
+<p>pair_history
+    Return historic, analyzed dataframe</p>
+
+<pre><code>    :param pair: Pair to get data for
+    :param timeframe: Only pairs with this timeframe available.
+    :param strategy: Strategy to analyze and get values for
+    :param timerange: Timerange to get data for (same format than --timerange endpoints)
+</code></pre>
+
+<p>performance
+    Return the performance of the different coins.</p>
+
+<p>ping
+    simple ping</p>
+
+<p>plot_config
+    Return plot configuration if the strategy defines one.</p>
+
+<p>profit
+    Return the profit summary.</p>
+
+<p>reload_config
+    Reload configuration.</p>
+
+<p>show_config</p>
+
+<pre><code>    Returns part of the configuration, relevant for trading operations.
+</code></pre>
+
+<p>start
+    Start the bot if it's in the stopped state.</p>
+
+<p>stats
+    Return the stats report (durations, sell-reasons).</p>
+
+<p>status
+    Get the status of open trades.</p>
+
+<p>stop
+    Stop the bot. Use <code>start</code> to restart.</p>
+
+<p>stopbuy
+    Stop buying (but handle sells gracefully). Use <code>reload_config</code> to reset.</p>
+
+<p>strategies
+    Lists available strategies</p>
+
+<p>strategy
+    Get strategy details</p>
+
+<pre><code>    :param strategy: Strategy class name
+</code></pre>
+
+<p>trade
+    Return specific trade</p>
+
+<pre><code>    :param trade_id: Specify which trade to get.
+</code></pre>
+
+<p>trades
+    Return trades history, sorted by id</p>
+
+<pre><code>    :param limit: Limits trades to the X last trades. Max 500 trades.
+    :param offset: Offset by this amount of trades.
+</code></pre>
+
+<p>version
+    Return the version of the bot.</p>
+
+<p>whitelist
+    Show the current whitelist.
+```</p>
+
+<h3>OpenAPI interface</h3>
+
+<p>To enable the builtin openAPI interface (Swagger UI), specify <code>"enable_openapi": true</code> in the api_server configuration.
+This will enable the Swagger UI at the <code>/docs</code> endpoint. By default, that's running at http://localhost:8080/docs/ - but it'll depend on your settings.</p>
+
+<h3>Advanced API usage using JWT tokens</h3>
+
+<p>!!! Note
+    The below should be done in an application (a Freqtrade REST API client, which fetches info via API), and is not intended to be used on a regular basis.</p>
+
+<p>Freqtrade's REST API also offers JWT (JSON Web Tokens).
+You can login using the following command, and subsequently use the resulting access_token.</p>
+
+<p>``` bash</p>
+
+<blockquote>
+  <p>curl -X POST --user Freqtrader http://localhost:8080/api/v1/token/login
+{"access<em>token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk2ODEsIm5iZiI6MTU4OTExOTY4MSwianRpIjoiMmEwYmY0NWUtMjhmOS00YTUzLTlmNzItMmM5ZWVlYThkNzc2IiwiZXhwIjoxNTg5MTIwNTgxLCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.qt6MAXYIa-l556OM7arBvYJ0SDI9J8bIk3</em>glDujF5g","refresh<em>token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk2ODEsIm5iZiI6MTU4OTExOTY4MSwianRpIjoiZWQ1ZWI3YjAtYjMwMy00YzAyLTg2N2MtNWViMjIxNWQ2YTMxIiwiZXhwIjoxNTkxNzExNjgxLCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.d1AT</em>jYICyTAjD0fiQAr52rkRqtxCjUGEMwlNuuzgNQ"}</p>
+
+<p>access<em>token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk2ODEsIm5iZiI6MTU4OTExOTY4MSwianRpIjoiMmEwYmY0NWUtMjhmOS00YTUzLTlmNzItMmM5ZWVlYThkNzc2IiwiZXhwIjoxNTg5MTIwNTgxLCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.qt6MAXYIa-l556OM7arBvYJ0SDI9J8bIk3</em>glDujF5g"</p>
+
+<h1>Use access_token for authentication</h1>
+
+<p>curl -X GET --header "Authorization: Bearer ${access_token}" http://localhost:8080/api/v1/count</p>
+</blockquote>
+
+<p>```</p>
+
+<p>Since the access token has a short timeout (15 min) - the <code>token/refresh</code> request should be used periodically to get a fresh access token:</p>
+
+<p>``` bash</p>
+
+<blockquote>
+  <p>curl -X POST --header "Authorization: Bearer ${refresh<em>token}"http://localhost:8080/api/v1/token/refresh
+{"access</em>token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk5NzQsIm5iZiI6MTU4OTExOTk3NCwianRpIjoiMDBjNTlhMWUtMjBmYS00ZTk0LTliZjAtNWQwNTg2MTdiZDIyIiwiZXhwIjoxNTg5MTIwODc0LCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.1seHlII3WprjjclY6DpRhen0rqdF4j6jbvxIhUFaSbs"}
+```</p>
+</blockquote>
+
+<h3>CORS</h3>
+
+<p>All web-based front-ends are subject to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS</a> - Cross-Origin Resource Sharing.
+Since most of the requests to the Freqtrade API must be authenticated, a proper CORS policy is key to avoid security problems.
+Also, the standard disallows <code>*</code> CORS policies for requests with credentials, so this setting must be set appropriately.</p>
+
+<p>Users can configure this themselves via the <code>CORS_origins</code> configuration setting.
+It consists of a list of allowed sites that are allowed to consume resources from the bot's API.</p>
+
+<p>Assuming your application is deployed as <code>https://frequi.freqtrade.io/home/</code> - this would mean that the following configuration becomes necessary:</p>
+
+<p><code>jsonc
+{
+    //...
+    "jwt_secret_key": "somethingrandom",
+    "CORS_origins": ["https://frequi.freqtrade.io"],
+    //...
+}
+</code></p>
+
+<p>!!! Note
+    We strongly recommend to also set <code>jwt_secret_key</code> to something random and known only to yourself to avoid unauthorized access to your bot.</p>

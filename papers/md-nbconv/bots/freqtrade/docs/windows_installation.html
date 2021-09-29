@@ -1,0 +1,64 @@
+<h1>Windows installation</h1>
+
+<p>We <strong>strongly</strong> recommend that Windows users use <a href="docker_quickstart.md">Docker</a> as this will work much easier and smoother (also more secure).</p>
+
+<p>If that is not possible, try using the Windows Linux subsystem (WSL) - for which the Ubuntu instructions should work.
+Otherwise, try the instructions below.</p>
+
+<h2>Install freqtrade manually</h2>
+
+<p>!!! Note
+    Make sure to use 64bit Windows and 64bit Python to avoid problems with backtesting or hyperopt due to the memory constraints 32bit applications have under Windows.</p>
+
+<p>!!! Hint
+    Using the <a href="https://www.anaconda.com/distribution/">Anaconda Distribution</a> under Windows can greatly help with installation problems. Check out the <a href="installation.md#Anaconda">Anaconda installation section</a> in this document for more information.</p>
+
+<h3>1. Clone the git repository</h3>
+
+<p><code>bash
+git clone https://github.com/freqtrade/freqtrade.git
+</code></p>
+
+<h3>2. Install ta-lib</h3>
+
+<p>Install ta-lib according to the <a href="https://github.com/mrjbq7/ta-lib#windows">ta-lib documentation</a>.</p>
+
+<p>As compiling from source on windows has heavy dependencies (requires a partial visual studio installation), there is also a repository of unofficial pre-compiled windows Wheels <a href="https://www.lfd.uci.edu/~gohlke/pythonlibs/#ta-lib">here</a>, which need to be downloaded and installed using <code>pip install TA_Lib-0.4.21-cp38-cp38-win_amd64.whl</code> (make sure to use the version matching your python version).</p>
+
+<p>Freqtrade provides these dependencies for the latest 2 Python versions (3.7 and 3.8) and for 64bit Windows.
+Other versions must be downloaded from the above link.</p>
+
+<p>``` powershell
+cd \path\freqtrade
+python -m venv .env
+.env\Scripts\activate.ps1</p>
+
+<h1>optionally install ta-lib from wheel</h1>
+
+<h1>Eventually adjust the below filename to match the downloaded wheel</h1>
+
+<p>pip install build<em>helpers/TA</em>Lib-0.4.19-cp38-cp38-win_amd64.whl
+pip install -r requirements.txt
+pip install -e .
+freqtrade
+```</p>
+
+<p>!!! Note "Use Powershell"
+    The above installation script assumes you're using powershell on a 64bit windows.
+    Commands for the legacy CMD windows console may differ.</p>
+
+<blockquote>
+  <p>Thanks <a href="https://github.com/Owdr">Owdr</a> for the commands. Source: <a href="https://github.com/freqtrade/freqtrade/issues/222">Issue #222</a></p>
+</blockquote>
+
+<h3>Error during installation on Windows</h3>
+
+<p><code>bash
+error: Microsoft Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools": http://landinghub.visualstudio.com/visual-cpp-build-tools
+</code></p>
+
+<p>Unfortunately, many packages requiring compilation don't provide a pre-built wheel. It is therefore mandatory to have a C/C++ compiler installed and available for your python environment to use.</p>
+
+<p>The easiest way is to download install Microsoft Visual Studio Community <a href="https://visualstudio.microsoft.com/downloads/">here</a> and make sure to install "Common Tools for Visual C++" to enable building C code on Windows. Unfortunately, this is a heavy download / dependency (~4Gb) so you might want to consider WSL or <a href="docker_quickstart.md">docker compose</a> first.</p>
+
+<hr />

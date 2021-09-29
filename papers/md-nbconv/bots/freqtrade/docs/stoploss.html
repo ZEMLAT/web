@@ -1,0 +1,211 @@
+<h1>Stop Loss</h1>
+
+<p>The <code>stoploss</code> configuration parameter is loss as ratio that should trigger a sale.
+For example, value <code>-0.10</code> will cause immediate sell if the profit dips below -10% for a given trade. This parameter is optional.</p>
+
+<p>Most of the strategy files already include the optimal <code>stoploss</code> value.</p>
+
+<p>!!! Info
+    All stoploss properties mentioned in this file can be set in the Strategy, or in the configuration. <br />
+    <ins>Configuration values will override the strategy values.</ins></p>
+
+<h2>Stop Loss On-Exchange/Freqtrade</h2>
+
+<p>Those stoploss modes can be <em>on exchange</em> or <em>off exchange</em>.</p>
+
+<p>These modes can be configured with these values:</p>
+
+<p><code>python
+    'emergencysell': 'market',
+    'stoploss_on_exchange': False
+    'stoploss_on_exchange_interval': 60,
+    'stoploss_on_exchange_limit_ratio': 0.99
+</code></p>
+
+<p>!!! Note
+    Stoploss on exchange is only supported for Binance (stop-loss-limit), Kraken (stop-loss-market, stop-loss-limit) and FTX (stop limit and stop-market) as of now. <br />
+    <ins>Do not set too low/tight stoploss value if using stop loss on exchange!</ins> <br />
+    If set to low/tight then you have greater risk of missing fill on the order and stoploss will not work.</p>
+
+<h3>stoploss<em>on</em>exchange and stoploss<em>on</em>exchange<em>limit</em>ratio</h3>
+
+<p>Enable or Disable stop loss on exchange.
+If the stoploss is <em>on exchange</em> it means a stoploss limit order is placed on the exchange immediately after buy order happens successfully. This will protect you against sudden crashes in market as the order will be in the queue immediately and if market goes down then the order has more chance of being fulfilled.</p>
+
+<p>If <code>stoploss_on_exchange</code> uses limit orders, the exchange needs 2 prices, the stoploss_price and the Limit price. <br />
+<code>stoploss</code> defines the stop-price where the limit order is placed - and limit should be slightly below this. <br />
+If an exchange supports both limit and market stoploss orders, then the value of <code>stoploss</code> will be used to determine the stoploss type.  </p>
+
+<p>Calculation example: we bought the asset at 100\$. <br />
+Stop-price is 95\$, then limit would be <code>95 * 0.99 = 94.05$</code> - so the limit order fill can happen between 95$ and 94.05$.  </p>
+
+<p>For example, assuming the stoploss is on exchange, and trailing stoploss is enabled, and the market is going up, then the bot automatically cancels the previous stoploss order and puts a new one with a stop value higher than the previous stoploss order.</p>
+
+<p>!!! Note
+    If <code>stoploss_on_exchange</code> is enabled and the stoploss is cancelled manually on the exchange, then the bot will create a new stoploss order.</p>
+
+<h3>stoploss<em>on</em>exchange_interval</h3>
+
+<p>In case of stoploss on exchange there is another parameter called <code>stoploss_on_exchange_interval</code>. This configures the interval in seconds at which the bot will check the stoploss and update it if necessary. <br />
+The bot cannot do these every 5 seconds (at each iteration), otherwise it would get banned by the exchange.
+So this parameter will tell the bot how often it should update the stoploss order. The default value is 60 (1 minute).
+This same logic will reapply a stoploss order on the exchange should you cancel it accidentally.</p>
+
+<h3>forcesell</h3>
+
+<p><code>forcesell</code> is an optional value, which defaults to the same value as <code>sell</code> and is used when sending a <code>/forcesell</code> command from Telegram or from the Rest API.</p>
+
+<h3>forcebuy</h3>
+
+<p><code>forcebuy</code> is an optional value, which defaults to the same value as <code>buy</code> and is used when sending a <code>/forcebuy</code> command from Telegram or from the Rest API.</p>
+
+<h3>emergencysell</h3>
+
+<p><code>emergencysell</code> is an optional value, which defaults to <code>market</code> and is used when creating stop loss on exchange orders fails.
+The below is the default which is used if not changed in strategy or configuration file.</p>
+
+<p>Example from strategy file:</p>
+
+<p><code>python
+order_types = {
+    'buy': 'limit',
+    'sell': 'limit',
+    'emergencysell': 'market',
+    'stoploss': 'market',
+    'stoploss_on_exchange': True,
+    'stoploss_on_exchange_interval': 60,
+    'stoploss_on_exchange_limit_ratio': 0.99
+}
+</code></p>
+
+<h2>Stop Loss Types</h2>
+
+<p>At this stage the bot contains the following stoploss support modes:</p>
+
+<ol>
+<li>Static stop loss.</li>
+<li>Trailing stop loss.</li>
+<li>Trailing stop loss, custom positive loss.</li>
+<li>Trailing stop loss only once the trade has reached a certain offset.</li>
+<li><a href="strategy-advanced.md#custom-stoploss">Custom stoploss function</a></li>
+</ol>
+
+<h3>Static Stop Loss</h3>
+
+<p>This is very simple, you define a stop loss of x (as a ratio of price, i.e. x * 100% of price). This will try to sell the asset once the loss exceeds the defined loss.</p>
+
+<p>Example of stop loss:</p>
+
+<p><code>python
+    stoploss = -0.10
+</code></p>
+
+<p>For example, simplified math:</p>
+
+<ul>
+<li>the bot buys an asset at a price of 100$</li>
+<li>the stop loss is defined at -10%</li>
+<li>the stop loss would get triggered once the asset drops below 90$</li>
+</ul>
+
+<h3>Trailing Stop Loss</h3>
+
+<p>The initial value for this is <code>stoploss</code>, just as you would define your static Stop loss.
+To enable trailing stoploss:</p>
+
+<p><code>python
+    stoploss = -0.10
+    trailing_stop = True
+</code></p>
+
+<p>This will now activate an algorithm, which automatically moves the stop loss up every time the price of your asset increases.</p>
+
+<p>For example, simplified math:</p>
+
+<ul>
+<li>the bot buys an asset at a price of 100$</li>
+<li>the stop loss is defined at -10%</li>
+<li>the stop loss would get triggered once the asset drops below 90$</li>
+<li>assuming the asset now increases to 102$</li>
+<li>the stop loss will now be -10% of 102$ = 91.8$</li>
+<li>now the asset drops in value to 101\$, the stop loss will still be 91.8$ and would trigger at 91.8$.</li>
+</ul>
+
+<p>In summary: The stoploss will be adjusted to be always be -10% of the highest observed price.</p>
+
+<h3>Trailing stop loss, custom positive loss</h3>
+
+<p>It is also possible to have a default stop loss, when you are in the red with your buy (buy - fee), but once you hit positive result the system will utilize a new stop loss, which can have a different value.
+For example, your default stop loss is -10%, but once you have more than 0% profit (example 0.1%) a different trailing stoploss will be used.</p>
+
+<p>!!! Note
+    If you want the stoploss to only be changed when you break even of making a profit (what most users want) please refer to next section with <a href="#Trailing-stop-loss-only-once-the-trade-has-reached-a-certain-offset">offset enabled</a>.</p>
+
+<p>Both values require <code>trailing_stop</code> to be set to true and <code>trailing_stop_positive</code> with a value.</p>
+
+<p><code>python
+    stoploss = -0.10
+    trailing_stop = True
+    trailing_stop_positive = 0.02
+</code></p>
+
+<p>For example, simplified math:</p>
+
+<ul>
+<li>the bot buys an asset at a price of 100$</li>
+<li>the stop loss is defined at -10%</li>
+<li>the stop loss would get triggered once the asset drops below 90$</li>
+<li>assuming the asset now increases to 102$</li>
+<li>the stop loss will now be -2% of 102$ = 99.96$ (99.96$ stop loss will be locked in and will follow asset price increments with -2%)</li>
+<li>now the asset drops in value to 101\$, the stop loss will still be 99.96$ and would trigger at 99.96$</li>
+</ul>
+
+<p>The 0.02 would translate to a -2% stop loss.
+Before this, <code>stoploss</code> is used for the trailing stoploss.</p>
+
+<h3>Trailing stop loss only once the trade has reached a certain offset</h3>
+
+<p>It is also possible to use a static stoploss until the offset is reached, and then trail the trade to take profits once the market turns.</p>
+
+<p>If <code>"trailing_only_offset_is_reached": true</code> then the trailing stoploss is only activated once the offset is reached. Until then, the stoploss remains at the configured <code>stoploss</code>.
+This option can be used with or without <code>trailing_stop_positive</code>, but uses <code>trailing_stop_positive_offset</code> as offset.</p>
+
+<p><code>python
+    trailing_stop_positive_offset = 0.011
+    trailing_only_offset_is_reached = True
+</code></p>
+
+<p>Configuration (offset is buy-price + 3%):</p>
+
+<p><code>python
+    stoploss = -0.10
+    trailing_stop = True
+    trailing_stop_positive = 0.02
+    trailing_stop_positive_offset = 0.03
+    trailing_only_offset_is_reached = True
+</code></p>
+
+<p>For example, simplified math:</p>
+
+<ul>
+<li>the bot buys an asset at a price of 100$</li>
+<li>the stop loss is defined at -10%</li>
+<li>the stop loss would get triggered once the asset drops below 90$</li>
+<li>stoploss will remain at 90$ unless asset increases to or above our configured offset</li>
+<li>assuming the asset now increases to 103$ (where we have the offset configured)</li>
+<li>the stop loss will now be -2% of 103$ = 100.94$</li>
+<li>now the asset drops in value to 101\$, the stop loss will still be 100.94$ and would trigger at 100.94$</li>
+</ul>
+
+<p>!!! Tip
+    Make sure to have this value (<code>trailing_stop_positive_offset</code>) lower than minimal ROI, otherwise minimal ROI will apply first and sell the trade.</p>
+
+<h2>Changing stoploss on open trades</h2>
+
+<p>A stoploss on an open trade can be changed by changing the value in the configuration or strategy and use the <code>/reload_config</code> command (alternatively, completely stopping and restarting the bot also works).</p>
+
+<p>The new stoploss value will be applied to open trades (and corresponding log-messages will be generated).</p>
+
+<h3>Limitations</h3>
+
+<p>Stoploss values cannot be changed if <code>trailing_stop</code> is enabled and the stoploss has already been adjusted, or if <a href="edge.md">Edge</a> is enabled (since Edge would recalculate stoploss based on the current market situation).</p>

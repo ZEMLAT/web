@@ -1,0 +1,218 @@
+<h1><img src="https://raw.githubusercontent.com/freqtrade/freqtrade/develop/docs/assets/freqtrade_poweredby.svg" alt="freqtrade" title="" /></h1>
+
+<p><a href="https://github.com/freqtrade/freqtrade/actions/"><img src="https://github.com/freqtrade/freqtrade/workflows/Freqtrade%20CI/badge.svg" alt="Freqtrade CI" title="" /></a>
+<a href="https://coveralls.io/github/freqtrade/freqtrade?branch=develop"><img src="https://coveralls.io/repos/github/freqtrade/freqtrade/badge.svg?branch=develop&amp;service=github" alt="Coverage Status" title="" /></a>
+<a href="https://www.freqtrade.io"><img src="https://readthedocs.org/projects/freqtrade/badge/" alt="Documentation" title="" /></a>
+<a href="https://codeclimate.com/github/freqtrade/freqtrade/maintainability"><img src="https://api.codeclimate.com/v1/badges/5737e6d668200b7518ff/maintainability" alt="Maintainability" title="" /></a></p>
+
+<p>Freqtrade is a free and open source crypto trading bot written in Python. It is designed to support all major exchanges and be controlled via Telegram. It contains backtesting, plotting and money management tools as well as strategy optimization by machine learning.</p>
+
+<p><img src="https://raw.githubusercontent.com/freqtrade/freqtrade/develop/docs/assets/freqtrade-screenshot.png" alt="freqtrade" title="" /></p>
+
+<h2>Disclaimer</h2>
+
+<p>This software is for educational purposes only. Do not risk money which
+you are afraid to lose. USE THE SOFTWARE AT YOUR OWN RISK. THE AUTHORS
+AND ALL AFFILIATES ASSUME NO RESPONSIBILITY FOR YOUR TRADING RESULTS.</p>
+
+<p>Always start by running a trading bot in Dry-run and do not engage money
+before you understand how it works and what profit/loss you should
+expect.</p>
+
+<p>We strongly recommend you to have coding and Python knowledge. Do not
+hesitate to read the source code and understand the mechanism of this bot.</p>
+
+<h2>Supported Exchange marketplaces</h2>
+
+<p>Please read the <a href="docs/exchanges.md">exchange specific notes</a> to learn about eventual, special configurations needed for each exchange.</p>
+
+<ul>
+<li>[X] <a href="https://www.binance.com/">Binance</a> (<a href="docs/exchanges.md#binance-blacklist">*Note for binance users</a>)</li>
+<li>[X] <a href="https://bittrex.com/">Bittrex</a></li>
+<li>[X] <a href="https://kraken.com/">Kraken</a></li>
+<li>[X] <a href="https://ftx.com">FTX</a></li>
+<li>[X] <a href="https://www.gate.io/ref/6266643">Gate.io</a></li>
+<li>[ ] <a href="https://github.com/ccxt/ccxt/">potentially many others</a>. <em>(We cannot guarantee they will work)</em></li>
+</ul>
+
+<h3>Community tested</h3>
+
+<p>Exchanges confirmed working by the community:</p>
+
+<ul>
+<li>[X] <a href="https://bitvavo.com/">Bitvavo</a></li>
+<li>[X] <a href="https://www.kucoin.com/">Kucoin</a></li>
+</ul>
+
+<h2>Documentation</h2>
+
+<p>We invite you to read the bot documentation to ensure you understand how the bot is working.</p>
+
+<p>Please find the complete documentation on our <a href="https://www.freqtrade.io">website</a>.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>[x] <strong>Based on Python 3.7+</strong>: For botting on any operating system - Windows, macOS and Linux.</li>
+<li>[x] <strong>Persistence</strong>: Persistence is achieved through sqlite.</li>
+<li>[x] <strong>Dry-run</strong>: Run the bot without paying money.</li>
+<li>[x] <strong>Backtesting</strong>: Run a simulation of your buy/sell strategy.</li>
+<li>[x] <strong>Strategy Optimization by machine learning</strong>: Use machine learning to optimize your buy/sell strategy parameters with real exchange data.</li>
+<li>[x] <strong>Edge position sizing</strong> Calculate your win rate, risk reward ratio, the best stoploss and adjust your position size before taking a position for each specific market. <a href="https://www.freqtrade.io/en/latest/edge/">Learn more</a>.</li>
+<li>[x] <strong>Whitelist crypto-currencies</strong>: Select which crypto-currency you want to trade or use dynamic whitelists.</li>
+<li>[x] <strong>Blacklist crypto-currencies</strong>: Select which crypto-currency you want to avoid.</li>
+<li>[x] <strong>Manageable via Telegram</strong>: Manage the bot with Telegram.</li>
+<li>[x] <strong>Display profit/loss in fiat</strong>: Display your profit/loss in 33 fiat.</li>
+<li>[x] <strong>Daily summary of profit/loss</strong>: Provide a daily summary of your profit/loss.</li>
+<li>[x] <strong>Performance status report</strong>: Provide a performance status of your current trades.</li>
+</ul>
+
+<h2>Quick start</h2>
+
+<p>Freqtrade provides a Linux/macOS script to install all dependencies and help you to configure the bot.</p>
+
+<p><code>bash
+git clone -b develop https://github.com/freqtrade/freqtrade.git 
+cd freqtrade
+./setup.sh --install
+</code></p>
+
+<p>For any other type of installation please refer to <a href="https://www.freqtrade.io/en/latest/installation/">Installation doc</a>.</p>
+
+<h2>Basic Usage</h2>
+
+<h3>Bot commands</h3>
+
+<p>```
+usage: freqtrade [-h] [-V]
+                 {trade,create-userdir,new-config,new-strategy,download-data,convert-data,convert-trade-data,list-data,backtesting,edge,hyperopt,hyperopt-list,hyperopt-show,list-exchanges,list-hyperopts,list-markets,list-pairs,list-strategies,list-timeframes,show-trades,test-pairlist,install-ui,plot-dataframe,plot-profit,webserver}
+                 ...</p>
+
+<p>Free, open source crypto trading bot</p>
+
+<p>positional arguments:
+  {trade,create-userdir,new-config,new-strategy,download-data,convert-data,convert-trade-data,list-data,backtesting,edge,hyperopt,hyperopt-list,hyperopt-show,list-exchanges,list-hyperopts,list-markets,list-pairs,list-strategies,list-timeframes,show-trades,test-pairlist,install-ui,plot-dataframe,plot-profit,webserver}
+    trade               Trade module.
+    create-userdir      Create user-data directory.
+    new-config          Create new config
+    new-strategy        Create new strategy
+    download-data       Download backtesting data.
+    convert-data        Convert candle (OHLCV) data from one format to
+                        another.
+    convert-trade-data  Convert trade data from one format to another.
+    list-data           List downloaded data.
+    backtesting         Backtesting module.
+    edge                Edge module.
+    hyperopt            Hyperopt module.
+    hyperopt-list       List Hyperopt results
+    hyperopt-show       Show details of Hyperopt results
+    list-exchanges      Print available exchanges.
+    list-hyperopts      Print available hyperopt classes.
+    list-markets        Print markets on exchange.
+    list-pairs          Print pairs on exchange.
+    list-strategies     Print available strategies.
+    list-timeframes     Print available timeframes for the exchange.
+    show-trades         Show trades.
+    test-pairlist       Test your pairlist configuration.
+    install-ui          Install FreqUI
+    plot-dataframe      Plot candles with indicators.
+    plot-profit         Generate plot showing profits.
+    webserver           Webserver module.</p>
+
+<p>optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit</p>
+
+<p>```</p>
+
+<h3>Telegram RPC commands</h3>
+
+<p>Telegram is not mandatory. However, this is a great way to control your bot. More details and the full command list on our <a href="https://www.freqtrade.io/en/latest/telegram-usage/">documentation</a></p>
+
+<ul>
+<li><code>/start</code>: Starts the trader.</li>
+<li><code>/stop</code>: Stops the trader.</li>
+<li><code>/stopbuy</code>: Stop entering new trades.</li>
+<li><code>/status &lt;trade_id&gt;|[table]</code>: Lists all or specific open trades.</li>
+<li><code>/profit [&lt;n&gt;]</code>: Lists cumulative profit from all finished trades, over the last n days.</li>
+<li><code>/forcesell &lt;trade_id&gt;|all</code>: Instantly sells the given trade (Ignoring <code>minimum_roi</code>).</li>
+<li><code>/performance</code>: Show performance of each finished trade grouped by pair</li>
+<li><code>/balance</code>: Show account balance per currency.</li>
+<li><code>/daily &lt;n&gt;</code>: Shows profit or loss per day, over the last n days.</li>
+<li><code>/help</code>: Show help message.</li>
+<li><code>/version</code>: Show version.</li>
+</ul>
+
+<h2>Development branches</h2>
+
+<p>The project is currently setup in two main branches:</p>
+
+<ul>
+<li><code>develop</code> - This branch has often new features, but might also contain breaking changes. We try hard to keep this branch as stable as possible.</li>
+<li><code>stable</code> - This branch contains the latest stable release. This branch is generally well tested.</li>
+<li><code>feat/*</code> - These are feature branches, which are being worked on heavily. Please don't use these unless you want to test a specific feature.</li>
+</ul>
+
+<h2>Support</h2>
+
+<h3>Help / Discord</h3>
+
+<p>For any questions not covered by the documentation or for further information about the bot, or to simply engage with like-minded individuals, we encourage you to join the Freqtrade <a href="https://discord.gg/p7nuUNVfP7">discord server</a>.</p>
+
+<h3><a href="https://github.com/freqtrade/freqtrade/issues?q=is%3Aissue">Bugs / Issues</a></h3>
+
+<p>If you discover a bug in the bot, please
+<a href="https://github.com/freqtrade/freqtrade/issues?q=is%3Aissue">search our issue tracker</a>
+first. If it hasn't been reported, please
+<a href="https://github.com/freqtrade/freqtrade/issues/new/choose">create a new issue</a> and
+ensure you follow the template guide so that our team can assist you as
+quickly as possible.</p>
+
+<h3><a href="https://github.com/freqtrade/freqtrade/labels/enhancement">Feature Requests</a></h3>
+
+<p>Have you a great idea to improve the bot you want to share? Please,
+first search if this feature was not <a href="https://github.com/freqtrade/freqtrade/labels/enhancement">already discussed</a>.
+If it hasn't been requested, please
+<a href="https://github.com/freqtrade/freqtrade/issues/new/choose">create a new request</a>
+and ensure you follow the template guide so that it does not get lost
+in the bug reports.</p>
+
+<h3><a href="https://github.com/freqtrade/freqtrade/pulls">Pull Requests</a></h3>
+
+<p>Feel like our bot is missing a feature? We welcome your pull requests!</p>
+
+<p>Please read our
+<a href="https://github.com/freqtrade/freqtrade/blob/develop/CONTRIBUTING.md">Contributing document</a>
+to understand the requirements before sending your pull-requests.</p>
+
+<p>Coding is not a necessity to contribute - maybe start with improving our documentation?
+Issues labeled <a href="https://github.com/freqtrade/freqtrade/labels/good%20first%20issue">good first issue</a> can be good first contributions, and will help get you familiar with the codebase.</p>
+
+<p><strong>Note</strong> before starting any major new feature work, <em>please open an issue describing what you are planning to do</em> or talk to us on <a href="https://discord.gg/p7nuUNVfP7">discord</a> (please use the #dev channel for this). This will ensure that interested parties can give valuable feedback on the feature, and let others know that you are working on it.</p>
+
+<p><strong>Important:</strong> Always create your PR against the <code>develop</code> branch, not <code>stable</code>.</p>
+
+<h2>Requirements</h2>
+
+<h3>Up-to-date clock</h3>
+
+<p>The clock must be accurate, synchronized to a NTP server very frequently to avoid problems with communication to the exchanges.</p>
+
+<h3>Min hardware required</h3>
+
+<p>To run this bot we recommend you a cloud instance with a minimum of:</p>
+
+<ul>
+<li>Minimal (advised) system requirements: 2GB RAM, 1GB disk space, 2vCPU</li>
+</ul>
+
+<h3>Software requirements</h3>
+
+<ul>
+<li><a href="http://docs.python-guide.org/en/latest/starting/installation/">Python 3.7.x</a></li>
+<li><a href="https://pip.pypa.io/en/stable/installing/">pip</a></li>
+<li><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">git</a></li>
+<li><a href="https://mrjbq7.github.io/ta-lib/install.html">TA-Lib</a></li>
+<li><a href="https://virtualenv.pypa.io/en/stable/installation.html">virtualenv</a> (Recommended)</li>
+<li><a href="https://www.docker.com/products/docker">Docker</a> (Recommended)</li>
+</ul>

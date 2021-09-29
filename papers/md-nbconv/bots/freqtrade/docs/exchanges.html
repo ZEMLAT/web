@@ -1,0 +1,182 @@
+<h1>Exchange-specific Notes</h1>
+
+<p>This page combines common gotchas and informations which are exchange-specific and most likely don't apply to other exchanges.</p>
+
+<h2>Binance</h2>
+
+<p>Binance supports <a href="configuration.md#understand-order_time_in_force">time<em>in</em>force</a>.</p>
+
+<p>!!! Tip "Stoploss on Exchange"
+    Binance supports <code>stoploss_on_exchange</code> and uses stop-loss-limit orders. It provides great advantages, so we recommend to benefit from it.</p>
+
+<h3>Binance Blacklist</h3>
+
+<p>For Binance, please add <code>"BNB/&lt;STAKE&gt;"</code> to your blacklist to avoid issues.
+Accounts having BNB accounts use this to pay for fees - if your first trade happens to be on <code>BNB</code>, further trades will consume this position and make the initial BNB trade unsellable as the expected amount is not there anymore.</p>
+
+<h3>Binance sites</h3>
+
+<p>Binance has been split into 2, and users must use the correct ccxt exchange ID for their exchange, otherwise API keys are not recognized.</p>
+
+<ul>
+<li><a href="https://www.binance.com/">binance.com</a> - International users. Use exchange id: <code>binance</code>.</li>
+<li><a href="https://www.binance.us/">binance.us</a> - US based users. Use exchange id: <code>binanceus</code>.</li>
+</ul>
+
+<h2>Kraken</h2>
+
+<p>!!! Tip "Stoploss on Exchange"
+    Kraken supports <code>stoploss_on_exchange</code> and can use both stop-loss-market and stop-loss-limit orders. It provides great advantages, so we recommend to benefit from it.
+    You can use either <code>"limit"</code> or <code>"market"</code> in the <code>order_types.stoploss</code> configuration setting to decide which type to use.</p>
+
+<h3>Historic Kraken data</h3>
+
+<p>The Kraken API does only provide 720 historic candles, which is sufficient for Freqtrade dry-run and live trade modes, but is a problem for backtesting.
+To download data for the Kraken exchange, using <code>--dl-trades</code> is mandatory, otherwise the bot will download the same 720 candles over and over, and you'll not have enough backtest data.</p>
+
+<p>Due to the heavy rate-limiting applied by Kraken, the following configuration section should be used to download data:</p>
+
+<p><code>json
+    "ccxt_async_config": {
+        "enableRateLimit": true,
+        "rateLimit": 3100
+    },
+</code></p>
+
+<p>!!! Warning "Downloading data from kraken"
+    Downloading kraken data will require significantly more memory (RAM) than any other exchange, as the trades-data needs to be converted into candles on your machine.
+    It will also take a long time, as freqtrade will need to download every single trade that happened on the exchange for the pair / timerange combination, therefore please be patient.</p>
+
+<p>!!! Warning "rateLimit tuning"
+    Please pay attention that rateLimit configuration entry holds delay in milliseconds between requests, NOT requests\sec rate.
+    So, in order to mitigate Kraken API "Rate limit exceeded" exception, this configuration should be increased, NOT decreased.</p>
+
+<h2>Bittrex</h2>
+
+<h3>Order types</h3>
+
+<p>Bittrex does not support market orders. If you have a message at the bot startup about this, you should change order type values set in your configuration and/or in the strategy from <code>"market"</code> to <code>"limit"</code>. See some more details on this <a href="faq.md#im-getting-the-exchange-bittrex-does-not-support-market-orders-message-and-cannot-run-my-strategy">here in the FAQ</a>.</p>
+
+<p>Bittrex also does not support <code>VolumePairlist</code> due to limited / split API constellation at the moment.
+Please use <code>StaticPairlist</code>. Other pairlists (other than <code>VolumePairlist</code>) should not be affected.</p>
+
+<h3>Volume pairlist</h3>
+
+<p>Bittrex does not support the direct usage of VolumePairList. This can however be worked around by using the advanced mode with <code>lookback_days: 1</code> (or more), which will emulate 24h volume.</p>
+
+<p>Read more in the <a href="plugins.md#volumepairlist-advanced-mode">pairlist documentation</a>.</p>
+
+<h3>Restricted markets</h3>
+
+<p>Bittrex split its exchange into US and International versions.
+The International version has more pairs available, however the API always returns all pairs, so there is currently no automated way to detect if you're affected by the restriction.</p>
+
+<p>If you have restricted pairs in your whitelist, you'll get a warning message in the log on Freqtrade startup for each restricted pair.</p>
+
+<p>The warning message will look similar to the following:</p>
+
+<p><code>output
+[...] Message: bittrex {"success":false,"message":"RESTRICTED_MARKET","result":null,"explanation":null}"
+</code></p>
+
+<p>If you're an "International" customer on the Bittrex exchange, then this warning will probably not impact you.
+If you're a US customer, the bot will fail to create orders for these pairs, and you should remove them from your whitelist.</p>
+
+<p>You can get a list of restricted markets by using the following snippet:</p>
+
+<p>``` python
+import ccxt
+ct = ccxt.bittrex()
+lm = ct.load_markets()</p>
+
+<p>res = [p for p, x in lm.items() if 'US' in x['info']['prohibitedIn']]
+print(res)
+```</p>
+
+<h2>FTX</h2>
+
+<p>!!! Tip "Stoploss on Exchange"
+    FTX supports <code>stoploss_on_exchange</code> and can use both stop-loss-market and stop-loss-limit orders. It provides great advantages, so we recommend to benefit from it.
+    You can use either <code>"limit"</code> or <code>"market"</code> in the <code>order_types.stoploss</code> configuration setting to decide which type of stoploss shall be used.</p>
+
+<h3>Using subaccounts</h3>
+
+<p>To use subaccounts with FTX, you need to edit the configuration and add the following:</p>
+
+<p><code>json
+"exchange": {
+    "ccxt_config": {
+        "headers": {
+            "FTX-SUBACCOUNT": "name"
+        }
+    },
+}
+</code></p>
+
+<h2>Kucoin</h2>
+
+<p>Kucoin requires a passphrase for each api key, you will therefore need to add this key into the configuration so your exchange section looks as follows:</p>
+
+<p><code>json
+"exchange": {
+    "name": "kucoin",
+    "key": "your_exchange_key",
+    "secret": "your_exchange_secret",
+    "password": "your_exchange_api_key_password",
+    // ...
+}
+</code></p>
+
+<p>Kucoin supports <a href="configuration.md#understand-order_time_in_force">time<em>in</em>force</a>.</p>
+
+<h3>Kucoin Blacklists</h3>
+
+<p>For Kucoin, please add <code>"KCS/&lt;STAKE&gt;"</code> to your blacklist to avoid issues.
+Accounts having KCS accounts use this to pay for fees - if your first trade happens to be on <code>KCS</code>, further trades will consume this position and make the initial KCS trade unsellable as the expected amount is not there anymore.</p>
+
+<h2>All exchanges</h2>
+
+<p>Should you experience constant errors with Nonce (like <code>InvalidNonce</code>), it is best to regenerate the API keys. Resetting Nonce is difficult and it's usually easier to regenerate the API keys.</p>
+
+<h2>Random notes for other exchanges</h2>
+
+<ul>
+<li>The Ocean (exchange id: <code>theocean</code>) exchange uses Web3 functionality and requires <code>web3</code> python package to be installed:</li>
+</ul>
+
+<p><code>shell
+$ pip3 install web3
+</code></p>
+
+<h3>Getting latest price / Incomplete candles</h3>
+
+<p>Most exchanges return current incomplete candle via their OHLCV/klines API interface.
+By default, Freqtrade assumes that incomplete candle is fetched from the exchange and removes the last candle assuming it's the incomplete candle.</p>
+
+<p>Whether your exchange returns incomplete candles or not can be checked using <a href="developer.md#Incomplete-candles">the helper script</a> from the Contributor documentation.</p>
+
+<p>Due to the danger of repainting, Freqtrade does not allow you to use this incomplete candle.</p>
+
+<p>However, if it is based on the need for the latest price for your strategy - then this requirement can be acquired using the <a href="strategy-customization.md#possible-options-for-dataprovider">data provider</a> from within the strategy.</p>
+
+<h3>Advanced Freqtrade Exchange configuration</h3>
+
+<p>Advanced options can be configured using the <code>_ft_has_params</code> setting, which will override Defaults and exchange-specific behavior.</p>
+
+<p>Available options are listed in the exchange-class as <code>_ft_has_default</code>.</p>
+
+<p>For example, to test the order type <code>FOK</code> with Kraken, and modify candle limit to 200 (so you only get 200 candles per API call):</p>
+
+<p><code>json
+"exchange": {
+    "name": "kraken",
+    "_ft_has_params": {
+        "order_time_in_force": ["gtc", "fok"],
+        "ohlcv_candle_limit": 200
+        }
+    //...
+}
+</code></p>
+
+<p>!!! Warning
+    Please make sure to fully understand the impacts of these settings before modifying them.</p>

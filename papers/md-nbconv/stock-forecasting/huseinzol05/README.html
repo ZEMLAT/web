@@ -1,0 +1,463 @@
+<p align="center">
+    <a href="#readme">
+        <img alt="logo" width="50%" src="output/evolution-strategy.png">
+    </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/huseinzol05/Stock-Prediction-Models/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-Apache--License--2.0-yellow.svg"></a>
+  <a href="#"><img src="https://img.shields.io/badge/deeplearning-30--models-success.svg"></a>
+  <a href="#"><img src="https://img.shields.io/badge/agent-23--models-success.svg"></a>
+</p>
+
+<hr />
+
+<p><strong>Stock-Prediction-Models</strong>, Gathers machine learning and deep learning models for Stock forecasting, included trading bots and simulations.</p>
+
+<h2>Table of contents</h2>
+
+<ul>
+<li><a href="#models">Models</a></li>
+<li><a href="#agents">Agents</a></li>
+<li><a href="realtime-agent">Realtime Agent</a></li>
+<li><a href="#data-explorations">Data Explorations</a></li>
+<li><a href="#simulations">Simulations</a></li>
+<li><a href="#tensorflow-js">Tensorflow-js</a></li>
+<li><a href="#misc">Misc</a></li>
+<li><a href="#results">Results</a>
+<ul>
+<li><a href="#results-agent">Results Agent</a></li>
+<li><a href="#results-signal-prediction">Results signal prediction</a></li>
+<li><a href="#results-analysis">Results analysis</a></li>
+<li><a href="#results-simulation">Results simulation</a></li>
+</ul></li>
+</ul>
+
+<h2>Contents</h2>
+
+<h3>Models</h3>
+
+<h4><a href="deep-learning">Deep-learning models</a></h4>
+
+<ol>
+<li>LSTM</li>
+<li>LSTM Bidirectional</li>
+<li>LSTM 2-Path</li>
+<li>GRU</li>
+<li>GRU Bidirectional</li>
+<li>GRU 2-Path</li>
+<li>Vanilla</li>
+<li>Vanilla Bidirectional</li>
+<li>Vanilla 2-Path</li>
+<li>LSTM Seq2seq</li>
+<li>LSTM Bidirectional Seq2seq</li>
+<li>LSTM Seq2seq VAE</li>
+<li>GRU Seq2seq</li>
+<li>GRU Bidirectional Seq2seq</li>
+<li>GRU Seq2seq VAE</li>
+<li>Attention-is-all-you-Need</li>
+<li>CNN-Seq2seq</li>
+<li>Dilated-CNN-Seq2seq</li>
+</ol>
+
+<p><strong>Bonus</strong></p>
+
+<ol>
+<li>How to use one of the model to forecast <code>t + N</code>, <a href="deep-learning/how-to-forecast.ipynb">how-to-forecast.ipynb</a></li>
+<li>Consensus, how to use sentiment data to forecast <code>t + N</code>, <a href="deep-learning/sentiment-consensus.ipynb">sentiment-consensus.ipynb</a></li>
+</ol>
+
+<h4><a href="stacking">Stacking models</a></h4>
+
+<ol>
+<li>Deep Feed-forward Auto-Encoder Neural Network to reduce dimension + Deep Recurrent Neural Network + ARIMA + Extreme Boosting Gradient Regressor</li>
+<li>Adaboost + Bagging + Extra Trees + Gradient Boosting + Random Forest + XGB</li>
+</ol>
+
+<h3><a href="agent">Agents</a></h3>
+
+<ol>
+<li>Turtle-trading agent</li>
+<li>Moving-average agent</li>
+<li>Signal rolling agent</li>
+<li>Policy-gradient agent</li>
+<li>Q-learning agent</li>
+<li>Evolution-strategy agent</li>
+<li>Double Q-learning agent</li>
+<li>Recurrent Q-learning agent</li>
+<li>Double Recurrent Q-learning agent</li>
+<li>Duel Q-learning agent</li>
+<li>Double Duel Q-learning agent</li>
+<li>Duel Recurrent Q-learning agent</li>
+<li>Double Duel Recurrent Q-learning agent</li>
+<li>Actor-critic agent</li>
+<li>Actor-critic Duel agent</li>
+<li>Actor-critic Recurrent agent</li>
+<li>Actor-critic Duel Recurrent agent</li>
+<li>Curiosity Q-learning agent</li>
+<li>Recurrent Curiosity Q-learning agent</li>
+<li>Duel Curiosity Q-learning agent</li>
+<li>Neuro-evolution agent</li>
+<li>Neuro-evolution with Novelty search agent</li>
+<li>ABCD strategy agent</li>
+</ol>
+
+<h3><a href="misc">Data Explorations</a></h3>
+
+<ol>
+<li>stock market study on TESLA stock, <a href="misc/tesla-study.ipynb">tesla-study.ipynb</a></li>
+<li>Outliers study using K-means, SVM, and Gaussian on TESLA stock, <a href="misc/outliers.ipynb">outliers.ipynb</a></li>
+<li>Overbought-Oversold study on TESLA stock, <a href="misc/overbought-oversold.ipynb">overbought-oversold.ipynb</a></li>
+<li>Which stock you need to buy? <a href="misc/which-stock.ipynb">which-stock.ipynb</a></li>
+</ol>
+
+<h3><a href="simulation">Simulations</a></h3>
+
+<ol>
+<li>Simple Monte Carlo, <a href="simulation/monte-carlo-drift.ipynb">monte-carlo-drift.ipynb</a></li>
+<li>Dynamic volatility Monte Carlo, <a href="simulation/monte-carlo-dynamic-volatility.ipynb">monte-carlo-dynamic-volatility.ipynb</a></li>
+<li>Drift Monte Carlo, <a href="simulation/monte-carlo-drift.ipynb">monte-carlo-drift.ipynb</a></li>
+<li>Multivariate Drift Monte Carlo BTC/USDT with Bitcurate sentiment, <a href="simulation/multivariate-drift-monte-carlo.ipynb">multivariate-drift-monte-carlo.ipynb</a></li>
+<li>Portfolio optimization, <a href="simulation/portfolio-optimization.ipynb">portfolio-optimization.ipynb</a>, inspired from https://pythonforfinance.net/2017/01/21/investment-portfolio-optimisation-with-python/</li>
+</ol>
+
+<h3><a href="stock-forecasting-js">Tensorflow-js</a></h3>
+
+<p>I code <a href="deep-learning/1.lstm.ipynb">LSTM Recurrent Neural Network</a> and <a href="agent/simple-agent.ipynb">Simple signal rolling agent</a> inside Tensorflow JS, you can try it here, <a href="https://huseinhouse.com/stock-forecasting-js/">huseinhouse.com/stock-forecasting-js</a>, you can download any historical CSV and upload dynamically.</p>
+
+<h3><a href="misc">Misc</a></h3>
+
+<ol>
+<li>fashion trending prediction with cross-validation, <a href="misc/fashion-forecasting.ipynb">fashion-forecasting.ipynb</a></li>
+<li>Bitcoin analysis with LSTM prediction, <a href="misc/bitcoin-analysis-lstm.ipynb">bitcoin-analysis-lstm.ipynb</a></li>
+<li>Kijang Emas Bank Negara, <a href="misc/kijang-emas-bank-negara.ipynb">kijang-emas-bank-negara.ipynb</a></li>
+</ol>
+
+<h2>Results</h2>
+
+<h3>Results Agent</h3>
+
+<p><strong>This agent only able to buy or sell 1 unit per transaction.</strong></p>
+
+<ol>
+<li>Turtle-trading agent, <a href="agent/1.turtle-agent.ipynb">turtle-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/turtle-agent.png" width="70%" align=""></p>
+
+<ol>
+<li>Moving-average agent, <a href="agent/2.moving-average-agent.ipynb">moving-average-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/moving-average-agent.png" width="70%" align=""></p>
+
+<ol>
+<li>Signal rolling agent, <a href="agent/3.signal-rolling-agent.ipynb">signal-rolling-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/signal-rolling-agent.png" width="70%" align=""></p>
+
+<ol>
+<li>Policy-gradient agent, <a href="agent/4.policy-gradient-agent.ipynb">policy-gradient-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/policy-gradient-agent.png" width="70%" align=""></p>
+
+<ol>
+<li>Q-learning agent, <a href="agent/5.q-learning-agent.ipynb">q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/q-learning-agent.png" width="70%" align=""></p>
+
+<ol>
+<li>Evolution-strategy agent, <a href="agent/6.evolution-strategy-agent.ipynb">evolution-strategy-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/evolution-strategy-agent.png" width="70%" align=""></p>
+
+<ol>
+<li>Double Q-learning agent, <a href="agent/7.double-q-learning-agent.ipynb">double-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/double-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Recurrent Q-learning agent, <a href="agent/8.recurrent-q-learning-agent.ipynb">recurrent-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/recurrent-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Double Recurrent Q-learning agent, <a href="agent/9.double-recurrent-q-learning-agent.ipynb">double-recurrent-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/double-recurrent-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Duel Q-learning agent, <a href="agent/10.duel-q-learning-agent.ipynb">duel-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/double-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Double Duel Q-learning agent, <a href="agent/11.double-duel-q-learning-agent.ipynb">double-duel-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/double-duel-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Duel Recurrent Q-learning agent, <a href="agent/12.duel-recurrent-q-learning-agent.ipynb">duel-recurrent-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/duel-recurrent-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Double Duel Recurrent Q-learning agent, <a href="agent/13.double-duel-recurrent-q-learning-agent.ipynb">double-duel-recurrent-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/double-duel-recurrent-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Actor-critic agent, <a href="agent/14.actor-critic-agent.ipynb">actor-critic-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/actor-critic.png" width="70%" align=""></p>
+
+<ol>
+<li>Actor-critic Duel agent, <a href="agent/14.actor-critic-duel-agent.ipynb">actor-critic-duel-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/actor-critic-duel.png" width="70%" align=""></p>
+
+<ol>
+<li>Actor-critic Recurrent agent, <a href="agent/16.actor-critic-recurrent-agent.ipynb">actor-critic-recurrent-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/actor-critic-recurrent.png" width="70%" align=""></p>
+
+<ol>
+<li>Actor-critic Duel Recurrent agent, <a href="agent/17.actor-critic-duel-recurrent-agent.ipynb">actor-critic-duel-recurrent-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/actor-critic-duel-recurrent.png" width="70%" align=""></p>
+
+<ol>
+<li>Curiosity Q-learning agent, <a href="agent/18.curiosity-q-learning-agent.ipynb">curiosity-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/curiosity-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Recurrent Curiosity Q-learning agent, <a href="agent/19.recurrent-curiosity-q-learning-agent.ipynb">recurrent-curiosity-q-learning.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/recurrent-curiosity-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Duel Curiosity Q-learning agent, <a href="agent/20.duel-curiosity-q-learning-agent.ipynb">duel-curiosity-q-learning-agent.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/duel-curiosity-q-learning.png" width="70%" align=""></p>
+
+<ol>
+<li>Neuro-evolution agent, <a href="agent/21.neuro-evolution-agent.ipynb">neuro-evolution.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/neuro-evolution.png" width="70%" align=""></p>
+
+<ol>
+<li>Neuro-evolution with Novelty search agent, <a href="agent/22.neuro-evolution-novelty-search-agent.ipynb">neuro-evolution-novelty-search.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/neuro-evolution-novelty-search.png" width="70%" align=""></p>
+
+<ol>
+<li>ABCD strategy agent, <a href="agent/23.abcd-strategy-agent.ipynb">abcd-strategy.ipynb</a></li>
+</ol>
+
+<p><img src="output-agent/abcd-strategy.png" width="70%" align=""></p>
+
+<h3>Results signal prediction</h3>
+
+<p>I will cut the dataset to train and test datasets,</p>
+
+<ol>
+<li>Train dataset derived from starting timestamp until last 30 days</li>
+<li>Test dataset derived from last 30 days until end of the dataset</li>
+</ol>
+
+<p>So we will let the model do forecasting based on last 30 days, and we will going to repeat the experiment for 10 times. You can increase it locally if you want, and tuning parameters will help you by a lot.</p>
+
+<ol>
+<li>LSTM, accuracy 95.693%, time taken for 1 epoch 01:09</li>
+</ol>
+
+<p><img src="output/lstm.png" width="70%" align=""></p>
+
+<ol>
+<li>LSTM Bidirectional, accuracy 93.8%, time taken for 1 epoch 01:40</li>
+</ol>
+
+<p><img src="output/bidirectional-lstm.png" width="70%" align=""></p>
+
+<ol>
+<li>LSTM 2-Path, accuracy 94.63%, time taken for 1 epoch 01:39</li>
+</ol>
+
+<p><img src="output/lstm-2path.png" width="70%" align=""></p>
+
+<ol>
+<li>GRU, accuracy 94.63%, time taken for 1 epoch 02:10</li>
+</ol>
+
+<p><img src="output/gru.png" width="70%" align=""></p>
+
+<ol>
+<li>GRU Bidirectional, accuracy 92.5673%, time taken for 1 epoch 01:40</li>
+</ol>
+
+<p><img src="output/bidirectional-gru.png" width="70%" align=""></p>
+
+<ol>
+<li>GRU 2-Path, accuracy 93.2117%, time taken for 1 epoch 01:39</li>
+</ol>
+
+<p><img src="output/gru-2path.png" width="70%" align=""></p>
+
+<ol>
+<li>Vanilla, accuracy 91.4686%, time taken for 1 epoch 00:52</li>
+</ol>
+
+<p><img src="output/vanilla.png" width="70%" align=""></p>
+
+<ol>
+<li>Vanilla Bidirectional, accuracy 88.9927%, time taken for 1 epoch 01:06</li>
+</ol>
+
+<p><img src="output/bidirectional-vanilla.png" width="70%" align=""></p>
+
+<ol>
+<li>Vanilla 2-Path, accuracy 91.5406%, time taken for 1 epoch 01:08</li>
+</ol>
+
+<p><img src="output/vanilla-2path.png" width="70%" align=""></p>
+
+<ol>
+<li>LSTM Seq2seq, accuracy 94.9817%, time taken for 1 epoch 01:36</li>
+</ol>
+
+<p><img src="output/lstm-seq2seq.png" width="70%" align=""></p>
+
+<ol>
+<li>LSTM Bidirectional Seq2seq, accuracy 94.517%, time taken for 1 epoch 02:30</li>
+</ol>
+
+<p><img src="output/bidirectional-lstm-seq2seq.png" width="70%" align=""></p>
+
+<ol>
+<li>LSTM Seq2seq VAE, accuracy 95.4190%, time taken for 1 epoch 01:48</li>
+</ol>
+
+<p><img src="output/lstm-seq2seq-vae.png" width="70%" align=""></p>
+
+<ol>
+<li>GRU Seq2seq, accuracy 90.8854%, time taken for 1 epoch 01:34</li>
+</ol>
+
+<p><img src="output/gru-seq2seq.png" width="70%" align=""></p>
+
+<ol>
+<li>GRU Bidirectional Seq2seq, accuracy 67.9915%, time taken for 1 epoch 02:30</li>
+</ol>
+
+<p><img src="output/bidirectional-gru-seq2seq.png" width="70%" align=""></p>
+
+<ol>
+<li>GRU Seq2seq VAE, accuracy 89.1321%, time taken for 1 epoch 01:48</li>
+</ol>
+
+<p><img src="output/gru-seq2seq-vae.png" width="70%" align=""></p>
+
+<ol>
+<li>Attention-is-all-you-Need, accuracy 94.2482%, time taken for 1 epoch 01:41</li>
+</ol>
+
+<p><img src="output/attention-is-all-you-need.png" width="70%" align=""></p>
+
+<ol>
+<li>CNN-Seq2seq, accuracy 90.74%, time taken for 1 epoch 00:43</li>
+</ol>
+
+<p><img src="output/cnn-seq2seq.png" width="70%" align=""></p>
+
+<ol>
+<li>Dilated-CNN-Seq2seq, accuracy 95.86%, time taken for 1 epoch 00:14</li>
+</ol>
+
+<p><img src="output/dilated-cnn-seq2seq.png" width="70%" align=""></p>
+
+<p><strong>Bonus</strong></p>
+
+<ol>
+<li>How to forecast,</li>
+</ol>
+
+<p><img src="output/how-to-forecast.png" width="70%" align=""></p>
+
+<ol>
+<li>Sentiment consensus,</li>
+</ol>
+
+<p><img src="output/sentiment-consensus.png" width="70%" align=""></p>
+
+<h3>Results analysis</h3>
+
+<ol>
+<li>Outliers study using K-means, SVM, and Gaussian on TESLA stock</li>
+</ol>
+
+<p><img src="misc/outliers.png" width="70%" align=""></p>
+
+<ol>
+<li>Overbought-Oversold study on TESLA stock</li>
+</ol>
+
+<p><img src="misc/overbought-oversold.png" width="70%" align=""></p>
+
+<ol>
+<li>Which stock you need to buy?</li>
+</ol>
+
+<p><img src="misc/which-stock.png" width="40%" align=""></p>
+
+<h3>Results simulation</h3>
+
+<ol>
+<li>Simple Monte Carlo</li>
+</ol>
+
+<p><img src="simulation/monte-carlo-simple.png" width="70%" align=""></p>
+
+<ol>
+<li>Dynamic volatity Monte Carlo</li>
+</ol>
+
+<p><img src="simulation/monte-carlo-dynamic-volatility.png" width="70%" align=""></p>
+
+<ol>
+<li>Drift Monte Carlo</li>
+</ol>
+
+<p><img src="simulation/monte-carlo-drift.png" width="70%" align=""></p>
+
+<ol>
+<li>Multivariate Drift Monte Carlo BTC/USDT with Bitcurate sentiment</li>
+</ol>
+
+<p><img src="simulation/multivariate-drift-monte-carlo.png" width="70%" align=""></p>
+
+<ol>
+<li>Portfolio optimization</li>
+</ol>
+
+<p><img src="simulation/portfolio-optimization.png" width="40%" align=""></p>

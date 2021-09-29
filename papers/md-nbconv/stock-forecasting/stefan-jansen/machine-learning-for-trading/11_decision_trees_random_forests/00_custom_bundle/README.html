@@ -1,0 +1,76 @@
+<h1>Custom Bundle for Japanese Stocks sourced from STOOQ</h1>
+
+<p>We are going to create a <a href="https://zipline.ml4trading.io/bundles.html#writing-a-new-bundle">custom bundle</a> for <code>Zipline</code> using Japanese equity data; see <a href="../../data/create_stooq_data.ipynb">download instructions</a> first.  </p>
+
+<p>We will take the following steps:
+1. Create several data files containing information on tickers, prices, and adjustments
+2. Code up a <code>Zipline</code> ingest function that handles the data processing and storage
+3. Define a <code>Zipline</code> extension that registers the new <code>bundle</code>
+4. Place the files in the <code>Zipline_ROOT</code> directory to ensure the <code>Zipline ingest</code> command finds them</p>
+
+<h2>Setup</h2>
+
+<p><code>Zipline</code> permits the creation of custom bundle containing open, high, low, close and volume (OHCLV) information, as well as adjustments like stock splits and dividend payments.</p>
+
+<p>It stores the data per default a <code>.Zipline</code> directory in the user's home directory, <code>~/.Zipline</code>. However, you can modify the target location by setting the <code>Zipline_ROOT</code> environment variable as we do for the docker images provided with this book.   </p>
+
+<h2>Data preprocessing</h2>
+
+<p>To prepare the data, we create three kinds of data tables in HDF5 format:
+1. <code>equities</code>: contains a unique <code>sid</code>, the <code>ticker</code>, and a <code>name</code> for the security.
+2. price tables with OHLCV data for each of the ~2,900 assets, named <code>jp.&lt;sid&gt;</code>
+3. <code>splits</code>: contains split factors and is required; our data is already adjusted so we just add one line with a factor of 1.0 for one   </p>
+
+<p>The file <code>stooq_preprocessing</code> implements these steps and produces the tables in the HDF5 file <code>stooq.h5</code>.</p>
+
+<h2><code>Zipline</code> ingest function</h2>
+
+<p>The file <code>stooq_jp_stocks.py</code> defines a function <code>stooq_jp_to_bundle(interval='1d')</code> that returns the <code>ingest</code> function required by <code>Zipline</code> to produce a custom bundle (see <a href="https://zipline.ml4trading.io/bundles.html#writing-a-new-bundle">docs</a>. It needs to have the following signature:</p>
+
+<p><code>python
+ingest(environ,
+       asset_db_writer,
+       minute_bar_writer,
+       daily_bar_writer,
+       adjustment_writer,
+       calendar,
+       start_session,
+       end_session,
+       cache,
+       show_progress,
+       output_dir)
+</code></p>
+
+<p>This function loads the information we crated in the previous step during the <code>ingest</code> process. It consists of a <code>data_generator()</code> that loads <code>(sid, ticker)</code> tuples as needed, and produces the corresponding OHLCV info in the correct format. It also adds information about the exchange so Zipline can associate the right calendar, and the range of trading dates.</p>
+
+<p>It also loads the adjustment data, which in this case does not play an active role.</p>
+
+<h2>Bundle registration</h2>
+
+<p>Zipline needs to know that the bundle exists and how to create the <code>ingest</code> function we just defined. To this end, we create an <code>extension.py</code> file that communicates the bundle's name, where to find the function that returns the <code>ingest</code> function (namely <code>stooq_jp_to_bundle()</code> in <code>stooq_jp_stocks.py</code>), and indicates the trading calendar to use (<code>XTKS</code> for Tokyo's exchange).</p>
+
+<h2>File locations</h2>
+
+<p>Finally, we need to put these files in the right locations so that Zipline finds them. We can use symbolic links while keeping the actual files in this directory.</p>
+
+<p>More specifically, we'll create symbolic links to 
+1. to <code>stooq_jp_stocks.py</code> in the ZIPLINE_ROOT directory, and 
+2. to stooq.h5 in <code>ZIPLINE_ROOT/custom_data</code></p>
+
+<p>In Linux or MacOSX, this implies opening the shell and running the following commands (where PROJECT_DIR refers to absolute path to the root folder of this repository on your machine)
+<code>bash
+cd $ZIPLINE_ROOT
+ln -s PROJECT_DIR/11_decision_trees_random_forests/00_custom_bundle/stooq_jp_stocks.py
+ln -s PROJECT_DIR/machine-learning-for-trading/11_decision_trees_random_forests/00_custom_bundle/extension.py .
+mkdir custom_data
+ln -s PROJECT_DIR/11_decision_trees_random_forests/00_custom_bundle/stooq.h5 custom_data/.
+</code> </p>
+
+<p>As a result, your directory structure should look as follows (some of these files will be symbolic links):
+<code>python
+ZIPLINE_ROOT
+    |-extension.py
+    |-stooq_jp_stocks.py
+    |-custom_data
+        |-stooq.h5
+</code></p>

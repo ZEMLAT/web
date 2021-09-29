@@ -1,0 +1,31 @@
+<h1>Data Sources used in the book</h1>
+
+<p>We will use freely available historical data from market, fundamental and alternative sources. Chapter 2, Market and Fundamental Data and Chapter 3, Alternative Data for Finance  cover characteristics and access to these data sources and introduce key providers that we will use throughout the book. </p>
+
+<p>A few sample data sources that we will source and work with include, among others:
+- Quandl daily prices and other data points for over 3,000 US stocks
+- Algoseek minute bar trade and quote price data for NASDAQ 100 stocks
+- Stooq daily price data on Japanese equities and US ETFs and stocks
+- Yahoo finance daily price data and fundamentals for US stocks <br />
+- NASDAQ ITCH order book data
+- Electronic Data Gathering, Analysis, and Retrieval (EDGAR) SEC filings
+- Earnings call transcripts from Seeking Alpha
+- Various macro fundamental data from the Federal Reserve and others
+- Financial news data from Reuters, etc.
+- Twitter sentiment data
+- Yelp business reviews sentiment data</p>
+
+<h2>How to source the Data</h2>
+
+<p>There are several notebooks that guide you through the data sourcing process:
+- The notebook <a href="create_datasets.ipynb">create<em>datasets</a> contains information on downloading the <strong>Quandl Wiki stock prices</strong> and a few other sources that we use throughout the book, such as S&amp;P500 benchmark, and US equities metadata.
+- The notebook <a href="create_stooq_data.ipynb">create</em>stooq_data</a> demonstrates how to download historical prices for Japanese stocks and US stocks and ETFs from STOOQ.</p>
+
+<blockquote>
+  <p>Please note that STOOQ will disable automatic downloads and require CAPTCHA starting Dec 10, 2020 so that the code that downloads and unpacks the zip files will no longer work; please navigate to their website for manual download.
+- The notebook <a href="create_yelp_review_data.ipynb">create<em>yelp</em>review<em>data</a> combines text data with additional numerical features for sentiment analysis from Yelp user reviews. 
+- The notebook <a href="glove_word_vectors.ipynb">glove</em>word<em>vectors</a> downloads pre-trained word vectors.
+- The notebook <a href="twitter_sentiment.ipynb">twitter</em>sentiment</a> downloads and extracts twitter data for sentiment analysis.</p>
+</blockquote>
+
+<p>In addition, instructions to obtain data sources for specific applications are provided in the relevant directories and notebooks. </p>

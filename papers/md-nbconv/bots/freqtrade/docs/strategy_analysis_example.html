@@ -1,0 +1,295 @@
+<h1>Strategy analysis example</h1>
+
+<p>Debugging a strategy can be time-consuming. Freqtrade offers helper functions to visualize raw data.
+The following assumes you work with SampleStrategy, data for 5m timeframe from Binance and have downloaded them into the data directory in the default location.</p>
+
+<h2>Setup</h2>
+
+<p>```python
+from pathlib import Path
+from freqtrade.configuration import Configuration</p>
+
+<h1>Customize these according to your needs.</h1>
+
+<h1>Initialize empty configuration object</h1>
+
+<p>config = Configuration.from_files([])</p>
+
+<h1>Optionally, use existing configuration file</h1>
+
+<h1>config = Configuration.from_files(["config.json"])</h1>
+
+<h1>Define some constants</h1>
+
+<p>config["timeframe"] = "5m"</p>
+
+<h1>Name of the strategy class</h1>
+
+<p>config["strategy"] = "SampleStrategy"</p>
+
+<h1>Location of the data</h1>
+
+<p>data<em>location = Path(config['user</em>data_dir'], 'data', 'binance')</p>
+
+<h1>Pair to analyze - Only use one pair here</h1>
+
+<p>pair = "BTC/USDT"
+```</p>
+
+<p>```python</p>
+
+<h1>Load data using values set above</h1>
+
+<p>from freqtrade.data.history import load<em>pair</em>history</p>
+
+<p>candles = load<em>pair</em>history(datadir=data<em>location,
+                            timeframe=config["timeframe"],
+                            pair=pair,
+                            data</em>format = "hdf5",
+                            )</p>
+
+<h1>Confirm success</h1>
+
+<p>print("Loaded " + str(len(candles)) + f" rows of data for {pair} from {data_location}")
+candles.head()
+```</p>
+
+<h2>Load and run strategy</h2>
+
+<ul>
+<li>Rerun each time the strategy file is changed</li>
+</ul>
+
+<p>```python</p>
+
+<h1>Load strategy using values set above</h1>
+
+<p>from freqtrade.resolvers import StrategyResolver
+strategy = StrategyResolver.load_strategy(config)</p>
+
+<h1>Generate buy/sell signals using strategy</h1>
+
+<p>df = strategy.analyze_ticker(candles, {'pair': pair})
+df.tail()
+```</p>
+
+<h3>Display the trade details</h3>
+
+<ul>
+<li>Note that using <code>data.head()</code> would also work, however most indicators have some "startup" data at the top of the dataframe.</li>
+<li>Some possible problems
+<ul>
+<li>Columns with NaN values at the end of the dataframe</li>
+<li>Columns used in <code>crossed*()</code> functions with completely different units</li>
+</ul></li>
+<li>Comparison with full backtest
+<ul>
+<li>having 200 buy signals as output for one pair from <code>analyze_ticker()</code> does not necessarily mean that 200 trades will be made during backtesting.</li>
+<li>Assuming you use only one condition such as, <code>df['rsi'] &lt; 30</code> as buy condition, this will generate multiple "buy" signals for each pair in sequence (until rsi returns > 29). The bot will only buy on the first of these signals (and also only if a trade-slot ("max<em>open</em>trades") is still available), or on one of the middle signals, as soon as a "slot" becomes available.  </li>
+</ul></li>
+</ul>
+
+<p>```python</p>
+
+<h1>Report results</h1>
+
+<p>print(f"Generated {df['buy'].sum()} buy signals")
+data = df.set_index('date', drop=False)
+data.tail()
+```</p>
+
+<h2>Load existing objects into a Jupyter notebook</h2>
+
+<p>The following cells assume that you have already generated data using the cli. <br />
+They will allow you to drill deeper into your results, and perform analysis which otherwise would make the output very difficult to digest due to information overload.</p>
+
+<h3>Load backtest results to pandas dataframe</h3>
+
+<p>Analyze a trades dataframe (also used below for plotting)</p>
+
+<p>```python
+from freqtrade.data.btanalysis import load<em>backtest</em>data, load<em>backtest</em>stats</p>
+
+<h1>if backtest_dir points to a directory, it'll automatically load the last backtest file.</h1>
+
+<p>backtest<em>dir = config["user</em>data<em>dir"] / "backtest</em>results"</p>
+
+<h1>backtest_dir can also point to a specific file</h1>
+
+<h1>backtest<em>dir = config["user</em>data<em>dir"] / "backtest</em>results/backtest-result-2020-07-01_20-04-22.json"</h1>
+
+<p>```</p>
+
+<p>```python</p>
+
+<h1>You can get the full backtest statistics by using the following command.</h1>
+
+<h1>This contains all information used to generate the backtest result.</h1>
+
+<p>stats = load<em>backtest</em>stats(backtest_dir)</p>
+
+<p>strategy = 'SampleStrategy'</p>
+
+<h1>All statistics are available per strategy, so if <code>--strategy-list</code> was used during backtest, this will be reflected here as well.</h1>
+
+<h1>Example usages:</h1>
+
+<p>print(stats['strategy'][strategy]['results<em>per</em>pair'])</p>
+
+<h1>Get pairlist used for this backtest</h1>
+
+<p>print(stats['strategy'][strategy]['pairlist'])</p>
+
+<h1>Get market change (average change of all pairs from start to end of the backtest period)</h1>
+
+<p>print(stats['strategy'][strategy]['market_change'])</p>
+
+<h1>Maximum drawdown ()</h1>
+
+<p>print(stats['strategy'][strategy]['max_drawdown'])</p>
+
+<h1>Maximum drawdown start and end</h1>
+
+<p>print(stats['strategy'][strategy]['drawdown<em>start'])
+print(stats['strategy'][strategy]['drawdown</em>end'])</p>
+
+<h1>Get strategy comparison (only relevant if multiple strategies were compared)</h1>
+
+<p>print(stats['strategy_comparison'])</p>
+
+<p>```</p>
+
+<p>```python</p>
+
+<h1>Load backtested trades as dataframe</h1>
+
+<p>trades = load<em>backtest</em>data(backtest_dir)</p>
+
+<h1>Show value-counts per pair</h1>
+
+<p>trades.groupby("pair")["sell<em>reason"].value</em>counts()
+```</p>
+
+<h2>Plotting daily profit / equity line</h2>
+
+<p>```python</p>
+
+<h1>Plotting equity line (starting with 0 on day 1 and adding daily profit for each backtested day)</h1>
+
+<p>from freqtrade.configuration import Configuration
+from freqtrade.data.btanalysis import load<em>backtest</em>data, load<em>backtest</em>stats
+import plotly.express as px
+import pandas as pd</p>
+
+<h1>strategy = 'SampleStrategy'</h1>
+
+<h1>config = Configuration.from<em>files(["user</em>data/config.json"])</h1>
+
+<h1>backtest<em>dir = config["user</em>data<em>dir"] / "backtest</em>results"</h1>
+
+<p>stats = load<em>backtest</em>stats(backtest<em>dir)
+strategy</em>stats = stats['strategy'][strategy]</p>
+
+<p>dates = []
+profits = []
+for date<em>profit in strategy</em>stats['daily<em>profit']:
+    dates.append(date</em>profit[0])
+    profits.append(date_profit[1])</p>
+
+<p>equity = 0
+equity<em>daily = []
+for daily</em>profit in profits:
+    equity<em>daily.append(equity)
+    equity += float(daily</em>profit)</p>
+
+<p>df = pd.DataFrame({'dates': dates,'equity<em>daily': equity</em>daily})</p>
+
+<p>fig = px.line(df, x="dates", y="equity_daily")
+fig.show()</p>
+
+<p>```</p>
+
+<h3>Load live trading results into a pandas dataframe</h3>
+
+<p>In case you did already some trading and want to analyze your performance</p>
+
+<p>```python
+from freqtrade.data.btanalysis import load<em>trades</em>from_db</p>
+
+<h1>Fetch trades from database</h1>
+
+<p>trades = load<em>trades</em>from_db("sqlite:///tradesv3.sqlite")</p>
+
+<h1>Display results</h1>
+
+<p>trades.groupby("pair")["sell<em>reason"].value</em>counts()
+```</p>
+
+<h2>Analyze the loaded trades for trade parallelism</h2>
+
+<p>This can be useful to find the best <code>max_open_trades</code> parameter, when used with backtesting in conjunction with <code>--disable-max-market-positions</code>.</p>
+
+<p><code>analyze_trade_parallelism()</code> returns a timeseries dataframe with an "open_trades" column, specifying the number of open trades for each candle.</p>
+
+<p>```python
+from freqtrade.data.btanalysis import analyze<em>trade</em>parallelism</p>
+
+<h1>Analyze the above</h1>
+
+<p>parallel<em>trades = analyze</em>trade_parallelism(trades, '5m')</p>
+
+<p>parallel_trades.plot()
+```</p>
+
+<h2>Plot results</h2>
+
+<p>Freqtrade offers interactive plotting capabilities based on plotly.</p>
+
+<p>```python
+from freqtrade.plot.plotting import  generate<em>candlestick</em>graph</p>
+
+<h1>Limit graph period to keep plotly quick and reactive</h1>
+
+<h1>Filter trades to one pair</h1>
+
+<p>trades_red = trades.loc[trades['pair'] == pair]</p>
+
+<p>data_red = data['2019-06-01':'2019-06-10']</p>
+
+<h1>Generate candlestick graph</h1>
+
+<p>graph = generate<em>candlestick</em>graph(pair=pair,
+                                   data=data<em>red,
+                                   trades=trades</em>red,
+                                   indicators1=['sma20', 'ema50', 'ema55'],
+                                   indicators2=['rsi', 'macd', 'macdsignal', 'macdhist']
+                                  )</p>
+
+<p>```</p>
+
+<p>```python</p>
+
+<h1>Show graph inline</h1>
+
+<h1>graph.show()</h1>
+
+<h1>Render graph in a separate window</h1>
+
+<p>graph.show(renderer="browser")</p>
+
+<p>```</p>
+
+<h2>Plot average profit per trade as distribution graph</h2>
+
+<p>```python
+import plotly.figure_factory as ff</p>
+
+<p>hist<em>data = [trades.profit</em>ratio]
+group<em>labels = ['profit</em>ratio']  # name of the dataset</p>
+
+<p>fig = ff.create<em>distplot(hist</em>data, group<em>labels,bin</em>size=0.01)
+fig.show()</p>
+
+<p>```</p>
+
+<p>Feel free to submit an issue or Pull Request enhancing this document if you would like to share ideas on how to best analyze the data.</p>

@@ -1,0 +1,203 @@
+<h1>Webhook usage</h1>
+
+<h2>Configuration</h2>
+
+<p>Enable webhooks by adding a webhook-section to your configuration file, and setting <code>webhook.enabled</code> to <code>true</code>.</p>
+
+<p>Sample configuration (tested using IFTTT).</p>
+
+<p><code>json
+  "webhook": {
+        "enabled": true,
+        "url": "https://maker.ifttt.com/trigger/&lt;YOUREVENT&gt;/with/key/&lt;YOURKEY&gt;/",
+        "webhookbuy": {
+            "value1": "Buying {pair}",
+            "value2": "limit {limit:8f}",
+            "value3": "{stake_amount:8f} {stake_currency}"
+        },
+        "webhookbuycancel": {
+            "value1": "Cancelling Open Buy Order for {pair}",
+            "value2": "limit {limit:8f}",
+            "value3": "{stake_amount:8f} {stake_currency}"
+        },
+         "webhookbuyfill": {
+            "value1": "Buy Order for {pair} filled",
+            "value2": "at {open_rate:8f}",
+            "value3": ""
+        },
+        "webhooksell": {
+            "value1": "Selling {pair}",
+            "value2": "limit {limit:8f}",
+            "value3": "profit: {profit_amount:8f} {stake_currency} ({profit_ratio})"
+        },
+        "webhooksellcancel": {
+            "value1": "Cancelling Open Sell Order for {pair}",
+            "value2": "limit {limit:8f}",
+            "value3": "profit: {profit_amount:8f} {stake_currency} ({profit_ratio})"
+        },
+        "webhooksellfill": {
+            "value1": "Sell Order for {pair} filled",
+            "value2": "at {close_rate:8f}.",
+            "value3": ""
+        },
+        "webhookstatus": {
+            "value1": "Status: {status}",
+            "value2": "",
+            "value3": ""
+        }
+    },
+</code></p>
+
+<p>The url in <code>webhook.url</code> should point to the correct url for your webhook. If you're using <a href="https://ifttt.com">IFTTT</a> (as shown in the sample above) please insert our event and key to the url.</p>
+
+<p>You can set the POST body format to Form-Encoded (default) or JSON-Encoded. Use <code>"format": "form"</code> or <code>"format": "json"</code> respectively. Example configuration for Mattermost Cloud integration:</p>
+
+<p><code>json
+  "webhook": {
+        "enabled": true,
+        "url": "https://&lt;YOURSUBDOMAIN&gt;.cloud.mattermost.com/hooks/&lt;YOURHOOK&gt;",
+        "format": "json",
+        "webhookstatus": {
+            "text": "Status: {status}"
+        }
+    },
+</code></p>
+
+<p>The result would be POST request with e.g. <code>{"text":"Status: running"}</code> body and <code>Content-Type: application/json</code> header which results <code>Status: running</code> message in the Mattermost channel.</p>
+
+<p>Different payloads can be configured for different events. Not all fields are necessary, but you should configure at least one of the dicts, otherwise the webhook will never be called.</p>
+
+<h3>Webhookbuy</h3>
+
+<p>The fields in <code>webhook.webhookbuy</code> are filled when the bot executes a buy. Parameters are filled using string.format.
+Possible parameters are:</p>
+
+<ul>
+<li><code>trade_id</code></li>
+<li><code>exchange</code></li>
+<li><code>pair</code></li>
+<li><code>limit</code></li>
+<li><code>amount</code></li>
+<li><code>open_date</code></li>
+<li><code>stake_amount</code></li>
+<li><code>stake_currency</code></li>
+<li><code>fiat_currency</code></li>
+<li><code>order_type</code></li>
+<li><code>current_rate</code></li>
+<li><code>buy_tag</code></li>
+</ul>
+
+<h3>Webhookbuycancel</h3>
+
+<p>The fields in <code>webhook.webhookbuycancel</code> are filled when the bot cancels a buy order. Parameters are filled using string.format.
+Possible parameters are:</p>
+
+<ul>
+<li><code>trade_id</code></li>
+<li><code>exchange</code></li>
+<li><code>pair</code></li>
+<li><code>limit</code></li>
+<li><code>amount</code></li>
+<li><code>open_date</code></li>
+<li><code>stake_amount</code></li>
+<li><code>stake_currency</code></li>
+<li><code>fiat_currency</code></li>
+<li><code>order_type</code></li>
+<li><code>current_rate</code></li>
+<li><code>buy_tag</code></li>
+</ul>
+
+<h3>Webhookbuyfill</h3>
+
+<p>The fields in <code>webhook.webhookbuyfill</code> are filled when the bot filled a buy order. Parameters are filled using string.format.
+Possible parameters are:</p>
+
+<ul>
+<li><code>trade_id</code></li>
+<li><code>exchange</code></li>
+<li><code>pair</code></li>
+<li><code>open_rate</code></li>
+<li><code>amount</code></li>
+<li><code>open_date</code></li>
+<li><code>stake_amount</code></li>
+<li><code>stake_currency</code></li>
+<li><code>fiat_currency</code></li>
+<li><code>buy_tag</code></li>
+</ul>
+
+<h3>Webhooksell</h3>
+
+<p>The fields in <code>webhook.webhooksell</code> are filled when the bot sells a trade. Parameters are filled using string.format.
+Possible parameters are:</p>
+
+<ul>
+<li><code>trade_id</code></li>
+<li><code>exchange</code></li>
+<li><code>pair</code></li>
+<li><code>gain</code></li>
+<li><code>limit</code></li>
+<li><code>amount</code></li>
+<li><code>open_rate</code></li>
+<li><code>profit_amount</code></li>
+<li><code>profit_ratio</code></li>
+<li><code>stake_currency</code></li>
+<li><code>fiat_currency</code></li>
+<li><code>sell_reason</code></li>
+<li><code>order_type</code></li>
+<li><code>open_date</code></li>
+<li><code>close_date</code></li>
+</ul>
+
+<h3>Webhooksellfill</h3>
+
+<p>The fields in <code>webhook.webhooksellfill</code> are filled when the bot fills a sell order (closes a Trae). Parameters are filled using string.format.
+Possible parameters are:</p>
+
+<ul>
+<li><code>trade_id</code></li>
+<li><code>exchange</code></li>
+<li><code>pair</code></li>
+<li><code>gain</code></li>
+<li><code>close_rate</code></li>
+<li><code>amount</code></li>
+<li><code>open_rate</code></li>
+<li><code>current_rate</code></li>
+<li><code>profit_amount</code></li>
+<li><code>profit_ratio</code></li>
+<li><code>stake_currency</code></li>
+<li><code>fiat_currency</code></li>
+<li><code>sell_reason</code></li>
+<li><code>order_type</code></li>
+<li><code>open_date</code></li>
+<li><code>close_date</code></li>
+</ul>
+
+<h3>Webhooksellcancel</h3>
+
+<p>The fields in <code>webhook.webhooksellcancel</code> are filled when the bot cancels a sell order. Parameters are filled using string.format.
+Possible parameters are:</p>
+
+<ul>
+<li><code>trade_id</code></li>
+<li><code>exchange</code></li>
+<li><code>pair</code></li>
+<li><code>gain</code></li>
+<li><code>limit</code></li>
+<li><code>amount</code></li>
+<li><code>open_rate</code></li>
+<li><code>current_rate</code></li>
+<li><code>profit_amount</code></li>
+<li><code>profit_ratio</code></li>
+<li><code>stake_currency</code></li>
+<li><code>fiat_currency</code></li>
+<li><code>sell_reason</code></li>
+<li><code>order_type</code></li>
+<li><code>open_date</code></li>
+<li><code>close_date</code></li>
+</ul>
+
+<h3>Webhookstatus</h3>
+
+<p>The fields in <code>webhook.webhookstatus</code> are used for regular status messages (Started / Stopped / ...). Parameters are filled using string.format.</p>
+
+<p>The only possible value here is <code>{status}</code>.</p>

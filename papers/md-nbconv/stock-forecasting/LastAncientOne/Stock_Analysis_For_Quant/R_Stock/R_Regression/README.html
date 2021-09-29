@@ -1,0 +1,165 @@
+<h1>Regression in R</h1>
+
+<p><img src="RegressionAnalysisR.PNG"></p>
+
+<h3>Regression Analysis is a statistical method that explore the relationship between two or more variables. There many different types of regression analysis; however, they all have one or more independent variables on a dependent variable.</h3>
+
+<h3>MSE, MAE, RMSE, and R-Squared metrics are mainly used to evaluate the prediction error rates and model performance in regression analysis.</h3>
+
+<p>| MSE / RSME | MAE| R2| 
+| ----------------------- | ------------- | -------------| 
+| Based on square of error      | Based on absolute value of error | Based on correlation between actual and predicted value|
+| Value lies between 0 to infinity | Value lies between 0 to infinity  | Value lies between 0 and 1 |
+| Sensitive to outliers, punishes larger error more | Treat larger and small errors equally. Not sensitive to outliers | Not sensitive to outliers |
+| Small value indicates better model | Small value indicates better model | Value near 1 indicates better model |</p>
+
+<h3>Mean Squared Error (MSE)</h3>
+
+<p>Mean Square Error (MSE) is a mean or average of the square of the difference between actual and estimated values. <br />
+Equations: <br />
+<img src="https://latex.codecogs.com/svg.image?MSE&space;=&space;\frac{1}{n}\sum_{i=1}^{n}(y_{i}&space;-&space;\hat{y_{i}})^{2}" title="MSE = \frac{1}{n}\sum_{i=1}^{n}(y_{i} - \hat{y_{i}})^{2}" width="300" height="100">  </p>
+
+<p>MSE = mean squared error <br />
+n = number of data points <br />
+y<em>i = observed vales <br />
+y ̂</em>i = predicted values  </p>
+
+<h3>Root Mean Squared Error (RMSE)</h3>
+
+<p>Root Mean Square Error (MSE) is the residual (difference between prediction and truth) for each data point, compute the norm of residual for each data point, compute the mean of residuals and take the square root of that mean. <br />
+Equations: <br />
+<img src="https://latex.codecogs.com/svg.image?RMSE&space;=&space;\sqrt{\sum_{i=1}^{n}\frac{(y_{i}-\hat{y}_i)^{2}}{n}}" title="RMSE = \sqrt{\sum_{i=1}^{n}\frac{(y_{i}-\hat{y}_i)^{2}}{n}}" width="300" height="100"></p>
+
+<p>RMSE = root-mean-squared error <br />
+i = variable i <br />
+n = number of non-missing data points <br />
+x<em>i = actual observations time series <br />
+x ̂</em>i = estimated time series  </p>
+
+<h3>Mean Absolute Error (MAE)</h3>
+
+<p>Mean Absolute Error (MAE) is a method to find the sum of the absolute difference between actual and predicted values. <br />
+Equations: <br />
+<img src="https://latex.codecogs.com/svg.image?MSE&space;=&space;\frac{1}{n}\sum_{i=1}^{n}(y_{i}&space;-&space;\hat{y_{i}})^{2}" title="MSE = \frac{1}{n}\sum_{i=1}^{n}(y_{i} - \hat{y_{i}})^{2}" width="300" height="100">  </p>
+
+<p>MAE = mean absolute error <br />
+n = total number of data points <br />
+x<em>i = prediction <br />
+y</em>i = true value  </p>
+
+<h3>R Squared (R2)</h3>
+
+<p>R2 or R Squared is a coefficient of determination and it is the total variance calculated by model/total variance.  </p>
+
+<p>Equations: <br />
+<img src="https://latex.codecogs.com/svg.image?R^{2}&space;=&space;1&space;-&space;\frac{RSS}{TSS}&space;=&space;1&space;-&space;\frac{\sum_{i}(y_{i}-\hat{y}_i)^2}{\sum_{i}(y_{i}-\bar{y}_i)^2}" title="R^{2} = 1 - \frac{RSS}{TSS} = 1 - \frac{\sum_{i}(y_{i}-\hat{y}_i)^2}{\sum_{i}(y_{i}-\bar{y}_i)^2}" width="400" height="100">  </p>
+
+<p><img src="https://latex.codecogs.com/svg.image?RSS&space;=&space;\sum_{i}^{n}(y_{i}-\hat{y}_i)^2" title="RSS = \sum_{i}^{n}(y_{i}-\hat{y}_i)^2" width="300" height="100"> <br />
+<img src="https://latex.codecogs.com/svg.image?TSS&space;=&space;\sum_{i}^{n}(y_{i}-\bar{y}_i)^2" title="TSS = \sum_{i}^{n}(y_{i}-\bar{y}_i)^2" width="300" height="100">  </p>
+
+<p>R^2 = coefficient of determination <br />
+RSS = sum of squares of residuals <br />
+TSS = total sum of squares   </p>
+
+<h3>Linear Regression</h3>
+
+<p>Linear Regression is a linear model or linear regression algorithm, and mostly common used. The linear relationship between the input variables (x) and the single output variable (y). 
+Use this model to predict numerical such as continuous and discrete data.  </p>
+
+<p>(1) Simple Linear Regression – Single input variable (x) <br />
+(2) Multiple Linear Regression – Multiple input variables (x)  </p>
+
+<h4>Equations:</h4>
+
+<h4>Linear Regression Equation</h4>
+
+<p><img src="https://latex.codecogs.com/svg.image?y&space;=&space;b_{0}&space;&plus;&space;b_{1}x" title="y = b_{0} + b_{1}x" width="200" height="50"> <br />
+<img src="https://latex.codecogs.com/svg.image?y&space;=&space;\alpha&space;&plus;&space;\beta&space;x" title="y = \alpha + \beta x" width="200" height="50">  </p>
+
+<h4>Mulitple Linear Regression Equation</h4>
+
+<p><img src="https://latex.codecogs.com/svg.image?y&space;=&space;b_{0}&space;&plus;&space;b_{1}x_{1}&space;&plus;&space;b_{2}&space;x_{2}&space;&plus;&space;...&space;&plus;&space;b_{n}&space;x_{n}" title="y = b_{0} + b_{1}x_{1} + b_{2} x_{2} + ... + b_{n} x_{n}" width="500" height="50">   </p>
+
+<h4>Polynomial Linear Regression Equation</h4>
+
+<p><img src="https://latex.codecogs.com/svg.image?y&space;=&space;b_{0}&space;&plus;&space;b_{1}x_{1}&space;&plus;&space;b_{2}x_{1}^{2}&space;&plus;&space;...&space;&plus;&space;b_{n}x_{1}^{n}&space;" title="y = b_{0} + b_{1}x_{1} + b_{2}x_{1}^{2} + ... + b_{n}x_{1}^{n}" width="200" height="50">  </p>
+
+<h3>Logistic Regression</h3>
+
+<p>Logistic Regression is a predictive modelling algorithm.  Use this model to predict the class or category.  </p>
+
+<h4>Equations:</h4>
+
+<p><img src="https://latex.codecogs.com/svg.image?p&space;=&space;\frac{1}{e^-(b_{0}&space;&plus;&space;b_{1}*x)}" title="p = \frac{1}{e^-(b_{0} + b_{1}*x)}" width="300" height="100">   </p>
+
+<h3>Decision Tree</h3>
+
+<p>Decision Tree is algorithm that decide to split a node into two or more sub-nodes and is a diagram or chart that helps determine the course of action or show a statistical probability. <br />
+Use this model to predict numerical such as class and category or continuous and discrete data. <br />
+(1) Categorical Variable Decision Tree – Class or Category data <br />
+(2) Continuous Variable Decision Tree – Continuous or Discrete data  </p>
+
+<h3>Information Theory</h3>
+
+<p>Information theory studies the quantification of information, its storage, and communication. There are two concepts that are used to construct a decision tree using ID3 algorithm is called information entropy and information gain.    </p>
+
+<h3>Information Entropy</h3>
+
+<p>Information Entropy is a measurement of the smallest amount of information to represent a data item from that data.  </p>
+
+<h3>Information Gain</h3>
+
+<p>Information Gain is calculated for a split by subtracting the weighted entropies of each branch from the original entropy. When training a Decision Tree using these metrics, the best split is chosen by maximizing Information Gain.  </p>
+
+<h4>Equations:</h4>
+
+<p><img src="https://latex.codecogs.com/svg.image?E(S)&space;=&space;\sum_{i=1}^{c}&space;-p_{i}log_{2}p_{i}&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;&space;" title="E(S) = \sum_{i=1}^{c} -p_{i}log_{2}p_{i} " width="300" height="100">  </p>
+
+<p><img src="https://latex.codecogs.com/svg.image?Gain(T,&space;X)&space;=&space;Entropy(T)&space;-&space;Entropy(T,X)" title="Gain(T, X) = Entropy(T) - Entropy(T,X)" width="500" height="50"> <br />
+<img src="https://latex.codecogs.com/svg.image?Entropy(T,&space;X)&space;=&space;\sum_{v\in&space;&space;Values(A)}^{}\frac{\left|&space;S_{v}\right|}{\left|S&space;\right|}Entropy(S_{v})" title="Entropy(T, X) = \sum_{v\in Values(A)}^{}\frac{\left| S_{v}\right|}{\left|S \right|}Entropy(S_{v})" width="500" height="100"></p>
+
+<h3>Bayesian Linear Regression</h3>
+
+<p>Bayesian Linear Regression is algorithm that uses probability distributions rather than point estimates. Use the model to predict the continuous or category. </p>
+
+<p>Equation</p>
+
+<p><img src="https://latex.codecogs.com/svg.image?y&space;=&space;\beta&space;_{0}&space;&plus;&space;&space;\beta&space;_{1}x_{1}&space;&plus;&space;\beta&space;_{2}x_{2}&space;&plus;&space;\epsilon&space;" title="y = \beta _{0} + \beta _{1}x_{1} + \beta _{2}x_{2} + \epsilon " width="500" height="60">  </p>
+
+<h3>Elastic Net Regression</h3>
+
+<p>Ordinal Logistic Regression is algorithm uses a weighted combination of L1 and L2 regularization. Use this model to predict continuous data. </p>
+
+<p>Equation  </p>
+
+<p><img src="https://latex.codecogs.com/svg.image?L_{enet}(&space;\hat{\beta})&space;=&space;\frac{\sum_{i-1}^{n}\left&space;(&space;y_{i}&space;-&space;x_{i}^{j}\hat{\beta}\right&space;&space;)^{2}}{2n}&space;&plus;&space;\lambda&space;(\frac{1-\alpha&space;}{2}\sum_{j=1}^{m}\hat{\beta}_{j}^{2}&space;&plus;&space;\alpha&space;\sum_{j=1}^{m}\left|\hat{\beta}_{j}\right|)" title="L_{enet}( \hat{\beta}) = \frac{\sum_{i-1}^{n}\left ( y_{i} - x_{i}^{j}\hat{\beta}\right )^{2}}{2n} + \lambda (\frac{1-\alpha }{2}\sum_{j=1}^{m}\hat{\beta}_{j}^{2} + \alpha \sum_{j=1}^{m}\left|\hat{\beta}_{j}\right|)" width="700" height="100">  </p>
+
+<h3>Quantile Regression</h3>
+
+<p>Ordinal Logistic Regression is algorithm and is used for finding the relationships between variables outside of the mean of the data.  Also, it is useful in understanding outcomes that are non-normally distributed and that have nonlinear relationships with predictor variables. Use this model to predict continuous or classification data.  </p>
+
+<p>Equation  </p>
+
+<p><img src="https://latex.codecogs.com/svg.image?Q_{\tau}(y_{i})&space;=&space;\beta&space;_{0}(\tau&space;)&space;&plus;&space;\beta&space;_{1}(\tau&space;)x_{i1}&space;&plus;&space;...&space;&plus;&space;\beta&space;_{p}(\tau&space;)x_{ip}" title="Q_{\tau}(y_{i}) = \beta _{0}(\tau ) + \beta _{1}(\tau )x_{i1} + ... + \beta _{p}(\tau )x_{ip}" width="700" height="100">  </p>
+
+<h3>Ordinal Regression</h3>
+
+<p>Ordinal Logistic Regression is a method to use interactions between independent variables to predict the dependent variable. <br />
+Use this model to predict an ordinal dependent variable given one or more independent variables.  </p>
+
+<h3>Random Forest Regression</h3>
+
+<p>Random Forest Regression is algorithm that performed both classification and regression tasks with the use of multiple decision trees. The technique is called Bootstrap and Aggregation, commonly known as bagging. <br />
+Use this model to predict continuous or classification data.  </p>
+
+<h3>Ridge Regression</h3>
+
+<p>Ridge Regression is algorithm that used to analyses any data that suffers from multicollinearity and it performs L2 regularization. If the multicollinearity occurs in the model, least-squares are unbiased, and variances are large. Therefore, results in predicted values to be far away from the actual values.  </p>
+
+<h3>Support Vector Machines</h3>
+
+<p>Support Vector Machines is a supervised machine learning algorithm that performed both classification and regression. Also, is a linear model for classification and regression problems.  As a result, classification and regression.    </p>
+
+<h2>Author:</h2>
+
+<h3>* Tin Hang</h3>

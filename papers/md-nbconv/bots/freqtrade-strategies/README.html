@@ -1,0 +1,117 @@
+<h1>Freqtrade strategies</h1>
+
+<p>This Git repo contains free buy/sell strategies for <a href="https://github.com/freqtrade/freqtrade">Freqtrade</a>.</p>
+
+<h2>Disclaimer</h2>
+
+<p>These strategies are for educational purposes only. Do not risk money 
+which you are afraid to lose. USE THE SOFTWARE AT YOUR OWN RISK. THE 
+AUTHORS AND ALL AFFILIATES ASSUME NO RESPONSIBILITY FOR YOUR TRADING 
+RESULTS. </p>
+
+<p>Always start by testing strategies with a backtesting then run the 
+trading bot in Dry-run. Do not engage money before you understand how 
+it works and what profit/loss you should expect.</p>
+
+<p>We strongly recommend you to have coding and Python knowledge. Do not 
+hesitate to read the source code and understand the mechanism of this 
+bot.</p>
+
+<h2>Table of Content</h2>
+
+<ul>
+<li><a href="#free-trading-strategies">Free trading strategies</a></li>
+<li><a href="#share-your-own-strategies-and-contribute-to-this-repo">Contribute</a></li>
+<li><a href="#faq">FAQ</a>
+<ul>
+<li><a href="#what-is-freqtrade">What is Freqtrade?</a></li>
+<li><a href="#what-includes-these-strategies">What includes these strategies?</a></li>
+<li><a href="#how-to-install-a-strategy">How to install a strategy?</a></li>
+<li><a href="#how-to-test-a-strategy">How to test a strategy?</a></li>
+<li><a href="https://www.freqtrade.io/en/latest/strategy-customization/">How to create/optimize a strategy?</a></li>
+</ul></li>
+</ul>
+
+<h2>Free trading strategies</h2>
+
+<p>Value below are result from backtesting from 2018-01-10 to 2018-01-30 and <br />
+<code>ask_strategy.sell_profit_only</code> enabled. More detail on each strategy 
+page.</p>
+
+<p>|  Strategy | Buy count | AVG profit % | Total profit | AVG duration | Backtest period |
+|-----------|-----------|--------------|--------------|--------------|-----------------|
+| <a href="https://github.com/freqtrade/freqtrade-strategies/blob/master/user_data/strategies/Strategy001.py">Strategy 001</a> | 55 | 0.05 | 0.00012102 |  476.1 | 2018-01-10 to 2018-01-30 |
+| <a href="https://github.com/freqtrade/freqtrade-strategies/blob/master/user_data/strategies/Strategy002.py">Strategy 002</a> | 9 | 3.21 | 0.00114807 |  189.4 | 2018-01-10 to 2018-01-30 |
+| <a href="https://github.com/freqtrade/freqtrade-strategies/blob/master/user_data/strategies/Strategy003.py">Strategy 003</a> | 14 | 1.47 | 0.00081740 |  227.5 | 2018-01-10 to 2018-01-30 | 
+| <a href="https://github.com/freqtrade/freqtrade-strategies/blob/master/user_data/strategies/Strategy004.py">Strategy 004</a> | 37 | 0.69 | 0.00102128 |  367.3 | 2018-01-10 to 2018-01-30 | 
+| <a href="https://github.com/freqtrade/freqtrade-strategies/blob/master/user_data/strategies/Strategy005.py">Strategy 005</a> | 180 | 1.16 | 0.00827589 |  156.2 | 2018-01-10 to 2018-01-30 |</p>
+
+<p>Strategies from this repo are free to use. Feel free to update them. 
+Most of them  were designed from Hyperopt calculations.</p>
+
+<p>Some only work in specific market conditions, while others are more "general purpose" strategies.
+It's noteworthy that depending on the exchange and Pairs used, further optimization can bring better results.</p>
+
+<p>Please keep in mind, results will heavily depend on the pairs, timeframe and timerange used to backtest - so please run your own backtests that mirror your usecase, to evaluate each strategy for yourself.</p>
+
+<h2>Share your own strategies and contribute to this repo</h2>
+
+<p>Feel free to send your strategies, comments, optimizations and pull requests via an 
+<a href="https://github.com/freqtrade/freqtrade-strategies/issues/new">Issue ticket</a> or as a <a href="https://github.com/freqtrade/freqtrade-strategies/pulls">Pull request</a> enhancing this repository.</p>
+
+<h2>FAQ</h2>
+
+<h3>What is Freqtrade?</h3>
+
+<p><a href="https://github.com/freqtrade/freqtrade">Freqtrade</a> Freqtrade is a free and open source crypto trading bot written in Python.
+It is designed to support all major exchanges and be controlled via Telegram. It contains backtesting, plotting and money management tools as well as strategy optimization by machine learning.</p>
+
+<h3>What includes these strategies?</h3>
+
+<p>Each Strategies includes:  </p>
+
+<ul>
+<li>[x] <strong>Minimal ROI</strong>: Minimal ROI optimized for the strategy.</li>
+<li>[x] <strong>Stoploss</strong>: Optimimal stoploss.</li>
+<li>[x] <strong>Buy signals</strong>: Result from Hyperopt or based on exisiting trading strategies.</li>
+<li>[x] <strong>Sell signals</strong>: Result from Hyperopt or based on exisiting trading strategies.</li>
+<li>[x] <strong>Indicators</strong>: Includes the indicators required to run the strategy.</li>
+</ul>
+
+<p>Best backtest multiple strategies with the exchange and pairs you're interrested in, and finetune the strategy to the markets you're trading.</p>
+
+<h3>How to install a strategy?</h3>
+
+<p>First you need a <a href="https://freqtrade.io">working Freqtrade</a>.</p>
+
+<p>Once you have the bot on the right version, follow this steps:</p>
+
+<ol>
+<li>Select the strategy you want. All strategies of the repo are into 
+<a href="https://github.com/freqtrade/freqtrade/tree/develop/user_data/strategies">user_data/strategies</a></li>
+<li>Copy the strategy file</li>
+<li>Paste it into your <code>user_data/strategies</code> folder</li>
+<li>Run the bot with the parameter <code>--strategy &lt;STRATEGY CLASS NAME&gt;</code> (ex: <code>freqtrade trade --strategy Strategy001</code>)</li>
+</ol>
+
+<p>More information <a href="https://www.freqtrade.io/en/latest/backtesting/">about backtesting</a> and <a href="https://www.freqtrade.io/en/latest/strategy-customization/">strategy customization</a>.</p>
+
+<h3>How to test a strategy?</h3>
+
+<p>Let assume you have selected the strategy <code>strategy001.py</code>:</p>
+
+<h4>Simple backtesting</h4>
+
+<p><code>bash
+freqtrade backtesting --strategy Strategy001
+</code></p>
+
+<h4>Refresh your test data</h4>
+
+<p><code>bash
+freqtrade download-data --days 100
+</code></p>
+
+<p><em>Note:</em> Generally, it's recommended to use static backtest data (from a defined period of time) for comparable results.</p>
+
+<p>Please check out the <a href="https://www.freqtrade.io/en/latest/backtesting/">official backtesting documentation</a> for more information.</p>

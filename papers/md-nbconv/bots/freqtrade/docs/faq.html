@@ -1,0 +1,230 @@
+<h1>Freqtrade FAQ</h1>
+
+<h2>Supported Markets</h2>
+
+<p>Freqtrade supports spot trading only.</p>
+
+<h3>Can I open short positions?</h3>
+
+<p>No, Freqtrade does not support trading with margin / leverage, and cannot open short positions.</p>
+
+<p>In some cases, your exchange may provide leveraged spot tokens which can be traded with Freqtrade eg. BTCUP/USD, BTCDOWN/USD, ETHBULL/USD, ETHBEAR/USD, etc...</p>
+
+<h3>Can I trade options or futures?</h3>
+
+<p>No, options and futures trading are not supported.</p>
+
+<h2>Beginner Tips &amp; Tricks</h2>
+
+<ul>
+<li>When you work with your strategy &amp; hyperopt file you should use a proper code editor like VSCode or PyCharm. A good code editor will provide syntax highlighting as well as line numbers, making it easy to find syntax errors (most likely pointed out by Freqtrade during startup).</li>
+</ul>
+
+<h2>Freqtrade common issues</h2>
+
+<h3>The bot does not start</h3>
+
+<p>Running the bot with <code>freqtrade trade --config config.json</code> shows the output <code>freqtrade: command not found</code>.</p>
+
+<p>This could be caused by the following reasons:</p>
+
+<ul>
+<li>The virtual environment is not active.
+<ul>
+<li>Run <code>source .env/bin/activate</code> to activate the virtual environment.</li>
+</ul></li>
+<li>The installation did not work correctly.
+<ul>
+<li>Please check the <a href="installation.md">Installation documentation</a>.</li>
+</ul></li>
+</ul>
+
+<h3>I have waited 5 minutes, why hasn't the bot made any trades yet?</h3>
+
+<ul>
+<li><p>Depending on the buy strategy, the amount of whitelisted coins, the
+situation of the market etc, it can take up to hours to find a good entry
+position for a trade. Be patient!</p></li>
+<li><p>It may be because of a configuration error. It's best to check the logs, they usually tell you if the bot is simply not getting buy signals (only heartbeat messages), or if there is something wrong (errors / exceptions in the log).</p></li>
+</ul>
+
+<h3>I have made 12 trades already, why is my total profit negative?</h3>
+
+<p>I understand your disappointment but unfortunately 12 trades is just
+not enough to say anything. If you run backtesting, you can see that our
+current algorithm does leave you on the plus side, but that is after
+thousands of trades and even there, you will be left with losses on
+specific coins that you have traded tens if not hundreds of times. We
+of course constantly aim to improve the bot but it will <em>always</em> be a
+gamble, which should leave you with modest wins on monthly basis but
+you can't say much from few trades.</p>
+
+<h3>I’d like to make changes to the config. Can I do that without having to kill the bot?</h3>
+
+<p>Yes. You can edit your config and use the <code>/reload_config</code> command to reload the configuration. The bot will stop, reload the configuration and strategy and will restart with the new configuration and strategy.</p>
+
+<h3>I want to improve the bot with a new strategy</h3>
+
+<p>That's great. We have a nice backtesting and hyperoptimization setup. See the tutorial <a href="bot-usage.md#hyperopt-commands">here|Testing-new-strategies-with-Hyperopt</a>.</p>
+
+<h3>Is there a setting to only SELL the coins being held and not perform anymore BUYS?</h3>
+
+<p>You can use the <code>/stopbuy</code> command in Telegram to prevent future buys, followed by <code>/forcesell all</code> (sell all open trades).</p>
+
+<h3>I want to run multiple bots on the same machine</h3>
+
+<p>Please look at the <a href="advanced-setup.md#running-multiple-instances-of-freqtrade">advanced setup documentation Page</a>.</p>
+
+<h3>I'm getting "Missing data fillup" messages in the log</h3>
+
+<p>This message is just a warning that the latest candles had missing candles in them.
+Depending on the exchange, this can indicate that the pair didn't have a trade for the timeframe you are using - and the exchange does only return candles with volume.
+On low volume pairs, this is a rather common occurrence.</p>
+
+<p>If this happens for all pairs in the pairlist, this might indicate a recent exchange downtime. Please check your exchange's public channels for details.</p>
+
+<p>Irrespectively of the reason, Freqtrade will fill up these candles with "empty" candles, where open, high, low and close are set to the previous candle close - and volume is empty. In a chart, this will look like a <code>_</code> - and is aligned with how exchanges usually represent 0 volume candles.</p>
+
+<h3>I'm getting the "RESTRICTED_MARKET" message in the log</h3>
+
+<p>Currently known to happen for US Bittrex users.  </p>
+
+<p>Read <a href="exchanges.md#restricted-markets">the Bittrex section about restricted markets</a> for more information.</p>
+
+<h3>I'm getting the "Exchange Bittrex does not support market orders." message and cannot run my strategy</h3>
+
+<p>As the message says, Bittrex does not support market orders and you have one of the <a href="configuration.md/#understand-order_types">order types</a> set to "market". Your strategy was probably written with other exchanges in mind and sets "market" orders for "stoploss" orders, which is correct and preferable for most of the exchanges supporting market orders (but not for Bittrex).</p>
+
+<p>To fix it for Bittrex, redefine order types in the strategy to use "limit" instead of "market":</p>
+
+<p><code>
+    order_types = {
+        ...
+        'stoploss': 'limit',
+        ...
+    }
+</code></p>
+
+<p>The same fix should be applied in the configuration file, if order types are defined in your custom config rather than in the strategy.</p>
+
+<h3>How do I search the bot logs for something?</h3>
+
+<p>By default, the bot writes its log into stderr stream. This is implemented this way so that you can easily separate the bot's diagnostics messages from Backtesting, Edge and Hyperopt results, output from other various Freqtrade utility sub-commands, as well as from the output of your custom <code>print()</code>'s you may have inserted into your strategy. So if you need to search the log messages with the grep utility, you need to redirect stderr to stdout and disregard stdout.</p>
+
+<ul>
+<li><p>In unix shells, this normally can be done as simple as:
+<code>shell
+$ freqtrade --some-options 2&gt;&amp;1 &gt;/dev/null | grep 'something'
+</code>
+(note, <code>2&gt;&amp;1</code> and <code>&gt;/dev/null</code> should be written in this order)</p></li>
+<li><p>Bash interpreter also supports so called process substitution syntax, you can grep the log for a string with it as:
+<code>shell
+$ freqtrade --some-options 2&gt; &gt;(grep 'something') &gt;/dev/null
+</code>
+or
+<code>shell
+$ freqtrade --some-options 2&gt; &gt;(grep -v 'something' 1&gt;&amp;2)
+</code></p></li>
+<li><p>You can also write the copy of Freqtrade log messages to a file with the <code>--logfile</code> option:
+<code>shell
+$ freqtrade --logfile /path/to/mylogfile.log --some-options
+</code>
+and then grep it as:
+<code>shell
+$ cat /path/to/mylogfile.log | grep 'something'
+</code>
+or even on the fly, as the bot works and the log file grows:
+<code>shell
+$ tail -f /path/to/mylogfile.log | grep 'something'
+</code>
+from a separate terminal window.</p></li>
+</ul>
+
+<p>On Windows, the <code>--logfile</code> option is also supported by Freqtrade and you can use the <code>findstr</code> command to search the log for the string of interest:
+```</p>
+
+<blockquote>
+  <p>type \path\to\mylogfile.log | findstr "something"
+```</p>
+</blockquote>
+
+<h3>Why does freqtrade not have GPU support?</h3>
+
+<p>First of all, most indicator libraries don't have GPU support - as such, there would be little benefit for indicator calculations.
+The GPU improvements would only apply to pandas-native calculations - or ones written by yourself.</p>
+
+<p>For hyperopt, freqtrade is using scikit-optimize, which is built on top of scikit-learn.
+Their statement about GPU support is <a href="https://scikit-learn.org/stable/faq.html#will-you-add-gpu-support">pretty clear</a>.</p>
+
+<p>GPU's also are only good at crunching numbers (floating point operations). 
+For hyperopt, we need both number-crunching (find next parameters) and running python code (running backtesting). 
+As such, GPU's are not too well suited for most parts of hyperopt.</p>
+
+<p>The benefit of using GPU would therefore be pretty slim - and will not justify the complexity introduced by trying to add GPU support.</p>
+
+<p>There is however nothing preventing you from using GPU-enabled indicators within your strategy if you think you must have this - you will however probably be disappointed by the slim gain that will give you (compared to the complexity).</p>
+
+<h2>Hyperopt module</h2>
+
+<h3>How many epochs do I need to get a good Hyperopt result?</h3>
+
+<p>Per default Hyperopt called without the <code>-e</code>/<code>--epochs</code> command line option will only
+run 100 epochs, means 100 evaluations of your triggers, guards, ... Too few
+to find a great result (unless if you are very lucky), so you probably
+have to run it for 10.000 or more. But it will take an eternity to
+compute.</p>
+
+<p>Since hyperopt uses Bayesian search, running for too many epochs may not produce greater results.</p>
+
+<p>It's therefore recommended to run between 500-1000 epochs over and over until you hit at least 10.000 epochs in total (or are satisfied with the result). You can best judge by looking at the results - if the bot keeps discovering better strategies, it's best to keep on going.</p>
+
+<p><code>bash
+freqtrade hyperopt --hyperopt-loss SharpeHyperOptLossDaily --strategy SampleStrategy -e 1000
+</code></p>
+
+<h3>Why does it take a long time to run hyperopt?</h3>
+
+<ul>
+<li><p>Discovering a great strategy with Hyperopt takes time. Study www.freqtrade.io, the Freqtrade Documentation page, join the Freqtrade <a href="https://discord.gg/p7nuUNVfP7">discord community</a>. While you patiently wait for the most advanced, free crypto bot in the world, to hand you a possible golden strategy specially designed just for you.</p></li>
+<li><p>If you wonder why it can take from 20 minutes to days to do 1000 epochs here are some answers:</p></li>
+</ul>
+
+<p>This answer was written during the release 0.15.1, when we had:</p>
+
+<ul>
+<li>8 triggers</li>
+<li>9 guards: let's say we evaluate even 10 values from each</li>
+<li>1 stoploss calculation: let's say we want 10 values from that too to be evaluated</li>
+</ul>
+
+<p>The following calculation is still very rough and not very precise
+but it will give the idea. With only these triggers and guards there is
+already 8*10^9*10 evaluations. A roughly total of 80 billion evaluations.
+Did you run 100 000 evaluations? Congrats, you've done roughly 1 / 100 000 th
+of the search space, assuming that the bot never tests the same parameters more than once.</p>
+
+<ul>
+<li>The time it takes to run 1000 hyperopt epochs depends on things like: The available cpu, hard-disk, ram, timeframe, timerange, indicator settings, indicator count, amount of coins that hyperopt test strategies on and the resulting trade count - which can be 650 trades in a year or 10.0000 trades depending if the strategy aims for big profits by trading rarely or for many low profit trades. </li>
+</ul>
+
+<p>Example: 4% profit 650 times vs 0,3% profit a trade 10.000 times in a year. If we assume you set the --timerange to 365 days. </p>
+
+<p>Example:
+<code>freqtrade --config config.json --strategy SampleStrategy --hyperopt SampleHyperopt -e 1000 --timerange 20190601-20200601</code></p>
+
+<h2>Edge module</h2>
+
+<h3>Edge implements interesting approach for controlling position size, is there any theory behind it?</h3>
+
+<p>The Edge module is mostly a result of brainstorming of <a href="https://github.com/mishaker">@mishaker</a> and <a href="https://github.com/creslinux">@creslinux</a> freqtrade team members.</p>
+
+<p>You can find further info on expectancy, win rate, risk management and position size in the following sources:</p>
+
+<ul>
+<li>https://www.tradeciety.com/ultimate-math-guide-for-traders/</li>
+<li>http://www.vantharp.com/tharp-concepts/expectancy.asp</li>
+<li>https://samuraitradingacademy.com/trading-expectancy/</li>
+<li>https://www.learningmarkets.com/determining-expectancy-in-your-trading/</li>
+<li>http://www.lonestocktrader.com/make-money-trading-positive-expectancy/</li>
+<li>https://www.babypips.com/trading/trade-expectancy-matter</li>
+</ul>

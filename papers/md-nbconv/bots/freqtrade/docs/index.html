@@ -1,0 +1,96 @@
+<p><img src="assets/freqtrade_poweredby.svg" alt="freqtrade" title="" /></p>
+
+<p><a href="https://github.com/freqtrade/freqtrade/actions/"><img src="https://github.com/freqtrade/freqtrade/workflows/Freqtrade%20CI/badge.svg" alt="Freqtrade CI" title="" /></a>
+<a href="https://coveralls.io/github/freqtrade/freqtrade?branch=develop"><img src="https://coveralls.io/repos/github/freqtrade/freqtrade/badge.svg?branch=develop&amp;service=github" alt="Coverage Status" title="" /></a>
+<a href="https://codeclimate.com/github/freqtrade/freqtrade/maintainability"><img src="https://api.codeclimate.com/v1/badges/5737e6d668200b7518ff/maintainability" alt="Maintainability" title="" /></a></p>
+
+<p><!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/freqtrade/freqtrade" data-icon="octicon-star" data-size="large" aria-label="Star freqtrade/freqtrade on GitHub">Star</a>
+<a class="github-button" href="https://github.com/freqtrade/freqtrade/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork freqtrade/freqtrade on GitHub">Fork</a>
+<a class="github-button" href="https://github.com/freqtrade/freqtrade/archive/stable.zip" data-icon="octicon-cloud-download" data-size="large" aria-label="Download freqtrade/freqtrade on GitHub">Download</a></p>
+
+<h2>Introduction</h2>
+
+<p>Freqtrade is a crypto-currency algorithmic trading software developed in python (3.7+) and supported on Windows, macOS and Linux.</p>
+
+<p>!!! Danger "DISCLAIMER"
+    This software is for educational purposes only. Do not risk money which you are afraid to lose. USE THE SOFTWARE AT YOUR OWN RISK. THE AUTHORS AND ALL AFFILIATES ASSUME NO RESPONSIBILITY FOR YOUR TRADING RESULTS.</p>
+
+<pre><code>Always start by running a trading bot in Dry-run and do not engage money before you understand how it works and what profit/loss you should expect.
+
+We strongly recommend you to have basic coding skills and Python knowledge. Do not hesitate to read the source code and understand the mechanisms of this bot, algorithms and techniques implemented in it.
+</code></pre>
+
+<h2>Features</h2>
+
+<ul>
+<li>Develop your Strategy: Write your strategy in python, using <a href="https://pandas.pydata.org/">pandas</a>. Example strategies to inspire you are available in the <a href="https://github.com/freqtrade/freqtrade-strategies">strategy repository</a>.</li>
+<li>Download market data: Download historical data of the exchange and the markets your may want to trade with.</li>
+<li>Backtest: Test your strategy on downloaded historical data.</li>
+<li>Optimize: Find the best parameters for your strategy using hyperoptimization which employs machining learning methods. You can optimize buy, sell, take profit (ROI), stop-loss and trailing stop-loss parameters for your strategy.</li>
+<li>Select markets: Create your static list or use an automatic one based on top traded volumes and/or prices (not available during backtesting). You can also explicitly blacklist markets you don't want to trade.</li>
+<li>Run: Test your strategy with simulated money (Dry-Run mode) or deploy it with real money (Live-Trade mode).</li>
+<li>Run using Edge (optional module): The concept is to find the best historical <a href="edge.md#expectancy">trade expectancy</a> by markets based on variation of the stop-loss and then allow/reject markets to trade. The sizing of the trade is based on a risk of a percentage of your capital.</li>
+<li>Control/Monitor: Use Telegram or a REST API (start/stop the bot, show profit/loss, daily summary, current open trades results, etc.).</li>
+<li>Analyse: Further analysis can be performed on either Backtesting data or Freqtrade trading history (SQL database), including automated standard plots, and methods to load the data into <a href="data-analysis.md">interactive environments</a>.</li>
+</ul>
+
+<h2>Supported exchange marketplaces</h2>
+
+<p>Please read the <a href="exchanges.md">exchange specific notes</a> to learn about eventual, special configurations needed for each exchange.</p>
+
+<ul>
+<li>[X] <a href="https://www.binance.com/">Binance</a> (<a href="docs/exchanges.md#binance-blacklist">*Note for binance users</a>)</li>
+<li>[X] <a href="https://bittrex.com/">Bittrex</a></li>
+<li>[X] <a href="https://ftx.com">FTX</a></li>
+<li>[X] <a href="https://kraken.com/">Kraken</a></li>
+<li>[X] <a href="https://www.gate.io/ref/6266643">Gate.io</a></li>
+<li>[ ] <a href="https://github.com/ccxt/ccxt/">potentially many others through <img alt="ccxt" width="30px" src="assets/ccxt-logo.svg" /></a>. <em>(We cannot guarantee they will work)</em></li>
+</ul>
+
+<h3>Community tested</h3>
+
+<p>Exchanges confirmed working by the community:</p>
+
+<ul>
+<li>[X] <a href="https://bitvavo.com/">Bitvavo</a></li>
+<li>[X] <a href="https://www.kucoin.com/">Kucoin</a></li>
+</ul>
+
+<h2>Requirements</h2>
+
+<h3>Hardware requirements</h3>
+
+<p>To run this bot we recommend you a linux cloud instance with a minimum of:</p>
+
+<ul>
+<li>2GB RAM</li>
+<li>1GB disk space</li>
+<li>2vCPU</li>
+</ul>
+
+<h3>Software requirements</h3>
+
+<ul>
+<li>Docker (Recommended)</li>
+</ul>
+
+<p>Alternatively</p>
+
+<ul>
+<li>Python 3.7+</li>
+<li>pip (pip3)</li>
+<li>git</li>
+<li>TA-Lib</li>
+<li>virtualenv (Recommended)</li>
+</ul>
+
+<h2>Support</h2>
+
+<h3>Help / Discord</h3>
+
+<p>For any questions not covered by the documentation or for further information about the bot, or to simply engage with like-minded individuals, we encourage you to join the Freqtrade <a href="https://discord.gg/p7nuUNVfP7">discord server</a>.</p>
+
+<h2>Ready to try?</h2>
+
+<p>Begin by reading our installation guide <a href="docker_quickstart.md">for docker</a> (recommended), or for <a href="installation.md">installation without docker</a>.</p>

@@ -1,0 +1,285 @@
+<h1>From Volatility Forecasts to Statistical Arbitrage: Linear Time Series Models</h1>
+
+<p>In this chapter, we will build dynamic linear models to explicitly represent time and include variables observed at specific intervals or lags. A key characteristic of time-series data is their sequential order: rather than random samples of individual observations as in the case of cross-sectional data, our data are a single realization of a stochastic process that we cannot repeat.</p>
+
+<p>Our goal is to identify <strong>systematic patterns in time series</strong> that help us predict how the time series will behave in the future. More specifically, we focus on models that extract signals from a historical sequence of the output and, optionally, other contemporaneous or lagged input variables to predict future values of the output. For example, we might try to predict future returns for a stock using past returns, combined with historical returns of a benchmark or macroeconomic variables. We focus on linear time-series models before turning to nonlinear models like recurrent or convolutional neural networks in Part 4. </p>
+
+<p>Time-series models are very popular given the time dimension inherent to trading. Key applications include the <strong>prediction of asset returns and volatility</strong>, as well as the identification of co-movements of asset price series. Time-series data are likely to become more prevalent as an ever-broader array of connected devices collects regular measurements with potential signal content.</p>
+
+<p>We first introduce tools to diagnose time-series characteristics and to extract features that capture potential patterns. Then we introduce univariate and multivariate time-series models and apply them to forecast macro data and volatility patterns. We conclude with the concept of <strong>cointegration</strong> and how to apply it to develop a <strong>pairs trading strategy</strong>.</p>
+
+<h2>Content</h2>
+
+<ol>
+<li><a href="#tools-for-diagnostics-and-feature-extraction">Tools for diagnostics and feature extraction</a>
+<ul>
+<li><a href="#how-to-decompose-time-series-patterns">How to decompose time series patterns</a></li>
+<li><a href="#rolling-window-statistics-and-moving-averages">Rolling window statistics and moving averages</a></li>
+<li><a href="#how-to-measure-autocorrelation">How to measure autocorrelation</a></li>
+<li><a href="#how-to-diagnose-and-achieve-stationarity">How to diagnose and achieve stationarity</a></li>
+<li><a href="#how-to-apply-time-series-transformations">How to apply time series transformations</a></li>
+<li><a href="#how-to-diagnose-and-address-unit-roots">How to diagnose and address unit roots</a></li>
+<li><a href="#code-example-working-with-time-series-data">Code example: working with time series data</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul></li>
+<li><a href="#univariate-time-series-models">Univariate Time Series Models</a>
+<ul>
+<li><a href="#how-to-build-autoregressive-models">How to build autoregressive models</a></li>
+<li><a href="#how-to-build-moving-average-models">How to build moving average models</a></li>
+<li><a href="#how-to-build-arima-models-and-extensions">How to build ARIMA models and extensions</a></li>
+<li><a href="#code-example-forecasting-macro-fundamentals-with-arima-and-sarimax-models">Code example: forecasting macro fundamentals with ARIMA and SARIMAX models</a></li>
+<li><a href="#how-to-use-time-series-models-to-forecast-volatility">How to use time series models to forecast volatility</a></li>
+<li><a href="#how-to-build-a-volatility-forecasting-model">How to build a volatility-forecasting model</a></li>
+<li><a href="#code-examples-volatility-forecasts">Code examples: volatility forecasts</a></li>
+<li><a href="#resources-2">Resources</a></li>
+</ul></li>
+<li><a href="#multivariate-time-series-models">Multivariate Time Series Models</a>
+<ul>
+<li><a href="#the-vector-autoregressive-var-model">The vector autoregressive (VAR) model</a></li>
+<li><a href="#code-example-how-to-use-the-var-model-for-macro-fundamentals-forecasts">Code example: How to use the VAR model for macro fundamentals forecasts</a></li>
+<li><a href="#resources-3">Resources</a></li>
+</ul></li>
+<li><a href="#cointegration--time-series-with-a-common-trend">Cointegration – time series with a common trend</a>
+<ul>
+<li><a href="#pairs-trading-statistical-arbitrage-with-cointegration">Pairs trading: Statistical arbitrage with cointegration</a></li>
+<li><a href="#alternative-approaches-to-selecting-and-trading-comoving-assets">Alternative approaches to selecting and trading comoving assets</a></li>
+<li><a href="#code-example-pairs-trading-in-practice">Code example: Pairs trading in practice</a>
+<ul>
+<li><a href="#computing-distance-based-heuristics-to-identify-cointegrated-pairs">Computing distance-based heuristics to identify cointegrated pairs</a></li>
+<li><a href="#precomputing-the-cointegration-tests">Precomputing the cointegration tests</a></li>
+</ul></li>
+<li><a href="#resources-4">Resources</a></li>
+</ul></li>
+</ol>
+
+<h2>Tools for diagnostics and feature extraction</h2>
+
+<p>Most of the examples in this section use data provided by the Federal Reserve that you can access using the pandas datareader that we introduced in <a href="../02_market_and_fundamental_data">Chapter 2, Market and Fundamental Data</a>. </p>
+
+<h3>How to decompose time series patterns</h3>
+
+<p>Time series data typically contains a mix of various patterns that can be decomposed into several components, each representing an underlying pattern category. In particular, time series often consist of the systematic components trend, seasonality and cycles, and unsystematic noise. These components can be combined in an additive, linear model, in particular when fluctuations do not depend on the level of the series, or in a non-linear, multiplicative model. </p>
+
+<ul>
+<li><code>pandas</code> Time Series and Date functionality <a href="https://pandas.pydata.org/pandas-docs/stable/timeseries.html">docs</a></li>
+<li><a href="https://otexts.org/fpp2/decomposition.html">Forecasting - Principles &amp; Practice, Hyndman, R. and Athanasopoulos, G., ch.6 'Time Series Decomposition'</a></li>
+</ul>
+
+<h3>Rolling window statistics and moving averages</h3>
+
+<p>The pandas library includes very flexible functionality to define various window types, including rolling, exponentially weighted and expanding windows.</p>
+
+<ul>
+<li><code>pandas</code> window function <a href="https://pandas.pydata.org/pandas-docs/stable/computation.html#window-functions">docs</a></li>
+</ul>
+
+<h3>How to measure autocorrelation</h3>
+
+<p>Autocorrelation (also called serial correlation) adapts the concept of correlation to the time series context: just as the correlation coefficient measures the strength of a linear relationship between two variables, the autocorrelation coefficient measures the extent of a linear relationship between time series values separated by a given lag.</p>
+
+<p>We present the following tools to measure autorcorrelation:
+- autocorrelation function (ACF)
+- partial autocorrelation function (PACF)
+- correlogram as a plot of ACF or PACF against the number of lags.</p>
+
+<h3>How to diagnose and achieve stationarity</h3>
+
+<p>The statistical properties, such as the mean, variance, or autocorrelation, of a stationary time series are independent of the period, that is, they don't change over time. Hence, stationarity implies that a time series does not have a trend or seasonal effects and that descriptive statistics, such as the mean or the standard deviation, when computed for different rolling windows, are constant or do not change much over time.</p>
+
+<h3>How to apply time series transformations</h3>
+
+<p>To satisfy the stationarity assumption of linear time series models, we need to transform the original time series, often in several steps. Common transformations include the application of the (natural) logarithm to convert an exponential growth pattern into a linear trend and stabilize the variance, or differencing.</p>
+
+<h3>How to diagnose and address unit roots</h3>
+
+<p>Unit roots pose a particular problem for determining the transformation that will render a time series stationary. In practice, time series of interest rates or asset prices are often not stationary, for example, because there does not exist a price level to which the series reverts. The most prominent example of a non-stationary series is the random walk.</p>
+
+<p>The defining characteristic of a unit-root non-stationary series is long memory: since current values are the sum of past disturbances, large innovations persist for much longer than for a mean-reverting, stationary series. Identifying the correct transformation, and in particular, the appropriate number and lags for differencing is not always clear-cut. We present a few heuristics to guide the process.</p>
+
+<p>Statistical unit root tests are a common way to determine objectively whether (additional) differencing is necessary. These are statistical hypothesis tests of stationarity that are designed to determine whether differencing is required.</p>
+
+<h3>Code example: working with time series data</h3>
+
+<ul>
+<li>The notebook <a href="01_tsa_and_stationarity.ipynb">tsa<em>and</em>stationarity</a> illustrates the concepts discussed in this section.</li>
+</ul>
+
+<h3>Resources</h3>
+
+<ul>
+<li><a href="https://www.wiley.com/en-us/Analysis+of+Financial+Time+Series%2C+3rd+Edition-p-9780470414354">Analysis of Financial Time Series, 3rd Edition, Ruey S. Tsay</a></li>
+<li><a href="https://www.wiley.com/en-us/Quantitative+Equity+Investing%3A+Techniques+and+Strategies-p-9780470262474">Quantitative Equity Investing: Techniques and Strategies, Frank J. Fabozzi, Sergio M. Focardi, Petter N. Kolm</a></li>
+<li><code>statsmodels</code> Time Series Analysis <a href="https://www.statsmodels.org/dev/tsa.html">docs</a></li>
+</ul>
+
+<h2>Univariate Time Series Models</h2>
+
+<p>Univariate time series models relate the value of the time series at the point in time of interest to a linear combination of lagged values of the series and possibly past disturbance terms.</p>
+
+<p>While exponential smoothing models are based on a description of the trend and seasonality in the data, ARIMA models aim to describe the autocorrelations in the data. ARIMA(p, d, q) models require stationarity and leverage two building blocks:
+- Autoregressive (AR) terms consisting of p-lagged values of the time series
+- Moving average (MA) terms that contain q-lagged disturbances</p>
+
+<h3>How to build autoregressive models</h3>
+
+<p>An AR model of order p aims to capture the linear dependence between time series values at different lags. It closely resembles a multiple linear regression on lagged values of the outcome.</p>
+
+<h3>How to build moving average models</h3>
+
+<p>An MA model of order q uses q past disturbances rather than lagged values of the time series in a regression-like model. Since we do not observe the white-noise disturbance values, MA(q) is not a regression model like the ones we have seen so far. Rather than using least squares, MA(q) models are estimated using maximum likelihood (MLE).</p>
+
+<h3>How to build ARIMA models and extensions</h3>
+
+<p>Autoregressive integrated moving-average ARIMA(p, d, q) models combine AR(p) and MA(q) processes to leverage the complementarity of these building blocks and simplify model development by using a more compact form and reducing the number of parameters, in turn reducing the risk of overfitting.</p>
+
+<ul>
+<li>statsmodels State-Space Models <a href="https://www.statsmodels.org/dev/statespace.html">docs</a></li>
+</ul>
+
+<h3>Code example: forecasting macro fundamentals with ARIMA and SARIMAX models</h3>
+
+<p>We will build a SARIMAX model for monthly data on an industrial production time series for the 1988-2017 period. See notebook <a href="02_arima_models.ipynb">arima_models</a> for implementation details.</p>
+
+<h3>How to use time series models to forecast volatility</h3>
+
+<p>A particularly important area of application for univariate time series models is the prediction of volatility. The volatility of financial time series is usually not constant over time but changes, with bouts of volatility clustering together. Changes in variance create challenges for time series forecasting using the classical ARIMA models.</p>
+
+<h3>How to build a volatility-forecasting model</h3>
+
+<p>The development of a volatility model for an asset-return series consists of four steps:
+1. Build an ARMA time series model for the financial time series based on the serial dependence revealed by the ACF and PACF.
+2. Test the residuals of the model for ARCH/GARCH effects, again relying on the ACF and PACF for the series of the squared residual.
+3. Specify a volatility model if serial correlation effects are significant, and jointly estimate the mean and volatility equations.
+4. Check the fitted model carefully and refine it if necessary.</p>
+
+<h3>Code examples: volatility forecasts</h3>
+
+<p>The notebook <a href="03_arch_garch_models.ipynb">arch<em>garch</em>models</a> demonstrates the usage of the ARCH library to estimate time series models for volatility foreccasting with NASDAQ data.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li>NYU Stern <a href="https://vlab.stern.nyu.edu/">VLAB</a></li>
+<li>ARCH Library
+<ul>
+<li><a href="https://arch.readthedocs.io/en/latest/index.html">docs</a> </li>
+<li><a href="http://nbviewer.jupyter.org/github/bashtage/arch/blob/master/examples/univariate_volatility_modeling.ipynb">examples</a></li>
+</ul></li>
+</ul>
+
+<h2>Multivariate Time Series Models</h2>
+
+<p>Multivariate time series models are designed to capture the dynamic of multiple time series simultaneously and leverage dependencies across these series for more reliable predictions.</p>
+
+<p>Univariate time-series models like the ARMA approach are limited to statistical relationships between a target variable and its lagged values or lagged disturbances and exogenous series in the ARMAX case. In contrast, multivariate time-series models also allow for lagged values of other time series to affect the target. This effect applies to all series, resulting in complex interactions.</p>
+
+<p>In addition to potentially better forecasting, multivariate time series are also used to gain insights into cross-series dependencies. For example, in economics, multivariate time series are used to understand how policy changes to one variable, such as an interest rate, may affect other variables over different horizons. </p>
+
+<ul>
+<li><a href="https://www.springer.com/us/book/9783540401728">New Introduction to Multiple Time Series Analysis, Lütkepohl, Helmut, Springer, 2005</a></li>
+</ul>
+
+<h3>The vector autoregressive (VAR) model</h3>
+
+<p>The vector autoregressive VAR(p) model extends the AR(p) model to k series by creating a system of k equations where each contains p lagged values of all k series.</p>
+
+<p>VAR(p) models also require stationarity, so that the initial steps from univariate time-series modeling carry over. First, explore the series and determine the necessary transformations, and then apply the augmented Dickey-Fuller test to verify that the stationarity criterion is met for each series and apply further transformations otherwise. It can be estimated with OLS conditional on initial information or with MLE, which is equivalent for normally distributed errors but not otherwise.</p>
+
+<p>If some or all of the k series are unit-root non-stationary, they may be cointegrated (see next section). This extension of the unit root concept to multiple time series means that a linear combination of two or more series is stationary and, hence, mean-reverting. </p>
+
+<h3>Code example: How to use the VAR model for macro fundamentals forecasts</h3>
+
+<p>The notebook <a href="04_vector_autoregressive_model.ipynb">vector<em>autoregressive</em>model</a> demonstrates how to use <code>statsmodels</code> to estimate a VAR model for macro fundamentals time series.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li><code>statsmodels</code> Vector Autoregression <a href="https://www.statsmodels.org/dev/vector_ar.html">docs</a></li>
+<li><a href="https://conference.scipy.org/proceedings/scipy2011/pdfs/statsmodels.pdf">Time Series Analysis in Python with statsmodels</a>, Wes McKinney, Josef Perktold, Skipper Seabold, SciPY Conference 2011</li>
+</ul>
+
+<h2>Cointegration – time series with a common trend</h2>
+
+<p>The concept of an integrated multivariate series is complicated by the fact that all the component series of the process may be individually integrated but the process is not jointly integrated in the sense that one or more linear combinations of the series exist that produce a new stationary series.</p>
+
+<p>In other words, a combination of two co-integrated series has a stable mean to which this linear combination reverts. A multivariate series with this characteristic is said to be co-integrated. This also applies when the individual series are integrated of a higher order and the linear combination reduces the overall order of integration. </p>
+
+<p>We demonstrate two major approaches to testing for cointegration:
+- The Engle–Granger two-step method
+- The Johansen procedure</p>
+
+<h3>Pairs trading: Statistical arbitrage with cointegration</h3>
+
+<p>Statistical arbitrage refers to strategies that employ some statistical model or method to take advantage of what appears to be relative mispricing of assets while maintaining a level of market neutrality.</p>
+
+<p>Pairs trading is a conceptually straightforward strategy that has been employed by algorithmic traders since at least the mid-eighties (Gatev, Goetzmann, and Rouwenhorst 2006). The goal is to find two assets whose prices have historically moved together, track the spread (the difference between their prices), and, once the spread widens, buy the loser that has dropped below the common trend and short the winner. If the relationship persists, the long and/or the short leg will deliver profits as prices converge and the positions are closed. </p>
+
+<p>This approach extends to a multivariate context by forming baskets from multiple securities and trade one asset against a basket of two baskets against each other.</p>
+
+<p>In practice, the strategy requires two steps: 
+1. Formation phase: Identify securities that have a long-term mean-reverting relationship. Ideally, the spread should have a high variance to allow for frequent profitable trades while reliably reverting to the common trend.
+2. Trading phase: Trigger entry and exit trading rules as price movements cause the spread to diverge and converge.</p>
+
+<p>Several approaches to the formation and trading phases have emerged from increasingly active research in this area across multiple asset classes over the last several years. The next subsection outlines the key differences before we dive into an example application.</p>
+
+<h3>Alternative approaches to selecting and trading comoving assets</h3>
+
+<p>A recent comprehensive survey of pairs trading strategies <a href="https://www.iwf.rw.fau.de/files/2016/03/09-2015.pdf">Statistical Arbitrage Pairs Trading Strategies: Review
+and Outlook</a>, Krauss (2017) identifies four different methodologies plus a number of other more recent approaches, including ML-based forecasts:</p>
+
+<ul>
+<li><strong>Distance</strong> approach: The oldest and most-studied method identifies candidate pairs with distance metrics like correlation and uses non-parametric thresholds like Bollinger Bands to trigger entry and exit trades. The computational simplicity allows for large-scale applications with demonstrated profitability across markets and asset classes for extended periods of time since Gatev, et al. (2006). However, performance has decayed more recently.</li>
+<li><strong>Cointegration</strong> approach: As outlined previously, this approach relies on an econometric model of a long-term relationship among two or more variables and allows for statistical tests that promise more reliability than simple distance metrics. Examples in this category use the Engle-Granger and Johansen procedures to identify pairs and baskets of securities as well as simpler heuristics that aim to capture the concept (Vidyamurthy 2004). Trading rules often resemble the simple thresholds used with distance metrics.</li>
+<li><strong>Time-series</strong> approach: With a focus on the trading phase, strategies in this category aim to model the spread as a mean-reverting stochastic process and optimize entry and exit rules accordingly (Elliott, Hoek, and Malcolm 2005). It assumes promising pairs have already been identified.</li>
+<li><strong>Stochastic control</strong> approach: Similar to the time-series approach, the goal is to optimize trading rules using stochastic control theory to find value and policy functions to arrive at an optimal portfolio (Liu and Timmermann 2013). We will address this type of approach in Chapter 21, Reinforcement Learning.</li>
+<li><strong>Other approaches</strong>: Besides pair identification based on unsupervised learning like principal component analysis (see Chapter 13, Unsupervised Learning) and statistical models like copulas (Patton 2012), machine learning has become popular more recently to identify pairs based on their relative price or return forecasts (Huck 2019). We will cover several ML algorithms that can be used for this purpose and illustrate corresponding multivariate pairs trading strategies in the coming chapters.</li>
+</ul>
+
+<h3>Code example: Pairs trading in practice</h3>
+
+<p>The <strong>distance approach</strong> identifies pairs using the correlation of (normalized) asset prices or their returns and is simple and orders of magnitude less computationally intensive than cointegration tests. 
+- The notebook <a href="05_cointegration_tests.ipynb">cointegration_tests</a> illustrates this for a sample of ~150 stocks with four years of daily data: it takes ~30ms to compute the correlation with the returns of an ETF, compared to 18 seconds for a suite of cointegration tests (using statsmodels) - 600x slower.</p>
+
+<p>The speed advantage is particularly valuable because the number of potential pairs is the product of the number of candidates to be considered on either side so that evaluating combinations of 100 stocks and 100 ETFs requires comparing 10,000 tests (we’ll discuss the challenge of multiple testing bias below).</p>
+
+<p>On the other hand, distance metrics do not necessarily select the most profitable pairs: correlation is maximized for perfect co-movement that in turn eliminates actual trading opportunities. Empirical studies confirm that the volatility of the price spread of cointegrated pairs is almost twice as high as the volatility of the price spread of distance pairs (Huck and Afawubo 2015).</p>
+
+<p>To balance the tradeoff between computational cost and the quality of the resulting pairs, Krauss (2017) recommends a procedure that combines both approaches based on his literature review:
+1. Select pairs with a stable spread that shows little drift to reduce the number of candidates
+2. Test the remaining pairs with the highest spread variance for cointegration</p>
+
+<p>This process aims to select cointegrated pairs with lower divergence risk while ensuring more volatile spreads that in turn generate higher profit opportunities.</p>
+
+<p>A large number of tests introduce data snooping bias as discussed in Chapter 6, The Machine Learning Workflow: multiple testing is likely to increase the number of false positives that mistakenly reject the null hypothesis of no cointegration. While statistical significance may not be necessary for profitable trading (Chan 2008), a study of commodity pairs (Cummins and Bucca 2012) shows that controlling the familywise error rate to improve the tests’ power according to Romano and Wolf (2010) can lead to better performance.</p>
+
+<h4>Computing distance-based heuristics to identify cointegrated pairs</h4>
+
+<ul>
+<li>The notebook <a href="05_cointegration_tests.ipynb">cointegration_tests</a> takes a closer look at how predictive various heuristics for the degree of comovement of asset prices are for the result of cointegration tests. The example code uses a sample of 172 stocks and 138 ETFs traded on the NYSE and NASDAQ with daily data from 2010 - 2019 provided by Stooq. </li>
+</ul>
+
+<p>The securities represent the largest average dollar volume over the sample period in their respective class; highly correlated and stationary assets have been removed. See the notebook <a href="../data/create_datasets.ipynb">create<em>datasets</a> in the data folder of the GitHub repository for downloading for instructions on how to obtain the data and the notebook cointegration</em>tests for the relevant code and additional preprocessing and exploratory details.</p>
+
+<h4>Precomputing the cointegration tests</h4>
+
+<p>The notebook <a href="06_statistical_arbitrage_with_cointegrated_pairs.ipynb">statistical<em>arbitrage</em>with<em>cointegrated</em>pairs</a> implements a statistical arbitrage strategy based on cointegration for the sample of stocks and ETFs and the 2017-2019 period.</p>
+
+<p>It first generates and stores the cointegration tests for all candidate pairs and the resulting trading signals before we backtest a strategy based on these signals given the computational intensity of the process.</p>
+
+<h3>Resources</h3>
+
+<ul>
+<li>Quantopian offers various resources on pairs trading:
+<ul>
+<li><a href="https://www.quantopian.com/lectures/introduction-to-pairs-trading">Introduction to Pairs Trading</a></li>
+<li><a href="https://www.quantopian.com/posts/trading-baskets-co-integrated-with-spy">Quantopian Johansen</a></li>
+<li><a href="https://www.quantopian.com/posts/how-to-build-a-pairs-trading-strategy-on-quantopian">Quantopian PT</a></li>
+<li><a href="https://blog.quantinsti.com/pairs-trading-basics/">Pairs Trading Basics: Correlation, Cointegration And Strategy</a></li>
+</ul></li>
+<li>Additional blog posts include:
+<ul>
+<li><a href="https://medium.com/auquan/pairs-trading-data-science-7dbedafcfe5a">Pairs Trading using Data-Driven Techniques: Simple Trading Strategies Part 3</a></li>
+<li><a href="https://letianzj.github.io/kalman-filter-pairs-trading.html">Pairs Trading Johansen &amp; Kalman</a></li>
+<li><a href="https://twiecki.io/blog/2018/05/03/copulas/">Copulas</a> by Thomas Wiecki</li>
+</ul></li>
+</ul>

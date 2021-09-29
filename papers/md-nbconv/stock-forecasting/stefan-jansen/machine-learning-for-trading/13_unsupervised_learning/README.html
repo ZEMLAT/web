@@ -1,0 +1,307 @@
+<h1>Unsupervised Learning: From Data-Driven Risk Factors to Hierarchical Risk Parity</h1>
+
+<p>Unsupervised learning is useful when a dataset contains only features and no measurement of the outcome, or when we want to extract information independent from the outcome. Instead of predicting future outcomes, the goal is to learn an informative representation of the data that is useful for solving another task, including the exploration of a data set. Examples include the identification of topics to summarize documents (see <a href="../14_topic_modeling">Chapter 14</a>, the reduction of the number of features to lower the risk of overfitting and computational cost for supervised learning, or to group similar observations as illustrated by the use of clustering for asset allocation at the end of this chapter.</p>
+
+<p>Dimensionality reduction and clustering are the main tasks for unsupervised learning: 
+- Dimensionality reduction transforms the existing features into a new, smaller set while minimizing the loss of information. A broad range of algorithms exists that differ by how they measure the loss of information, whether they apply linear or non-linear transformations or the constraints they impose on the new feature set. 
+- Clustering algorithms identify and group similar observations or features instead of identifying new features. Algorithms differ in how they define the similarity of observations and their assumptions about the resulting groups.</p>
+
+<p>More specifically, this chapter covers:
+- How principal and independent component analysis (PCA and ICA) perform linear dimensionality reduction
+- Identifying data-driven risk factors and eigenportfolios from asset returns using PCA
+- Effectively visualizing nonlinear, high-dimensional data using manifold learning
+- Using T-SNE and UMAP to explore high-dimensional image data
+- How k-means, hierarchical, and density-based clustering algorithms work
+- Using agglomerative clustering to build robust portfolios with hierarchical risk parity</p>
+
+<h2>Content</h2>
+
+<ol>
+<li><a href="#code-example-the-curse-of-dimensionality">Code Example: the curse of dimensionality</a></li>
+<li><a href="#linear-dimensionality-reduction">Linear Dimensionality Reduction</a>
+<ul>
+<li><a href="#code-example-principal-component-analysis">Code Example: Principal Component Analysis</a>
+<ul>
+<li><a href="#visualizing-key-ideas-behind-pca-">Visualizing key ideas behind PCA </a></li>
+<li><a href="#how-the-pca-algorithm-works">How the PCA algorithm works</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul></li>
+<li><a href="#code-examples-pca-for-trading-">Code Examples: PCA for Trading </a>
+<ul>
+<li><a href="#data-driven-risk-factors">Data-driven risk factors</a></li>
+<li><a href="#eigenportfolios">Eigenportfolios</a></li>
+<li><a href="#references-2">References</a></li>
+</ul></li>
+<li><a href="#independent-component-analysis">Independent Component Analysis</a></li>
+<li><a href="#manifold-learning">Manifold Learning</a>
+<ul>
+<li><a href="#code-example-what-a-manifold-looks-like-">Code Example: what a manifold looks like </a></li>
+<li><a href="#code-example-local-linear-embedding">Code Example: Local Linear Embedding</a></li>
+<li><a href="#references-3">References</a></li>
+</ul></li>
+<li><a href="#code-examples-visualizing-high-dimensional-image-and-asset-price-data-with-manifold-learning">Code Examples: visualizing high-dimensional image and asset price data with manifold learning</a>
+<ul>
+<li><a href="#t-distributed-stochastic-neighbor-embedding-t-sne">t-distributed stochastic neighbor embedding (t-SNE)</a></li>
+<li><a href="#umap">UMAP</a></li>
+</ul></li>
+<li><a href="#cluster-algorithms">Cluster Algorithms</a>
+<ul>
+<li><a href="#code-example-comparing-cluster-algorithms">Code example: comparing cluster algorithms</a></li>
+<li><a href="#code-example-k-means">Code example: k-Means</a>
+<ul>
+<li><a href="#the-algorithm">The algorithm</a></li>
+<li><a href="#evaluating-the-results">Evaluating the results</a></li>
+</ul></li>
+<li><a href="#code-example-hierarchical-clustering">Code example: Hierarchical Clustering</a></li>
+<li><a href="#code-example-density-based-clustering">Code example: Density-Based Clustering</a></li>
+<li><a href="#code-example-gaussian-mixture-models">Code example: Gaussian Mixture Models</a></li>
+<li><a href="#code-example-hierarchical-risk-parity">Code example: Hierarchical Risk Parity</a>
+<ul>
+<li><a href="#the-algorithm-2">The algorithm</a></li>
+<li><a href="#backtest-comparison-with-alternatives">Backtest comparison with alternatives</a></li>
+</ul></li>
+<li><a href="#references-4">References</a></li>
+</ul></li>
+</ol>
+
+<h2>Code Example: the curse of dimensionality</h2>
+
+<p>The number of dimensions of a dataset matter because each new dimension can add signal concerning an outcome. However, there is also a downside known as the curse of dimensionality: as the number of independent features grows while the number of observations remains constant, the average distance between data points also grows, and the density of the feature space drops exponentially. The implications for machine learning are dramatic because prediction becomes much harder when observations are more distant, i.e., different from each other.</p>
+
+<p>The notebook <a href="01_linear_dimensionality_reduction/00_curse_of_dimensionality.ipynb">curse<em>of</em>dimensionality</a> simulates how the average and minimum distances between data points increase as the number of dimensions grows.</p>
+
+<h2>Linear Dimensionality Reduction</h2>
+
+<p>Linear dimensionality reduction algorithms compute linear combinations that translate, rotate, and rescale the original features to capture significant variation in the data, subject to constraints on the characteristics of the new features.</p>
+
+<p>This section introduces these two algorithms and then illustrates how to apply PCA to asset returns to learn risk factors from the data, and to build so-called eigen portfolios for systematic trading strategies.</p>
+
+<ul>
+<li><a href="https://www.microsoft.com/en-us/research/publication/dimension-reduction-a-guided-tour-2/">Dimension Reduction: A Guided Tour</a>, Chris J.C. Burges, Foundations and Trends in Machine Learning, January 2010</li>
+</ul>
+
+<h3>Code Example: Principal Component Analysis</h3>
+
+<p>PCA finds principal components as linear combinations of the existing features and uses these components to represent the original data. The number of components is a hyperparameter that determines the target dimensionality and needs to be equal to or smaller than the number of observations or columns, whichever is smaller.</p>
+
+<h4>Visualizing key ideas behind PCA</h4>
+
+<p>The notebook <a href="01_linear_dimensionality_reduction/01_pca_key_ideas.ipynb">pca<em>key</em>ideas</a> visualizes principal components in 2D and 3D.</p>
+
+<p>PCA aims to capture most of the variance in the data, to make it easy to recover the original features, and that each component adds information. It reduces dimensionality by projecting the original data into the principal component space. PCA makes several assumptions that are important to keep in mind. These include:
+- high variance implies a high signal-to-noise ratio
+- the data is standardized so that the variance is comparable across features
+- linear transformations capture the relevant aspects of the data, and
+- higher-order statistics beyond the first and second moment do not matter, which implies that the data has a normal distribution</p>
+
+<p>The emphasis on the first and second moments align with standard risk/return metrics, but the normality assumption may conflict with the characteristics of market data.</p>
+
+<h4>How the PCA algorithm works</h4>
+
+<p>The notebook <a href="01_linear_dimensionality_reduction/02_the_math_behind_pca.ipynb">the<em>math</em>behind_pca</a> illustrate the computation of principal components.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://www.miketipping.com/papers/met-mppca.pdf">Mixtures of Probabilistic Principal Component Analysers</a>, Michael E. Tipping and Christopher M. Bishop, Neural Computation 11(2), pp 443–482. MIT Press</li>
+<li><a href="http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf">Finding Structure with Randomness: Probabilistic Algorithms for Constructing Approximate Matrix Decompositions</a>, N. Halko†, P. G. Martinsson, J. A. Tropp, SIAM REVIEW, Vol. 53, No. 2, pp. 217–288</li>
+<li><a href="https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca">Relationship between SVD and PCA. How to use SVD to perform PCA?</a>, excellent technical CrossValidated StackExchange answer with visualization</li>
+</ul>
+
+<h2>Code Examples: PCA for Trading</h2>
+
+<p>PCA is useful for algorithmic trading in several respects, including the data-driven derivation of risk factors by applying PCA to asset returns, and the construction of uncorrelated portfolios based on the principal components of the correlation matrix of asset returns.</p>
+
+<h3>Data-driven risk factors</h3>
+
+<p>In <a href="../07_linear_models/02_fama_macbeth.ipynb">Chapter 07 - Linear Models</a>, we explored risk factor models used in quantitative finance to capture the main drivers of returns. These models explain differences in returns on assets based on their exposure to systematic risk factors and the rewards associated with these factors.</p>
+
+<p>In particular, we explored the Fama-French approach that specifies factors based on prior knowledge about the empirical behavior of average returns, treats these factors as observable, and then estimates risk model coefficients using linear regression. An alternative approach treats risk factors as latent variables and uses factor analytic techniques like PCA to simultaneously estimate the factors and how the drive returns from historical returns.</p>
+
+<ul>
+<li>The notebook <a href="01_linear_dimensionality_reduction/03_pca_and_risk_factor_models.ipynb">pca<em>and</em>risk<em>factor</em>models</a> demonstrates how this method derives factors in a purely statistical or data-driven way with the advantage of not requiring ex-ante knowledge of the behavior of asset returns.</li>
+</ul>
+
+<h3>Eigenportfolios</h3>
+
+<p>Another application of PCA involves the covariance matrix of the normalized returns. The principal components of the correlation matrix capture most of the covariation among assets in descending order and are mutually uncorrelated. Moreover, we can use standardized principal components as portfolio weights. </p>
+
+<p>The notebook <a href="01_linear_dimensionality_reduction/04_pca_and_eigen_portfolios.ipynb">pca<em>and</em>eigen_portfolios</a> illustrates how to create Eigenportfolios.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://www.nber.org/2018LTAM/kelly.pdf">Characteristics Are Covariances: A Unified Model of Risk and Return</a>, Kelly, Pruitt and Su, NBER, 2018</li>
+<li><a href="https://math.nyu.edu/faculty/avellane/AvellanedaLeeStatArb20090616.pdf">Statistical Arbitrage in the U.S. Equities Market</a>, Marco Avellaneda and Jeong-Hyun Lee, 2008</li>
+</ul>
+
+<h2>Independent Component Analysis</h2>
+
+<p>Independent component analysis (ICA) is another linear algorithm that identifies a new basis to represent the original data but pursues a different objective than PCA. See <a href="https://www.sciencedirect.com/science/article/pii/S0893608000000265">Hyvärinen and Oja</a> (2000) for a detailed introduction.</p>
+
+<p>ICA emerged in signal processing, and the problem it aims to solve is called blind source separation. It is typically framed as the cocktail party problem where a given number of guests are speaking at the same time so that a single microphone would record overlapping signals. ICA assumes there are as many different microphones as there are speakers, each placed at different locations so that it records a different mix of the signals. ICA then aims to recover the individual signals from the different recordings.</p>
+
+<ul>
+<li><a href="https://www.sciencedirect.com/science/article/pii/S0893608000000265">Independent Component Analysis: Algorithms and Applications</a>, Aapo Hyvärinen and Erkki Oja, Neural Networks, 2000</li>
+<li><a href="http://cs229.stanford.edu/notes/cs229-notes11.pdf">Independent Components Analysis</a>, CS229 Lecture Notes, Andrew Ng</li>
+<li><a href="https://www.sciencedirect.com/science/article/pii/S0304405X0000091X">Common factors in prices, order flows, and liquidity</a>, Hasbrouck and Seppi, Journal of Financial Economics, 2001</li>
+<li><a href="https://link.springer.com/chapter/10.1007/11508069_74">Volatility Modelling of Multivariate Financial Time Series by Using ICA-GARCH Models</a>, Edmond H. C. Wu, Philip L. H. Yu, in: Gallagher M., Hogan J.P., Maire F. (eds) Intelligent Data Engineering and Automated Learning - IDEAL 2005</li>
+<li><a href="http://www.cs.cuhk.hk/~lwchan/papers/icapred.pdf">The Prediction Performance of Independent Factor Models</a>, Chan, In: proceedings of the 2002 IEEE International Joint Conference on Neural Networks</li>
+<li><a href="http://www.informatica.si/ojs-2.4.3/index.php/informatica/article/download/334/333">An Overview of Independent Component Analysis and Its Applications</a>, Ganesh R. Naik, Dinesh K Kumar, Informatica 2011</li>
+</ul>
+
+<h2>Manifold Learning</h2>
+
+<p>The manifold hypothesis emphasizes that high-dimensional data often lies on or near a lower-dimensional non-linear manifold that is embedded in the higher dimensional space. </p>
+
+<p><a href="https://scikit-learn.org/stable/modules/manifold.html">Manifold learning</a> aims to find the manifold of intrinsic dimensionality and then represent the data in this subspace. A simplified example uses a road as one-dimensional manifolds in a three-dimensional space and identifies data points using house numbers as local coordinates.</p>
+
+<h3>Code Example: what a manifold looks like</h3>
+
+<p>The notebook <a href="02_manifold_learning/01_manifold_learning_intro.ipynb">manifold<em>learning</em>intro</a> contains several exampoles, including the two-dimensional swiss roll that illustrates the topological structure of manifolds. </p>
+
+<h3>Code Example: Local Linear Embedding</h3>
+
+<p>Several techniques approximate a lower dimensional manifold. One example is <a href="https://cs.nyu.edu/~roweis/lle/">locally-linear embedding</a> (LLE) that was developed in 2000 by Sam Roweis and Lawrence Saul.</p>
+
+<ul>
+<li>The notebook <a href="02_manifold_learning/02_manifold_learning_lle.ipynb">manifold<em>learning</em>lle</a> demonstrates how it ‘unrolls’ the swiss roll. For each data point, LLE identifies a given number of nearest neighbors and computes weights that represent each point as a linear combination of its neighbors. It finds a lower-dimensional embedding by linearly projecting each neighborhood on global internal coordinates on the lower-dimensional manifold and can be thought of as a sequence of PCA applications.</li>
+</ul>
+
+<p>The generic examples use the following datasets:</p>
+
+<ul>
+<li><a href="http://yann.lecun.com/exdb/mnist/">MNIST Data</a></li>
+<li><a href="https://github.com/zalandoresearch/fashion-mnist">Fashion MNIST dataset</a></li>
+</ul>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="https://cs.nyu.edu/~roweis/lle/">Locally Linear Embedding</a>, Sam T. Roweis and Lawrence K. Saul (LLE author website)</li>
+</ul>
+
+<h2>Code Examples: visualizing high-dimensional image and asset price data with manifold learning</h2>
+
+<h3>t-distributed stochastic neighbor embedding (t-SNE)</h3>
+
+<p><a href="https://lvdmaaten.github.io/tsne/">t-SNE</a> is an award-winning algorithm developed in 2010 by Laurens van der Maaten and Geoff Hinton to detect patterns in high-dimensional data. It takes a probabilistic, non-linear approach to locating data on several different, but related low-dimensional manifolds. The algorithm emphasizes keeping similar points together in low dimensions, as opposed to maintaining the distance between points that are apart in high dimensions, which results from algorithms like PCA that minimize squared distances. </p>
+
+<ul>
+<li><a href="http://www.cs.toronto.edu/~hinton/absps/tsne.pdf">Visualizing Data using t-SNE</a>, van der Maaten, Hinton, Journal of Machine Learning Research, 2008</li>
+<li><a href="http://www.cs.rug.nl/~alext/PAPERS/EuroVis16/paper.pdf">Visualizing Time-Dependent Data Using Dynamic t-SNE</a>, Rauber, Falcão, Telea, Eurographics Conference on Visualization (EuroVis) 2016</li>
+<li><a href="http://blog.kaggle.com/2012/11/02/t-distributed-stochastic-neighbor-embedding-wins-merck-viz-challenge/">t-Distributed Stochastic Neighbor Embedding Wins Merck Viz Challenge</a>, Kaggle Blog 2016</li>
+<li><a href="https://www.youtube.com/watch?v=RJVL80Gg3lA&amp;list=UUtXKDgv1AVoG88PLl8nGXmw">t-SNE: Google Tech Talk</a>, van der Maaten, 2013</li>
+<li><a href="https://github.com/kylemcdonald/Parametric-t-SNE">Parametric t-SNE</a>, fast t-SNE implementation using Keras by Kyle McDonald</li>
+</ul>
+
+<h3>UMAP</h3>
+
+<p><a href="https://github.com/lmcinnes/umap">UMAP</a>) is a more recent algorithm for visualization and general dimensionality reduction. It assumes the data is uniformly distributed on a locally connected manifold and looks for the closest low-dimensional equivalent using fuzzy topology. It uses a neighbors parameter that impacts the result similarly as perplexity above.</p>
+
+<p>It is faster and hence scales better to large datasets than t-SNE, and sometimes preserves global structure than better than t-SNE. It can also work with different distance functions, including, e.g., cosine similarity that is used to measure the distance between word count vectors.</p>
+
+<ul>
+<li><p><a href="https://arxiv.org/abs/1802.03426">UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction</a>, Leland McInnes, John Healy, 2018</p></li>
+<li><p>The notebooks <a href="02_manifold_learning/03_manifold_learning_tsne_umap.ipynb">manifold<em>learning</em>tsne<em>umap</a> and <a href="02_manifold_learning/04_manifold_learning_asset_prices.ipynb">manifold</em>learning<em>asset</em>prices</a> demonstrate the usage of both t-SNE and UMAP with various data sets, including equity returns.</p></li>
+</ul>
+
+<h2>Cluster Algorithms</h2>
+
+<p>Both clustering and dimensionality reduction summarize the data. Dimensionality reduction compresses the data by representing it using new, fewer features that capture the most relevant information. Clustering algorithms, in contrast, assign existing observations to subgroups that consist of similar data points.</p>
+
+<p>Clustering can serve to better understand the data through the lens of categories learned from continuous variables. It also permits automatically categorizing new objects according to the learned criteria. Examples of related applications include hierarchical taxonomies, medical diagnostics, or customer segmentation. Alternatively, clusters can be used to represent groups as prototypes, using e.g. the midpoint of a cluster as the best representatives of learned grouping. An example application includes image compression.</p>
+
+<p>Clustering algorithms differ with respect to their strategy of identifying groupings:
+- Combinatorial algorithms select the most coherent of different groupings of observations
+- Probabilistic modeling estimates distributions that most likely generated the clusters
+- Hierarchical clustering finds a sequence of nested clusters that optimizes coherence at any given stage</p>
+
+<p>Algorithms also differ by the notion of what constitutes a useful collection of objects that needs to match the data characteristics, domain and the goal of the applications. Types of groupings include:
+- Clearly separated groups of various shapes
+- Prototype- or center-based, compact clusters
+- Density-based clusters of arbitrary shape
+- Connectivity- or graph-based clusters</p>
+
+<p>Important additional aspects of a clustering algorithm include whether 
+- it requires exclusive cluster membership, 
+- makes hard, i.e., binary, or soft, probabilistic assignment, and 
+- is complete and assigns all data points to clusters.</p>
+
+<h3>Code example: comparing cluster algorithms</h3>
+
+<p>The notebook <a href="03_clustering_algorithms/01_clustering_algos.ipynb">clustering_algos</a> compares the clustering results for several algorithm using toy dataset designed to test clustering algorithms.</p>
+
+<h3>Code example: k-Means</h3>
+
+<p>k-Means is the most well-known clustering algorithm and was first proposed by Stuart Lloyd at Bell Labs in 1957. </p>
+
+<h4>The algorithm</h4>
+
+<p>The algorithm finds K centroids and assigns each data point to exactly one cluster with the goal of minimizing the within-cluster variance (called inertia). It typically uses Euclidean distance but other metrics can also be used. k-Means assumes that clusters are spherical and of equal size and ignores the covariance among features.</p>
+
+<ul>
+<li>The notebook <a href="03_clustering_algorithms/02_kmeans_implementation.ipynb">kmeans_implementation</a> demonstrates how the k-Means algorithm works.</li>
+</ul>
+
+<h4>Evaluating the results</h4>
+
+<p>Cluster quality metrics help select among alternative clustering results. </p>
+
+<ul>
+<li>The notebook <a href="03_clustering_algorithms/03_kmeans_evaluation.ipynb">kmeans_evaluation </a> illustrates how to evaluate clustering quality using inertia and the <a href="http://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html">silhouette score</a>.</li>
+</ul>
+
+<h3>Code example: Hierarchical Clustering</h3>
+
+<p>Hierarchical clustering avoids the need to specify a target number of clusters because it assumes that data can successively be merged into increasingly dissimilar clusters. It does not pursue a global objective but decides incrementally how to produce a sequence of nested clusters that range from a single cluster to clusters consisting of the individual data points.</p>
+
+<p>While hierarchical clustering does not have hyperparameters like k-Means, the measure of dissimilarity between clusters (as opposed to individual data points) has an important impact on the clustering result. The options differ as follows:</p>
+
+<ul>
+<li>Single-link: distance between nearest neighbors of two clusters</li>
+<li>Complete link: maximum distance between respective cluster members</li>
+<li>Group average</li>
+<li>Ward’s method: minimize within-cluster variance</li>
+</ul>
+
+<p>The notebook <a href="03_clustering_algorithms/04_hierarchical_clustering.ipynb">hierarchical_clustering</a> demonstrates how this algorithm works, and how to visualize and evaluate the results.  </p>
+
+<h3>Code example: Density-Based Clustering</h3>
+
+<p>Density-based clustering algorithms assign cluster membership based on proximity to other cluster members. They pursue the goal of identifying dense regions of arbitrary shapes and sizes. They do not require the specification of a certain number of clusters but instead rely on parameters that define the size of a neighborhood and a density threshold.</p>
+
+<p>The notebook <a href="03_clustering_algorithms/05_density_based_clustering.ipynb">density<em>based</em>clustering</a> demonstrates how DBSCAN and hierarchical DBSCAN work.</p>
+
+<ul>
+<li><a href="https://www.quantopian.com/posts/pairs-trading-with-machine-learning">Pairs Trading with density-based clustering and cointegration</a></li>
+</ul>
+
+<h3>Code example: Gaussian Mixture Models</h3>
+
+<p>Gaussian mixture models (GMM) are a generative model that assumes the data has been generated by a mix of various multivariate normal distributions. The algorithm aims to estimate the mean &amp; covariance matrices of these distributions.</p>
+
+<p>It generalizes the k-Means algorithm: it adds covariance among features so that clusters can be ellipsoids rather than spheres, while the centroids are represented by the means of each distribution. The GMM algorithm performs soft assignments because each point has a probability to be a member of any cluster. </p>
+
+<p>The notebook <a href="03_clustering_algorithms/06_gaussian_mixture_models.ipynb">gaussian<em>mixture</em>models</a> demonstrates the application of a GMM clustering model.</p>
+
+<h3>Code example: Hierarchical Risk Parity</h3>
+
+<p>The key idea of hierarchical risk parity (HRP) is to use hierarchical clustering on the covariance matrix to be able to group assets with similar correlations together and reduce the number of degrees of freedom by only considering 'similar' assets as substitutes when constructing the portfolio. </p>
+
+<h4>The algorithm</h4>
+
+<p>The notebook <a href="04_hierarchical_risk_parity/01_hierarchical_risk_parity.ipynb">hierarchical<em>risk</em>parity</a> in the subfolder <a href="04_hierarchical_risk_parity">hierarchical<em>risk</em>parity</a> illustrate its application. </p>
+
+<h4>Backtest comparison with alternatives</h4>
+
+<p>The notebook <a href="04_hierarchical_risk_parity/02_pf_optimization_with_hrp_zipline_benchmark.ipynb">pf<em>optimization</em>with<em>hrp</em>zipline<em>benchmark</a> in the subfolder <a href="04_hierarchical_risk_parity">hierarchical</em>risk_parity</a> compares HRP with other portfolio optimization methods discussed in <a href="../05_strategy_evaluation">Chapter 5</a>. </p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2708678">Building Diversified Portfolios that Outperform Out-of-Sample</a>, Lopez de Prado, Journal of Portfolio Management, 2015</li>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2840729">Hierarchical Clustering Based Asset Allocation</a>, Raffinot 2016</li>
+<li><a href="https://scikit-learn.org/stable/auto_examples/applications/plot_stock_market.html">Visualizing the Stock Market Structure</a></li>
+</ul>

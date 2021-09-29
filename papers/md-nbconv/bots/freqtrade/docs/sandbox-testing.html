@@ -1,0 +1,129 @@
+<h1>Sandbox API testing</h1>
+
+<p>Some exchanges provide sandboxes or testbeds for risk-free testing, while running the bot against a real exchange.
+With some configuration, freqtrade (in combination with ccxt) provides access to these.</p>
+
+<p>This document is an overview to configure Freqtrade to be used with sandboxes.
+This can be useful to developers and trader alike.</p>
+
+<p>!!! Warning
+    Sandboxes usually have very low volume, and either a very wide spread, or no orders available at all.
+    Therefore, sandboxes will usually not do a good job of showing you how a strategy would work in real trading.</p>
+
+<h2>Exchanges known to have a sandbox / testnet</h2>
+
+<ul>
+<li><a href="https://testnet.binance.vision/">binance</a></li>
+<li><a href="https://public.sandbox.pro.coinbase.com">coinbasepro</a></li>
+<li><a href="https://exchange.sandbox.gemini.com/">gemini</a></li>
+<li><a href="https://www.testnet.huobi.pro/">huobipro</a></li>
+<li><a href="https://sandbox.kucoin.com/">kucoin</a></li>
+<li><a href="https://testnet.phemex.com/">phemex</a> </li>
+</ul>
+
+<p>!!! Note
+    We did not test correct functioning of all of the above testnets. Please report your experiences with each sandbox.</p>
+
+<hr />
+
+<h2>Configure a Sandbox account</h2>
+
+<p>When testing your API connectivity, make sure to use the appropriate sandbox / testnet URL.</p>
+
+<p>In general, you should follow these steps to enable an exchange's sandbox:</p>
+
+<ul>
+<li>Figure out if an exchange has a sandbox (most likely by using google or the exchange's support documents)</li>
+<li>Create a sandbox account (often the sandbox-account requires separate registration)</li>
+<li><a href="#add-test-funds">Add some test assets to account</a></li>
+<li>Create API keys</li>
+</ul>
+
+<h3>Add test funds</h3>
+
+<p>Usually, sandbox exchanges allow depositing funds directly via web-interface.
+You should make sure to have a realistic amount of funds available to your test-account, so results are representable of your real account funds.</p>
+
+<p>!!! Warning
+    Test exchanges will <strong>NEVER</strong> require your real credit card or banking details!</p>
+
+<h2>Configure freqtrade to use a exchange's sandbox</h2>
+
+<h3>Sandbox URLs</h3>
+
+<p>Freqtrade makes use of CCXT which in turn provides a list of URLs to Freqtrade.
+These include <code>['test']</code> and <code>['api']</code>.</p>
+
+<ul>
+<li><code>[Test]</code> if available will point to an Exchanges sandbox.</li>
+<li><code>[Api]</code> normally used, and resolves to live API target on the exchange.</li>
+</ul>
+
+<p>To make use of sandbox / test add "sandbox": true, to your config.json</p>
+
+<p><code>json
+  "exchange": {
+        "name": "coinbasepro",
+        "sandbox": true,
+        "key": "5wowfxemogxeowo;heiohgmd",
+        "secret": "/ZMH1P62rCVmwefewrgcewX8nh4gob+lywxfwfxwwfxwfNsH1ySgvWCUR/w==",
+        "password": "1bkjfkhfhfu6sr",
+        "outdated_offset": 5
+        "pair_whitelist": [
+            "BTC/USD"
+        ]
+  },
+  "datadir": "user_data/data/coinbasepro_sandbox"
+</code></p>
+
+<p>Also the following information:</p>
+
+<ul>
+<li>api-key (created for the sandbox webpage)</li>
+<li>api-secret (noted earlier)</li>
+<li>password (the passphrase - noted earlier)</li>
+</ul>
+
+<p>!!! Tip "Different data directory"
+    We also recommend to set <code>datadir</code> to something identifying downloaded data as sandbox data, to avoid having sandbox data mixed with data from the real exchange.
+    This can be done by adding the <code>"datadir"</code> key to the configuration.
+    Now, whenever you use this configuration, your data directory will be set to this directory.</p>
+
+<hr />
+
+<h2>You should now be ready to test your sandbox</h2>
+
+<p>Ensure Freqtrade logs show the sandbox URL, and trades made are shown in sandbox. Also make sure to select a pair which shows at least some decent value (which very often is BTC/<somestablecoin>).</p>
+
+<h2>Common problems with sandbox exchanges</h2>
+
+<p>Sandbox exchange instances often have very low volume, which can cause some problems which usually are not seen on a real exchange instance.</p>
+
+<h3>Old Candles problem</h3>
+
+<p>Since Sandboxes often have low volume, candles can be quite old and show no volume.
+To disable the error "Outdated history for pair ...", best increase the parameter <code>"outdated_offset"</code> to a number that seems realistic for the sandbox you're using.</p>
+
+<h3>Unfilled orders</h3>
+
+<p>Sandboxes often have very low volumes - which means that many trades can go unfilled, or can go unfilled for a very long time.</p>
+
+<p>To mitigate this, you can try to match the first order on the opposite orderbook side using the following configuration:</p>
+
+<p><code>jsonc
+  "order_types": {
+    "buy": "limit",
+    "sell": "limit"
+    // ...
+  },
+  "bid_strategy": {
+    "price_side": "ask",
+    // ...
+  },
+  "ask_strategy":{
+    "price_side": "bid",
+    // ...
+  },
+</code></p>
+
+<p>The configuration is similar to the suggested configuration for market orders - however by using limit-orders you can avoid moving the price too much, and you can set the worst price you might get.</p>
