@@ -1,0 +1,24 @@
+<h2>02 API access to market data</h2>
+
+<p>There are several options to access market data via API using Python.</p>
+
+<h3>pandas Library</h3>
+
+<p>The notebook <a href="01_datareader.ipynb">01<em>datareader</a> presents a few sources built into the pandas library. 
+- The <code>pandas</code> library enables access to data displayed on websites using the read</em>html function 
+- the related <code>pandas-datareader</code> library provides access to the API endpoints of various data providers through a standard interface </p>
+
+<h3>LOBSTER tick data</h3>
+
+<p>The notebook <a href="02_lobster_itch_data.ipynb">02<em>lobster</em>itch_data</a> demonstrates the use of order book data made available by 
+LOBSTER (Limit Order Book System - The Efficient Reconstructor), an <a href="https://lobsterdata.com/info/WhatIsLOBSTER.php">online</a> limit order book data tool that aims to provide easy-to-use, high-quality limit order book data.</p>
+
+<p>Since 2013 LOBSTER acts as a data provider for the academic community, giving access to reconstructed limit order book data for the entire universe of NASDAQ traded stocks. More recently, it started offering a commercial service.</p>
+
+<h3>Qandl</h3>
+
+<p>The notebook <a href="03_quandl_demo.ipynb">03<em>quandl</em>demo</a> shows how Quandl uses a very straightforward API to make its free and premium data available. See <a href="https://www.quandl.com/tools/api">documentation</a> for more details.</p>
+
+<h3>zipline &amp; Qantopian</h3>
+
+<p>The directory <a href="04_zipline">04<em>zipline</a> contains the notebook <a href="04_zipline/zipline_example.ipynb">zipline</em>example</a> that briefly introduces the backtesting library <code>zipline</code> that we will use later in the book from installation to data access and the implementation of a simple  trading strategy.</p>

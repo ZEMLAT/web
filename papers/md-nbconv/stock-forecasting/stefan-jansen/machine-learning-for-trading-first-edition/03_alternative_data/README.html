@@ -1,0 +1,77 @@
+<h1>Chapter 03: Alternative Data</h1>
+
+<p>This chapter explains how individuals, business processes, and sensors produce alternative data. It also provides a framework to navigate and evaluate the proliferating supply of alternative data for investment purposes. </p>
+
+<p>It demonstrates the workflow, from acquisition to preprocessing and storage using Python for data obtained through web scraping to set the stage for the application of ML. It concludes by providing examples of sources, providers, and applications.</p>
+
+<p>More specifically, this chapter covers:</p>
+
+<ul>
+<li>How the alternative data revolution has unleashed new sources of information</li>
+<li>How individuals, business processes, and sensors generate alternative data</li>
+<li>How to evaluate the proliferating supply of alternative data used for algorithmic trading</li>
+<li>How to work with alternative data in Python, such as by scraping the internet</li>
+<li>Important categories and providers of alternative data</li>
+</ul>
+
+<h2>The Alternative Data Revolution</h2>
+
+<p>For algorithmic trading, new data sources offer an informational advantage if they provide access to information unavailable from traditional sources, or provide access sooner. Following global trends, the investment industry is rapidly expanding beyond market and fundamental data to alternative sources to reap alpha through an informational edge. Annual spending on data, technological capabilities, and related talent are expected to increase from the current $3 billion by 12.8% annually through 2020.</p>
+
+<p>Today, investors can access macro or company-specific data in real-time that historically has been available only at a much lower frequency. Use cases for new data sources include the following:
+- Online price data on a representative set of goods and services can be used to measure inflation
+- The number of store visits or purchases permits real-time estimates of company or industry-specific sales or economic activity
+- Satellite images can reveal agricultural yields, or activity at mines or on oil rigs before this information is available elsewhere </p>
+
+<p>Useful references include:
+- <a href="https://www.emc.com/collateral/analyst-reports/idc-the-digital-universe-in-2020.pdf">The Digital Universe in 2020</a>
+- <a href="https://www.mckinsey.com/business-functions/digital-mckinsey/our-insights/big-data-the-next-frontier-for-innovation">Big data: The next frontier for innovation, competition, and productivity</a>, McKinsey 2011
+- <a href="https://www.mckinsey.com/featured-insights/artificial-intelligence">McKinsey on Artificial Intelligence</a></p>
+
+<h2>Evaluating Alternative Datasets</h2>
+
+<p>The ultimate objective of alternative data is to provide an informational advantage in the competitive search for trading signals that produce alpha, namely positive, uncorrelated investment returns. In practice, the signals extracted from alternative datasets can be used on a standalone basis or combined with other signals as part of a quantitative strategy.</p>
+
+<p>Key reference: </p>
+
+<ul>
+<li><a href="http://valuesimplex.com/articles/JPM.pdf">Big Data and AI Strategies</a>, Kolanovic, M. and Krishnamachari, R., JP Morgan, May 2017</li>
+</ul>
+
+<h2>The Market for Alternative Data</h2>
+
+<p>The investment industry is going to spend an estimated $2bn-3bn on data services in 2018, and this number is expected to grow at double digits per year in line with other industries. This expenditure includes the acquisition of alternative data, investments in related technology, and the hiring of qualified talent.</p>
+
+<ul>
+<li><a href="https://alternativedata.org/">Alternative Data</a></li>
+</ul>
+
+<h2>Working with Alternative Data</h2>
+
+<p>This section illustrates the acquisition of alternative data using web scraping, targeting first OpenTable restaurant data, and then move to earnings call transcripts hosted by Seeking Alpha.</p>
+
+<ul>
+<li><a href="https://www.nature.com/articles/srep01684">Quantifying Trading Behavior in Financial Markets Using Google Trends</a>, Preis, Moat and Stanley, Nature, 2013</li>
+<li><a href="https://www.sciencedirect.com/science/article/pii/S0957417415005473">Quantifying StockTwits semantic terms’ trading behavior in financial markets: An effective application of decision tree algorithms</a>, Al Nasseri et al, Expert Systems with Applications, 2015</li>
+</ul>
+
+<h4>Open Table Web Scraping</h4>
+
+<p>This subfolder <a href="01_opentable">01<em>opentable</a> contains the script <a href="01_opentable/opentable_selenium.py">opentable</em>selenium</a> to scrape OpenTable data using Scrapy and Selenium.</p>
+
+<ul>
+<li><a href="https://www.lifewire.com/view-web-source-code-4151702">How to View the Source Code of a Web Page in Every Browser</a></li>
+</ul>
+
+<h4>SeekingAlpha Earnings Transcripts</h4>
+
+<p>The subfolder <a href="02_earnings_calls">02<em>earnings</em>calls</a> contains the script <a href="02_earnings_calls/sa_selenium.py">sa_selenium</a> to scrape earnings call transcripts from the <a href="www.seekingalpha.com">SeekingAlpha</a> website.</p>
+
+<h4>Python Libraries &amp; Documentation</h4>
+
+<ul>
+<li>requests <a href="http://docs.python-requests.org/en/master/">docs</a></li>
+<li>beautifulsoup <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/﻿">docs</a></li>
+<li>Selenium <a href="https://www.seleniumhq.org/﻿">docs</a></li>
+<li>Scrapy <a href="https://scapy.readthedocs.io/en/latest/">docs</a></li>
+</ul>

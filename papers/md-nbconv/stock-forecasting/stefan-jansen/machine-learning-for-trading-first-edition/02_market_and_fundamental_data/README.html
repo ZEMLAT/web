@@ -1,0 +1,164 @@
+<h1>Chapter 02: Market &amp; Fundamental Data</h1>
+
+<p>This chapter introduces market and fundamental data sources and the environment in which they are created. Familiarity with various types of orders and the trading infrastructure matters because they affect backtest simulations of a trading strategy. We also illustrate how to use Python to access and work with trading and financial statement data.</p>
+
+<p>In particular, this chapter will cover the following topics:
+- How market microstructure shapes market data
+- How to reconstruct the order book from tick data using Nasdaq ITCH 
+- How to summarize tick data using various types of bars
+- How to work with eXtensible Business Reporting Language (XBRL)-encoded electronic filings
+- How to parse and combine market and fundamental data to create a P/E series
+- How to access various market and fundamental data sources using Python</p>
+
+<h2>How to work with Market Data</h2>
+
+<p>Market data results from the placement and processing of buy and sell orders in the course of the trading of financial instruments on the many marketplaces. The data reflects the institutional environment of trading venues, including the rules and regulations that govern orders, trade execution, and price formation.</p>
+
+<p>Algorithmic traders use ML algorithms to analyze the flow of buy and sell orders and the resulting volume and price statistics to extract trade signals or features that capture insights into, for example, demand-supply dynamics or the behavior of certain market participants.</p>
+
+<p>This section reviews institutional features that impact the simulation of a trading strategy during a backtest. Then, we will take a look at how tick data can be reconstructed from the order book source. Next, we will highlight several methods that regularize tick data and aim to maximize the information content. Finally, we will illustrate how to access various market data provider interfaces and highlight several providers.</p>
+
+<h3>Market microstructure</h3>
+
+<p>Market microstructure is the branch of financial economics that investigates the trading process and the organization of related markets. The following references provide insights into institutional details that can be quite complex and diverse across asset classes and their derivatives, trading venues, and geographies, as well as data about the trading activities on various exchanges around the world</p>
+
+<ul>
+<li><a href="https://global.oup.com/ushe/product/trading-and-exchanges-9780195144703?cc=us&amp;lang=en&amp;">Trading and Exchanges - Market Microstructure for Practitioners</a>, Larry Harris, Oxford University Press, 2002</li>
+<li><a href="https://www.world-exchanges.org/our-work/statistics">World Federation of Exchanges</a></li>
+</ul>
+
+<h3>Working with Order Book data</h3>
+
+<p>The primary source of market data is the order book, which is continuously updated in real-time throughout the day to reflect all trading activity. Exchanges typically offer this data as a real-time service and may provide some historical data for free. </p>
+
+<h4>The FIX protocol</h4>
+
+<p>The trading activity is reflected in numerous messages about trade orders sent by market participants. These messages typically conform to the electronic Financial Information eXchange (FIX) communications protocol for real-time exchange of securities transactions and market data or a native exchange protocol. </p>
+
+<ul>
+<li><a href="https://www.fixtrading.org/standards/">FIX Trading Standards</a></li>
+<li>Python: <a href="https://github.com/da4089/simplefix">Simplefix</a></li>
+<li>C++ version: <a href="http://www.quickfixengine.org/">quickfixengine</a></li>
+<li>Interactive Brokers <a href="https://www.interactivebrokers.com/en/index.php?f=4988">interface</a></li>
+</ul>
+
+<h4>Nasdaq TotalView-ITCH data</h4>
+
+<p>While FIX has a dominant large market share, exchanges also offer native protocols. The Nasdaq offers a TotalView ITCH direct data-feed protocol that allows subscribers to track individual orders for equity instruments from placement to execution or cancellation.</p>
+
+<ul>
+<li>The ITCH <a href="http://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/NQTVITCHspecification.pdf">Specifications</a></li>
+<li><a href="ftp://emi.nasdaq.com/ITCH/">Sample Files</a></li>
+</ul>
+
+<h4>Code Examples</h4>
+
+<ul>
+<li>The folder <a href="01_NASDAQ_TotalView-ITCH_Order_Book">NASDAQ TotalView ITCH Order Book</a> contains the notebooks to
+<ul>
+<li>download NASDAQ Total View sample tick data,</li>
+<li>parse the messages from the binary source data</li>
+<li>reconstruct the order book for a given stock</li>
+<li>visualize order flow data</li>
+<li>normalize tick data</li>
+</ul></li>
+<li>Binary Data services: the <code>struct</code> <a href="https://docs.python.org/3/library/struct.html">module</a></li>
+</ul>
+
+<h4>Other protocols</h4>
+
+<ul>
+<li>Native exchange protocols [around the world](https://en.wikipedia.org/wiki/List<em>of</em>electronic<em>trading</em>protocols_</li>
+</ul>
+
+<h3>Access to Market Data</h3>
+
+<p>There are several options to access market data via API using Python. In this chapter, we first present a few sources built into the <a href="https://pandas.pydata.org/"><code>pandas</code></a> library. Then we briefly introduce the trading platform <a href="https://www.quantopian.com/posts">Quantopian</a>, the data provider <a href="https://www.quandl.com/">Quandl</a> (acquired by NASDAQ in 12/2018) and the backtesting library <a href="https://github.com/quantopian/zipline"><code>zipline</code></a> that we will use later in the book, and list several additional options to access various types of market data. The directory <a href="02_data_providers">data_providers</a> contains several notebooks that illustrate the usage of these options.</p>
+
+<h4>Remote data access using pandas</h4>
+
+<ul>
+<li>read_html <a href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_html.html?highlight=pandas%20io%20read_html">docs</a></li>
+<li>S&amp;P 500 constituents from <a href="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies">Wikipedia</a></li>
+<li><code>pandas-datareader</code><a href="https://pandas-datareader.readthedocs.io/en/latest/index.html">docs</a></li>
+</ul>
+
+<h4>Code Examples</h4>
+
+<p>The folder <a href="02_data_providers">data providers</a> contains examples to use various data providers.</p>
+
+<p>Relevant sources include:</p>
+
+<ul>
+<li>Quandl <a href="https://docs.quandl.com/docs">docs</a> and Python <a href="https://www.quandl.com/tools/python﻿">API</a></li>
+<li><a href="https://www.quantopian.com/posts">Quantopian</a></li>
+<li><a href="http://www.zipline.io/﻿">Zipline</a></li>
+<li><a href="https://lobsterdata.com/">LOBSTER</a></li>
+<li><a href="https://iextrading.com/﻿">The Investor Exchange</a></li>
+<li><a href="https://www.money.net/">Money.net</a></li>
+<li><a href="https://tradingeconomics.com/">Trading Economic</a></li>
+<li><a href="https://www.barchart.com/">Barchart</a></li>
+<li><a href="https://www.alphavantage.co/﻿">Alpha Vantage</a></li>
+<li><a href="https://www.alphatradinglabs.com/">Alpha Trading Labs</a></li>
+</ul>
+
+<p>News
+- <a href="https://www.ft.com/content/622855dc-2d31-11e8-9b4b-bc4b9f08f381">Bloomberg and Reuters lose data share to smaller rivals</a>, FT, 2018</p>
+
+<h2>How to work with Fundamental data</h2>
+
+<p>Fundamental data pertains to the economic drivers that determine the value of securities. The nature of the data depends on the asset class:
+- For equities and corporate credit, it includes corporate financials as well as industry and economy-wide data.
+- For government bonds, it includes international macro-data and foreign exchange.
+- For commodities, it includes asset-specific supply-and-demand determinants, such as weather data for crops. </p>
+
+<p>We will focus on equity fundamentals for the US, where data is easier to access. There are some 13,000+ public companies worldwide that generate 2 million pages of annual reports and 30,000+ hours of earnings calls. In algorithmic trading, fundamental data and features engineered from this data may be used to derive trading signals directly, for example as value indicators, and are an essential input for predictive models, including machine learning models.</p>
+
+<h3>Financial statement data</h3>
+
+<p>The Securities and Exchange Commission (SEC) requires US issuers, that is, listed companies and securities, including mutual funds to file three quarterly financial statements (Form 10-Q) and one annual report (Form 10-K), in addition to various other regulatory filing requirements.</p>
+
+<p>Since the early 1990s, the SEC made these filings available through its Electronic Data Gathering, Analysis, and Retrieval (EDGAR) system. They constitute the primary data source for the fundamental analysis of equity and other securities, such as corporate credit, where the value depends on the business prospects and financial health of the issuer. </p>
+
+<h4>Automated processing using XBRL markup</h4>
+
+<p>Automated analysis of regulatory filings has become much easier since the SEC introduced XBRL, a free, open, and global standard for the electronic representation and exchange of business reports. XBRL is based on XML; it relies on <a href="https://www.sec.gov/dera/data/edgar-log-file-data-set.html">taxonomies</a> that define the meaning of the elements of a report and map to tags that highlight the corresponding information in the electronic version of the report. One such taxonomy represents the US Generally Accepted Accounting Principles (GAAP).</p>
+
+<p>The SEC introduced voluntary XBRL filings in 2005 in response to accounting scandals before requiring this format for all filers since 2009 and continues to expand the mandatory coverage to other regulatory filings. The SEC maintains a website that lists the current taxonomies that shape the content of different filings and can be used to extract specific items.</p>
+
+<p>There are several avenues to track and access fundamental data reported to the SEC:
+- As part of the <a href="(https://www.sec.gov/oit/announcement/public-dissemination-service-system-contact.html">EDGAR Public Dissemination Service</a>) (PDS), electronic feeds of accepted filings are available for a fee. 
+- The SEC updates <a href="https://www.sec.gov/structureddata/rss-feeds-submitted-filings">RSS feeds</a> every 10 minutes, which list structured disclosure submissions.
+- There are public <a href="https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm">index files</a> for the retrieval of all filings through FTP for automated processing.
+- The financial statement (and notes) datasets contain parsed XBRL data from all financial statements and the accompanying notes.</p>
+
+<p>The SEC also publishes log files containing the <a href="https://www.sec.gov/dera/data/edgar-log-file-data-set.html">internet search traffic</a> for EDGAR filings through SEC.gov, albeit with a six-month delay.</p>
+
+<h4>Building a fundamental data time series</h4>
+
+<p>The scope of the data in the <a href="https://www.sec.gov/dera/data/financial-statement-and-notes-data-set.html">Financial Statement and Notes</a> datasets consists of numeric data extracted from the primary financial statements (Balance sheet, income statement, cash flows, changes in equity, and comprehensive income) and footnotes on those statements. The data is available as early as 2009.</p>
+
+<p>The folder <a href="03_sec_edgar">03<em>sec</em>edgar</a> contains the notebook <a href="03_sec_edgar/edgar_xbrl.ipynb">edgar_xbrl</a> to download and parse EDGAR data in XBRL format, and create fundamental metrics like the P/E ratio by combining financial statement and price data.</p>
+
+<h3>Other fundamental data sources</h3>
+
+<ul>
+<li><a href="https://library.law.yale.edu/news/75-sources-economic-data-statistics-reports-and-commentary">Compilation of macro resources by the Yale Law School</a></li>
+<li><a href="www.capitaliq.com">Capital IQ</a></li>
+<li><a href="www.compustat.com">Compustat</a></li>
+<li><a href="www.mscibarra.com">MSCI Barra</a></li>
+<li><a href="www.northinfo.com">Northfield Information Services</a></li>
+<li><a href="www.qsg.com">Quantitative Services Group</a></li>
+</ul>
+
+<h3>Efficient data storage with pandas</h3>
+
+<p>We'll be using many different data sets in this book, and it's worth comparing the main formats for efficiency and performance. In particular, we compare the following:</p>
+
+<ul>
+<li>CSV: Comma-separated, standard flat text file format.</li>
+<li>HDF5: Hierarchical data format, developed initially at the National Center for Supercomputing, is a fast and scalable storage format for numerical data, available in pandas using the PyTables library.</li>
+<li>Parquet: A binary, columnar storage format, part of the Apache Hadoop ecosystem, that provides efficient data compression and encoding and has been developed by Cloudera and Twitter. It is available for pandas through the pyarrow library, led by Wes McKinney, the original author of pandas.</li>
+</ul>
+
+<p>The notebook <a href="04_storage_benchmark/storage_benchmark.ipynb">storage<em>benchmark</a> in the directory <a href="04_storage_benchmark">04</em>storage_benchmark</a> compares the performance of the preceding libraries.</p>

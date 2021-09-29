@@ -3,8 +3,12 @@
 
 for file in $(find . -name *.ipynb)
 do
+	pdfFile="${file/.ipynb/.pdf}"
+
+	[ ! -f "$pdfFile" ] || continue
+
    jupyter nbconvert "$file" --to pdf
-   pdfFile="${file/.ipynb/.pdf}"
+   
    dest="./papers/pdf-nbconv/${pdfFile:2}"
    mkdir -p `dirname "$dest"`
    mv -v "$pdfFile" "$dest"

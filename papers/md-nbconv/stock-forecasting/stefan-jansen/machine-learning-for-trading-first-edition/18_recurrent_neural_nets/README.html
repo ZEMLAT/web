@@ -1,0 +1,97 @@
+<h1>Chapter 18: Recurrent Neural Networks</h1>
+
+<p>The major innovation of RNN is that each output is a function of both previous output and new data. As a result, RNN gain the ability to incorporate information on previous observations into the computation it performs on a new feature vector, effectively creating a model with memory. This recurrent formulation enables parameter sharing across a much deeper computational graph that includes cycles. Prominent architectures include Long Short-Term Memory (LSTM) and Gated Recurrent Units (GRU) that aim to overcome the challenge of vanishing gradients associated with learning long-range dependencies, where errors need to be propagated over many connections. </p>
+
+<p>RNNs have been successfully applied to various tasks that require mapping one or more input sequences to one or more output sequences and are particularly well suited to natural language. RNN can also be applied to univariate and multivariate time series to predict market or fundamental data. This chapter covers how RNN can model alternative text data using the word embeddings that we covered in <a href="15_word_embeddings">Chapter 15</a> to classify the sentiment expressed in documents. Most specifically, this chapter addresses:
+- How to unroll and analyze the computational graph for an RNN
+- How gated units learn to regulate an RNN’s memory from data to enable long-range dependencies
+- How to design and train RNN for univariate and multivariate time series in Python
+- How to leverage word embeddings for sentiment analysis with RNN</p>
+
+<h2>How RNN work</h2>
+
+<p>RNNs assume that data is sequential so that previous data points impact the current observation and are relevant for predictions of subsequent elements in the sequence.
+They allow for more complex and diverse input-output relationships than feedforward networks (FFNN) and convolutional nets that are designed to map one input to one output vector, usually of fixed size and using a given number of computational steps. RNN, in contrast, can model data for tasks where the input, the output or both are best represented as a sequence of vectors. </p>
+
+<p>Note that input and output sequences can be of arbitrary lengths because the recurrent transformation that is fixed but learned from the data can be applied as many times as needed.
+Just as CNN easily scale to large images and some CNN can process images of variable size, RNN scale to much longer sequences than networks not tailored to sequence-based tasks. Most RNN can also process sequences of variable length.</p>
+
+<h3>Backpropagation through Time</h3>
+
+<p>RNNs are called recurrent because they apply the same transformations to every element of a sequence in a way that the output depends on the outcome of prior iterations. As a result, RNNs maintain an internal state that captures information about previous elements in the sequence akin to a memory.</p>
+
+<p>The backpropagation algorithm that updates the weight parameters based on the gradient of the loss function with respect to the parameters involves a forward pass from left to right along the unrolled computational graph, followed by backward pass in the opposite direction.</p>
+
+<ul>
+<li><a href="http://www.deeplearningbook.org/contents/rnn.html">Sequence Modeling: Recurrent and Recursive Nets</a>, Deep Learning Book, Chapter 10, Ian Goodfellow, Yoshua Bengio and Aaron Courville, MIT Press, 2016</li>
+<li><a href="https://www.cs.toronto.edu/~graves/preprint.pdf">Supervised Sequence Labelling with Recurrent Neural Networks</a>, Alex Graves, 2013</li>
+<li><a href="http://people.idsia.ch/~juergen/lstm/sld001.htm">Tutorial on LSTM Recurrent Networks</a>, Juergen Schmidhuber, 2003</li>
+<li><a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">The Unreasonable Effectiveness of Recurrent Neural Networks</a></li>
+</ul>
+
+<h2>Alternative RNN Architectures</h2>
+
+<p>RNNs can be designed in a variety of ways to best capture the functional relationship and dynamic between input and output data. In addition to the recurrent connections between the hidden states, there are several alternative approaches, including recurrent output relationships, bidirectional RNN, and encoder-decoder architectures.</p>
+
+<h3>Long-Short Term Memory</h3>
+
+<p>RNNs with an LSTM architecture have more complex units that maintain an internal state and contain gates to keep track of dependencies between elements of the input sequence and regulate the cell’s state accordingly. These gates recurrently connect to each other instead of the usual hidden units we encountered above. They aim to address the problem of vanishing and exploding gradients by letting gradients pass through unchanged.</p>
+
+<p>A typical LSTM unit combines four parameterized layers that interact with each other and the cell state by transforming and passing along vectors. These layers usually involve an input gate, an output gate, and a forget gate, but there are variations that may have additional gates or lack some of these mechanisms</p>
+
+<ul>
+<li><a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">Understanding LSTM Networks</a>, Christopher Olah, 2015</li>
+<li><a href="http://proceedings.mlr.press/v37/jozefowicz15.pdf">An Empirical Exploration of Recurrent Network Architectures</a>, Rafal Jozefowicz, Ilya Sutskever, et al, 2015</li>
+</ul>
+
+<h3>Gated Recurrent Units</h3>
+
+<p>Gated recurrent units (GRU) simplify LSTM units by omitting the output gate. They have been shown to achieve similar performance on certain language modeling tasks but do better on smaller datasets.</p>
+
+<ul>
+<li><a href="https://arxiv.org/pdf/1406.1078.pdf">Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation</a>, Kyunghyun Cho, Yoshua Bengio, et al 2014</li>
+<li><a href="https://arxiv.org/abs/1412.3555">Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling</a>, Junyoung Chung, Caglar Gulcehre, KyungHyun Cho, Yoshua Bengio, 2014</li>
+</ul>
+
+<h2>How to build and train an RNN using Python</h2>
+
+<p>We illustrate how to build RNN using the Keras library for various scenarios. The first set of models includes regression and classification of univariate and multivariate time series. The second set of tasks focuses on text data for sentiment analysis using text data converted to word embeddings (see <a href="../15_word_embeddings">Chapter 15</a>). </p>
+
+<ul>
+<li><a href="https://keras.io/getting-started/sequential-model-guide/">Keras documentation</a></li>
+<li><a href="https://keras.io/layers/recurrent/">LSTM documentation</a></li>
+<li><a href="https://keras.io/optimizers/">Keras-recommended approach for RNNs</a> (use RMSProp)</li>
+</ul>
+
+<h3>Univariate Time Series Regression</h3>
+
+<p>The notebook <a href="01_univariate_time_series_regression.ipynb">univariate<em>time</em>series_regression</a> demonstrates how to get data into the requisite shape and how to forecast the S&amp;P 500 index values using a Recurrent Neural Network. </p>
+
+<h3>Stacked LSTMs for time series classification</h3>
+
+<p>We'll now build a slightly deeper model by stacking two LSTM layers using the Quandl stock price data (see the <a href="02_stacked_lstm_with_feature_embeddings.ipynb">stacked<em>lstm</em>with<em>feature</em>embeddings</a> notebook for implementation details). Furthermore, we will include features that are not sequential in nature, namely indicator variables that identify the ticker and time periods like month and year.</p>
+
+<h3>Multivariate Time Series Regression</h3>
+
+<p>So far, we have limited our modeling efforts to single time series. RNNs are naturally well suited to multivariate time series and represent a non-linear alternative to the Vector Autoregressive (VAR) models we covered in <a href="../08_time_series_models">Chapter 8, Time Series Models</a>.</p>
+
+<p>The notebook <a href="03_multivariate_timeseries.ipynb">multivariate_timeseries</a> demonstrates the application of RNNs to modeling and forecasting several time series using the same dataset we used for the <a href="../08_time_series_models/03_vector_autoregressive_model.ipynb">VAR example</a>, namely monthly data on consumer sentiment, and industrial production from the Federal Reserve's FRED service.</p>
+
+<h3>LSTM &amp; Word Embeddings for Sentiment Classification</h3>
+
+<p>RNNs are commonly applied to various natural language processing tasks. We've already encountered sentiment analysis using text data in part three of <a href="https://www.amazon.com/Hands-Machine-Learning-Algorithmic-Trading-ebook/dp/B07JLFH7C5/ref=sr_1_2?ie=UTF8&amp;qid=1548455634&amp;sr=8-2&amp;keywords=machine+learning+algorithmic+trading">this book</a>.</p>
+
+<p>The notebook <a href="04_sentiment_analysis.ipynb">sentiment_analysis</a> illustrates how to apply an RNN model to text data to detect positive or negative sentiment (which can easily be extended to a finer-grained sentiment scale). We are going to use word embeddings to represent the tokens in the documents. We covered word embeddings in <a href="../15_word_embeddings">Chapter 15, Word Embeddings</a>. They are an excellent technique to convert text into a continuous vector representation such that the relative location of words in the latent space encodes useful semantic aspects based on the words' usage in context.</p>
+
+<p>In this example, we again use Keras' built-in embedding layer that allows us to train vector representations specific to the task at hand. In the next example, we use pretrained vectors instead.</p>
+
+<h3>How to use pre-trained word embeddings</h3>
+
+<p>In <a href="../15_word_embeddings">Chapter 15, Word Embeddings</a>, we showed how to learn domain-specific word embeddings. Word2vec, and related learning algorithms, produce high-quality word vectors, but require large datasets. Hence, it is common that research groups share word vectors trained on large datasets, similar to the weights for pretrained deep learning models that we encountered in the section on transfer learning in the <a href="../17_convolutional_neural_nets">previous chapter</a>.</p>
+
+<p>The notebook <a href="05_sentiment_analysis_pretrained_embeddings.ipynb">sentiment<em>analysis</em>pretrained_embeddings</a> illustrates how to use pretrained Global Vectors for Word Representation (GloVe) provided by the Stanford NLP group with the IMDB review dataset.</p>
+
+<ul>
+<li><a href="http://ai.stanford.edu/~amaas/data/sentiment/">Large Movie Review Dataset</a>, Stanford AI Group</li>
+<li><a href="https://nlp.stanford.edu/projects/glove/">GloVe: Global Vectors for Word Representation</a>, Stanford NLP</li>
+</ul>

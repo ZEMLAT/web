@@ -1,0 +1,79 @@
+<h1>Installation Instructions</h1>
+
+<p>The book uses <a href="https://jupyter.org/">jupyter</a> notebooks to present the code with extensive commentary and context information and facilitate the visualization of results in one place. Some of the code examples are longer and make more sense to run as <code>python</code> scripts; you can convert a notebook to a script by running the following on the command line:</p>
+
+<p><code>bash
+$ jupyter nbconvert --to script [YOUR_NOTEBOOK].ipynb
+</code></p>
+
+<p>For testing purposes, most directories already include notebooks converted to python scripts that are more sparsely commented.  </p>
+
+<h2>How to install the required libaries</h2>
+
+<h3>Install miniconda</h3>
+
+<p>The notebooks use a virtual environment based on <a href="">miniconda3</a> that you need to install first. You can find detailed instructions for various operating systems <a href="https://conda.io/projects/conda/en/latest/user-guide/install/index.html">here</a>.</p>
+
+<h3>Create a virtual conda environment</h3>
+
+<p>[conda] is the package manager provided by the <a href="https://www.anaconda.com/">Anaconda</a> python distribution that is tailored to faciliate the installation of data science libraries.</p>
+
+<p>Just like there are <a href="https://docs.python.org/3/tutorial/venv.html">virtual environments</a> for generic python installations, conda permits the creation of separate <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html">environments</a> that are based on the same interpreter (miniconda3 if you followed the above instructions) but can contain different package and versions of packages. See also <a href="https://towardsdatascience.com/getting-started-with-python-environments-using-conda-32e9f2779307">here</a> for a more detailed tutorial.</p>
+
+<p>You can create a new conda environment with name <code>env_name</code> and one or more packages with a specific version number using the command: 
+<code>bash
+conda create --name env_name package=version_number
+</code>
+e.g.
+<code>bash
+conda create --name pandas_environment pandas=0.24
+</code></p>
+
+<h3>Create conda environment from file for this book</h3>
+
+<p>Here, we will create an environment from a file to ensure you install the versions the code has been tested with. The environment specs are in the file <code>environment_[linux|mac_osx].yml</code> in the root of this repo, where you should choose the one corresponding to your operating system. To create the environment with the name <code>ml4t</code> (specified in the file), just run:</p>
+
+<p><code>bash
+conda env create -f environment_linux.yml
+</code></p>
+
+<p>or </p>
+
+<p><code>bash
+conda env create -f environment_mac_osx.yml
+</code>
+from the command line in the root directory.</p>
+
+<h4>Separate environments for Chapters 4 &amp; 5</h4>
+
+<p>The <code>zipline</code> backtesting library was at time of writing only compatible with older <code>pandas</code> versions so that we provided different <code>environment.yml</code> files for these applications.</p>
+
+<h4>Known Issues</h4>
+
+<p>In case <code>conda</code> throws a <code>RemoveError</code>, a quick fix <a href="https://github.com/conda/conda/issues/8149">can be</a>:</p>
+
+<p><code>bash
+conda update conda
+</code> </p>
+
+<p>possibly adding <code>--force</code>.</p>
+
+<h3>Activate conda environment</h3>
+
+<p>After you've create it, you can activate the environment using its name, which in our case is <code>ml4t</code>:</p>
+
+<p><code>bash
+conda activate ml4t
+</code></p>
+
+<p>To deactivate, simply use</p>
+
+<p><code>bash
+conda deactivate
+</code></p>
+
+<h2>Set up jupyter extensions</h2>
+
+<p>jupyter notebooks can use a range of <a href="https://github.com/ipython-contrib/jupyter_contrib_nbextensions">extentsion</a> provided by the community. There are many useful ones that are described in the <a href="https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/">documentation</a>.</p>
+
+<p>The notebooks in this repo are formatted to use the <a href="https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/nbextensions/toc2/README.html">Table of Contents (2)</a> extension. For the best experience, activate it using the Configurator inthe <a href="https://github.com/Jupyter-contrib/jupyter_nbextensions_configurator">Nbextensions</a> tab available in your browser after starting the jupyter server. Modify the settings to check the option 'Leave h1 items out of ToC' if not set by default.</p>

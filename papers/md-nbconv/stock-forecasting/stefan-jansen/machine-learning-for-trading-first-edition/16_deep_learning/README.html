@@ -1,0 +1,121 @@
+<h1>Chapter 16: Deep Learning</h1>
+
+<p>The chapter presents feedforward neural networks (NN) to demonstrate how to efficiently train large models using backpropagation, and manage the risks of overfitting. It also shows how to use of the frameworks Keras, TensorFlow 2.0, and PyTorch.</p>
+
+<p>In the following chapters, we will build on this foundation to design and train a variety of architectures suitable for different investment applications with a particular focus on alternative data sources. These include recurrent NN tailored to sequential data like time series or natural language and convolutional NN particularly well suited to image data. We will also cover deep unsupervised learning, including Generative Adversarial Networks (GAN) to create synthetic data and reinforcement learning to train agents that interactively learn from their environment. In particular, this chapter will cover
+- How DL solves AI challenges in complex domains
+- How key innovations have propelled DL to its current popularity
+- How feed-forward networks learn representations from data
+- How to design and train deep neural networks in Python
+- How to implement deep NN using Keras, TensorFlow, and PyTorch
+- How to build and tune a deep NN to predict asset price moves</p>
+
+<h2>How Deep Learning Works</h2>
+
+<ul>
+<li><a href="https://www.deeplearningbook.org/">Deep Learning</a>, Ian Goodfellow, Yoshua Bengio and Aaron Courville, MIT Press, 2016</li>
+<li><a href="https://www.nature.com/articles/nature14539">Deep learning</a>, Yann LeCun, Yoshua Bengio, and Geoffrey Hinton, Nature 2015</li>
+<li><a href="http://neuralnetworksanddeeplearning.com/">Neural Networks and Deep Learning</a>, Michael A. Nielsen, Determination Press, 2015</li>
+<li><a href="https://ai.stanford.edu/~nilsson/QAI/qai.pdf">The Quest for Artificial Intelligence - A History of Ideas and Achievements</a>, Nils J. Nilsson, Cambridge University Press, 2010</li>
+<li><a href="https://ai100.stanford.edu/">One Hundred Year Study on Artificial Intelligence (AI100)</a></li>
+<li><a href="http://playground.tensorflow.org/#activation=tanh&amp;batchSize=10&amp;dataset=circle&amp;regDataset=reg-plane&amp;learningRate=0.03&amp;regularizationRate=0&amp;noise=0&amp;networkShape=4,2&amp;seed=0.71056&amp;showTestData=false&amp;discretize=false&amp;percTrainData=50&amp;x=true&amp;y=true&amp;xTimesY=false&amp;xSquared=false&amp;ySquared=false&amp;cosX=false&amp;sinX=false&amp;cosY=false&amp;sinY=false&amp;collectStats=false&amp;problem=classification&amp;initZero=false&amp;hideText=false">TensorFlow Playground</a>, Interactive, browser-based Deep Learning platform</li>
+</ul>
+
+<h3>Backpropagation</h3>
+
+<ul>
+<li><a href="http://ufldl.stanford.edu/wiki/index.php/Gradient_checking_and_advanced_optimization">Gradient Checking &amp; Advanced Optimization</a>, Unsupervised Feature Learning and Deep Learning, Stanford University</li>
+<li><a href="http://ruder.io/optimizing-gradient-descent/index.html#momentum">An overview of gradient descent optimization algorithms</a>, Sebastian Ruder, 2016</li>
+</ul>
+
+<h2>How to build a Neural Network using Python</h2>
+
+<p>To gain a better understanding of how NN work, the notebook <a href="build_and_train_feedforward_nn.ipynb">01<em>build</em>and<em>train</em>feedforward_nn</a> formulates as simple feedforward architecture and forward propagation computations using matrix algebra and implements it using Numpy, the Python counterpart of linear algebra.</p>
+
+<h2>Popular Deep Learning libraries</h2>
+
+<p>Currently, the most popular DL libraries are TensorFlow (supported by Google), Keras (led by Francois Chollet, now at Google), and PyTorch (supported by Facebook). Development is very active with PyTorch just releasing version 1.0 and TensorFlow 2.0 expected in early Spring 2019 when it is expected to adopt Keras as its main interface.</p>
+
+<p>Additional options include:</p>
+
+<ul>
+<li><a href="https://github.com/Microsoft/CNTK">Microsoft Cognitive Toolkit (CNTK)</a></li>
+<li><a href="http://caffe.berkeleyvision.org/">Caffe</a></li>
+<li><a href="http://www.deeplearning.net/software/theano/">Thenao</a>, developed at University of Montreal since 2007</li>
+<li><a href="https://mxnet.apache.org/">Apache MXNet</a>, used by Amazon</li>
+<li><a href="https://chainer.org/">Chainer</a>, developed by the Japanese company Preferred Networks</li>
+<li><a href="http://torch.ch/">Torch</a>, uses Lua, basis for PyTorch</li>
+<li><a href="https://deeplearning4j.org/">Deeplearning4J</a>, uses Java</li>
+</ul>
+
+<h3>How to Leverage GPU Optimization</h3>
+
+<p>All popular Deep Learning libraries support the use of GPU, and some also allow for parallel training on multiple GPU. The most common types of GPU are produced by NVIDA, and configuration requires installation and setup of the CUDA environment. The process continues to evolve and can be somewhat challenging depending on your computational environment. </p>
+
+<p>A more straightforward way to leverage GPU is via the the Docker virtualization platform. There are numerous images available that you can run in local container managed by Docker that circumvents many of the driver and version conflicts that you may otherwise encounter. Tensorflow provides docker images on its website that can also be used with Keras. </p>
+
+<ul>
+<li><a href="http://timdettmers.com/2018/11/05/which-gpu-for-deep-learning/">Which GPU(s) to Get for Deep Learning: My Experience and Advice for Using GPUs in Deep Learning</a>, Tim Dettmers</li>
+</ul>
+
+<h3>How to use Keras</h3>
+
+<p>Keras was designed as a high-level or meta API to accelerate the iterative workflow when designing and training deep neural networks with computational backends like TensorFlow, Theano, or CNTK. It has been integrated into TensorFlow in 2017 and is set to become the principal TensorFlow interface with the 2.0 release. You can also combine code from both libraries to leverage Keras’ high-level abstractions as well as customized TensorFlow graph operations.</p>
+
+<p>The notebook <a href="02_how_to_use_keras.ipynb">how<em>to</em>use_keras</a> demonstrates the functionality.</p>
+
+<ul>
+<li><a href="http://timdettmers.com/2018/12/16/deep-learning-hardware-guide/">A Full Hardware Guide to Deep Learning</a>, Tim Dettmers</li>
+<li><a href="https://keras.io/">Keras documentation</a></li>
+</ul>
+
+<h3>How to use Tensorboard</h3>
+
+<p>Tensorboard is a great visualization tool that comes with TensorFlow. It includes a suite of visualization tools to simplify the understanding, debugging, and optimization of neural networks.</p>
+
+<p>You can use it to visualize the computational graph, plot various execution and performance metrics, and even visualize image data processed by the network. It also permits comparisons of different training runs.
+When you run the how<em>to</em>use_keras notebook, and with TensorFlow installed, you can launch Tensorboard from the command line:</p>
+
+<p><code>python
+tensorboard --logdir=/full_path_to_your_logs ## e.g. ./tensorboard
+</code></p>
+
+<ul>
+<li><a href="https://www.tensorflow.org/guide/summaries_and_tensorboard">TensorBoard: Visualizing Learning</a></li>
+</ul>
+
+<h3>How to use PyTorch 1.0</h3>
+
+<p>Pytorch has been developed at the Facebook AI Research group led by Yann LeCunn and the first alpha version released in September 2016. It provides deep integration with Python libraries like Numpy that can be used to extend its functionality, strong GPU acceleration, and automatic differentiation using its autograd system. It provides more granular control than Keras through a lower-level API and is mainly used as a deep learning research platform but can also replace NumPy while enabling GPU computation.</p>
+
+<p>It employs eager execution, in contrast to the static computation graphs used by, e.g., Theano or TensorFlow. Rather than initially defining and compiling a network for fast but static execution, it relies on its autograd package for automatic differentiation of Tensor operations, i.e., it computes gradients ‘on the fly’ so that network structures can be partially modified more easily. This is called define-by-run, meaning that backpropagation is defined by how your code runs, which in turn implies that every single iteration can be different. The PyTorch documentation provides a detailed tutorial on this.</p>
+
+<ul>
+<li><a href="https://pytorch.org/docs">PyTorch Documentation</a></li>
+<li><a href="https://pytorch.org/tutorials">PyTorch Tutorials</a></li>
+<li><a href="https://pytorch.org/ecosystem">PyTorch Ecosystem</a>
+<ul>
+<li><a href="https://allennlp.org/">AllenNLP</a>, state-of-the-art NLP platform developed by the Allen Institute for Artificial Intelligence</li>
+<li><a href="https://github.com/zalandoresearch/flair">Flair</a>,  simple framework for state-of-the-art NLP developed at Zalando</li>
+<li><a href="http://www.fast.ai/">fst.ai</a>, simplifies training NN using modern best practices; offers online training</li>
+</ul></li>
+</ul>
+
+<h3>How to use TensorFlow</h3>
+
+<p>TensorFlow has become the leading deep learning library shortly after its release in September 2015, one year before PyTorch. TensorFlow 2.0 aims to simplify the API that has grown increasingly complex over time by making the Keras API, integrated into TensorFlow as part of the contrib package since 2017 its principal interface, and adopting eager execution. It will continue to focus on a robust implementation across numerous platforms but will make it easier to experiment and do research.</p>
+
+<p>The notebook <a href="04_how_to_use_tensorflow.ipynb">how<em>to</em>use_tensorflow</a> will  illustrateshow to use the 2.0 release (updated as the interface stabilizes).</p>
+
+<ul>
+<li><a href="https://www.tensorflow.org/">TensorFlow.org</a></li>
+<li><a href="https://medium.com/tensorflow/standardizing-on-keras-guidance-on-high-level-apis-in-tensorflow-2-0-bad2b04c819a">Standardizing on Keras: Guidance on High-level APIs in TensorFlow 2.0</a></li>
+<li><a href="https://js.tensorflow.org/">TensorFlow.js</a>, A JavaScript library for training and deploying ML models in the browser and on Node.js</li>
+</ul>
+
+<h2>How to optimize Neural Network Architectures</h2>
+
+<p>In practice, we need to explore variations of the design options outlined above because we can rarely be sure from the outset which network architecture best suits the data.
+The GridSearchCV class provided by scikit-learn that we encountered in Chapter 6, The Machine Learning Workflow conveniently automates this process. Just be mindful of the risk of false discoveries and keep track of how many experiments you are running to adjust the results accordingly.</p>
+
+<p>The notebook <a href="04_how_to_use_tensorflow.ipynb">how<em>to</em>optimize<em>a</em>NN_architecure</a> explores various options to build a simple feedforward Neural Network to predict asset price moves for a one-month horizon. The python script of the same name aims to facilitate running the code on a server in order to speed up computation.</p>
