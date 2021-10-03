@@ -1,0 +1,22 @@
+body {
+	max-width: 100%!important;
+}
+
+main.cd-main-content {
+    position: absolute;
+    z-index: 9999;
+    background-color: #999;
+}
+
+.cd-main-content {
+  /* set a min-height and a z-index to be sure that the main element completely covers the lateral menu */
+  min-height: 100%;
+  z-index: 2;
+  transition-property: transform;
+  transition-duration: 1s;
+}
+
+
+.cd-main-content.lateral-menu-is-open {
+	transform: translateX(calc(-100% - 10px));
+}
